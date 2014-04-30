@@ -69,6 +69,7 @@ using Microsoft.CodeAnalysis.MSBuild;
 using Microsoft.CodeAnalysis.FindSymbols;
 using System.Diagnostics;
 
+using System.Collections.Generic;
 
 namespace MetrHelper
 {
@@ -104,12 +105,30 @@ namespace MetrHelper
 
     }
 
+    class B2 : A {
+
+    }
+
+    class B3 : A
+    {
+
+    }
+
+    class B2Children1 : B2 {
+
+    }
+
+    class B2Children2 : B2
+    {
+
+    }
+
     class C : B
     {
         class InternalDefinedClass1 {
 
         }
-        
+
 
         private C(Int32 a)
         {
@@ -131,10 +150,11 @@ namespace MetrHelper
         public void PublicMethod1_C() { }
         public void PublicMethod2_C() { }
 
-        
+
 
     }
-
+}
+namespace MetrTest { 
     //  [Microsoft.VisualStudio.TestTools.UnitTesting.TestClass]
     class MetricCalculatorTest
     {
@@ -149,7 +169,7 @@ namespace MetrHelper
                 _compilation = project.GetCompilationAsync().Result;
 
 
-                var classType = Type.GetType("MetrHelper.MetricCalculatorTest");
+                var classType = Type.GetType("MetrTest.MetricCalculatorTest");
                 var methodInfos = classType.GetMethods(//System.Reflection.BindingFlags
                     ).Where(x => x.Name.IndexOf("Test") != -1);
                 //System.Reflection.CustomAttributeData
@@ -191,6 +211,26 @@ namespace MetrHelper
                 Console.WriteLine(ex.Message);
             }
         }
+        static public void TestNOC0(String nameOfThisMethod)
+        {
+            try
+            {
+                Microsoft.VisualStudio.TestTools.UnitTesting.
+                Assert.AreEqual(3,
+                Metr.MetricCalculator.NOC(_compilation, "MetrHelper.A"), "Blah");
+
+                Microsoft.VisualStudio.TestTools.UnitTesting.
+                Assert.AreEqual(2,
+                Metr.MetricCalculator.NOC(_compilation, "MetrHelper.B2"), "Blah");
+
+                Console.WriteLine(nameOfThisMethod + " - OK");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+            }
+        }
+
 
     }
 
@@ -201,6 +241,46 @@ namespace Metr
 {
     class MetricCalculator
     {
+
+
+        static private Dictionary<Compilation, Dictionary<ITypeSymbol, List<ITypeSymbol>>> _cacheTypesHierarchyField;
+        static private Dictionary<Compilation, Dictionary<ITypeSymbol, List<ITypeSymbol>>> _cacheTypesHierarchy {
+            get {
+                if (_cacheTypesHierarchyField == null) _cacheTypesHierarchyField = new Dictionary<Compilation, Dictionary<ITypeSymbol, List<ITypeSymbol>>>();
+                return _cacheTypesHierarchyField;
+            }
+        }
+        private MetricCalculator() { }
+
+
+        static private void dfs(Compilation compilation, INamespaceOrTypeSymbol v)
+        {
+            foreach (var cur in v.GetMembers())
+            {
+                var to = cur as INamespaceOrTypeSymbol;
+                if (to != null)
+                {
+                    var toAsType = to as ITypeSymbol;
+                    if (toAsType != null)
+                    {
+                        if (toAsType.BaseType != null)
+                        {
+                            if (!_cacheTypesHierarchy[compilation].ContainsKey(toAsType.BaseType))
+                                _cacheTypesHierarchy[compilation].Add(toAsType.BaseType, new List<ITypeSymbol>());
+
+                            _cacheTypesHierarchy[compilation][toAsType.BaseType].Add(toAsType);
+                        }
+                    }
+                    dfs(compilation, to);
+                }
+            }
+        }
+
+        static private void BuildTypesHierarchyForCompilation(Compilation compilation)
+        {
+            _cacheTypesHierarchy.Add(compilation, new Dictionary<ITypeSymbol, List<ITypeSymbol>>());
+            dfs(compilation, compilation.GlobalNamespace);
+        }
         /// <summary>
         /// 
         /// </summary>
@@ -209,7 +289,6 @@ namespace Metr
         /// <returns>Count of methods (including all constructors) of given class. Without members of parent class</returns>
         static public Int32 WMC(Compilation compilation, String className)
         {
-            
             /// TODO Complexity of Methods Analysis 
             ITypeSymbol cur = compilation.GetTypeByMetadataName(className);
                 
@@ -218,6 +297,7 @@ namespace Metr
             var res = t.Count();
             return res;
         }
+
 
         static public Int32 DIT(Compilation compilation, String className)
         {
@@ -231,7 +311,13 @@ namespace Metr
             return k;
         }
 
+        static public Int32 NOC(Compilation compilation, String className)
+        {
+            ITypeSymbol cur = compilation.GetTypeByMetadataName(className);
+            if (!_cacheTypesHierarchy.ContainsKey(compilation)) BuildTypesHierarchyForCompilation(compilation);
 
+            return _cacheTypesHierarchy[compilation][cur].Count;
+        }
 
     }
 
@@ -240,7 +326,7 @@ namespace Metr
     {
         static void Main(string[] args)
         {
-            MetrHelper.MetricCalculatorTest.Run();
+            MetrTest.MetricCalculatorTest.Run();
 
             
 
