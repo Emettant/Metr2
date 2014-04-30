@@ -287,15 +287,20 @@ namespace Metr
         /// <param name="compilation"></param>
         /// <param name="className"></param>
         /// <returns>Count of methods (including all constructors) of given class. Without members of parent class</returns>
-        static public Int32 WMC(Compilation compilation, String className)
+        static public Int32 RS(Compilation compilation, String className)
         {
-            /// TODO Complexity of Methods Analysis 
             ITypeSymbol cur = compilation.GetTypeByMetadataName(className);
-                
+
             var t = cur.GetMembers()
             .Where(x => x is IMethodSymbol);
             var res = t.Count();
             return res;
+        }
+
+        static public Int32 WMC(Compilation compilation, String className)
+        {
+            /// TODO Complexity of Methods Analysis 
+            return RS(compilation, className);
         }
 
 
@@ -318,6 +323,8 @@ namespace Metr
 
             return _cacheTypesHierarchy[compilation][cur].Count;
         }
+
+
 
     }
 
