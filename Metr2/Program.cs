@@ -71,8 +71,37 @@ using System.Diagnostics;
 
 using System.Collections.Generic;
 
-namespace MetrHelper
+namespace MetrExamples
 {
+    class D {
+        public void d_op1() {
+            B.PublicMethod1_B();
+           // B.PublicMethod2_B();
+            C.PublicMethod1_C();
+        }
+
+        public int d_pro1 {
+            get {
+                B.PublicMethod2_B();//*** for CBO is the same that lower// that's why counted 1 per d_pro1
+                return 0;
+            }
+            set {
+                C.PublicMethod1_C();
+                C.PublicMethod2_B();//*** for CBO counted as method B.PublicMethod2_B(), which was present earlier // that's why counted 1 per d_pro1
+            }
+        }
+    }
+
+    class E
+    {
+        public void e_op1()
+        {
+            B.PublicMethod1_B();
+            // B.PublicMethod2_B();
+            C.PublicMethod1_C();
+        }
+    }
+
     class A
     {
 
@@ -80,6 +109,9 @@ namespace MetrHelper
 
     class B : A
     {
+        static public void PublicMethod1_B() { }
+        static public void PublicMethod2_B() { }
+
         protected String _field1;
 
         protected B() { }
@@ -100,9 +132,7 @@ namespace MetrHelper
 
         private void PrivateMethod1_B() { }
         protected void ProtectedMethod1_B() { }
-        public void PublicMethod1_B() { }
-        public void PublicMethod2_B() { }
-
+    
     }
 
     class B2 : A {
@@ -147,7 +177,7 @@ namespace MetrHelper
 
         private void PrivateMethod1_C() { }
         protected void ProtectedMethod1_C() { }
-        public void PublicMethod1_C() { }
+        static public void PublicMethod1_C() { }
         public void PublicMethod2_C() { }
 
 
@@ -160,14 +190,17 @@ namespace MetrTest {
     {
 
         static Compilation _compilation;
+        static Solution _solution;
+        static String ExampleNamespaceName = "MetrExamples";
+        
         public static void Run()
         {
                 string solutionPath = @"C:\Users\Vitaliy\Documents\Visual Studio 2013\Projects\Metr2\Metr2.sln";
                 var workspace = MSBuildWorkspace.Create();
-                var solution = workspace.OpenSolutionAsync(solutionPath).Result;
-                var project = solution.Projects.Where(p => p.Name == "Metr2").First();
+                _solution = workspace.OpenSolutionAsync(solutionPath).Result;
+                var project = _solution.Projects.Where(p => p.Name == "Metr2").First();
                 _compilation = project.GetCompilationAsync().Result;
-
+            // var temp = _compilation.GetCompilationNamespace(_compilation.GlobalNamespace);
 
                 var classType = Type.GetType("MetrTest.MetricCalculatorTest");
                 var methodInfos = classType.GetMethods(//System.Reflection.BindingFlags
@@ -188,7 +221,7 @@ namespace MetrTest {
             {
                 Microsoft.VisualStudio.TestTools.UnitTesting.
                 Assert.AreEqual(3, 
-                Metr.MetricCalculator.DIT(_compilation, "MetrHelper.C"), "Blah");
+                Metr.MetricCalculator.DIT(_compilation, ExampleNamespaceName + ".C"), "Blah");
                 Console.WriteLine(nameOfThisMethod + " - OK");
             }
             catch (Exception ex)
@@ -203,7 +236,7 @@ namespace MetrTest {
             {
                 Microsoft.VisualStudio.TestTools.UnitTesting.
                 Assert.AreEqual(7, 
-                Metr.MetricCalculator.WMC(_compilation, "MetrHelper.C"), "Blah");
+                Metr.MetricCalculator.WMC(_compilation, ExampleNamespaceName + ".C"), "Blah");
                 Console.WriteLine(nameOfThisMethod + " - OK");
             }
             catch (Exception ex)
@@ -217,11 +250,44 @@ namespace MetrTest {
             {
                 Microsoft.VisualStudio.TestTools.UnitTesting.
                 Assert.AreEqual(3,
-                Metr.MetricCalculator.NOC(_compilation, "MetrHelper.A"), "Blah");
+                Metr.MetricCalculator.NOC(_solution, _compilation, ExampleNamespaceName + ".A"), "Blah");
 
                 Microsoft.VisualStudio.TestTools.UnitTesting.
                 Assert.AreEqual(2,
-                Metr.MetricCalculator.NOC(_compilation, "MetrHelper.B2"), "Blah");
+                Metr.MetricCalculator.NOC(_solution, _compilation, ExampleNamespaceName + ".B2"), "Blah");
+
+                Microsoft.VisualStudio.TestTools.UnitTesting.
+                   Assert.AreEqual(0,
+                   Metr.MetricCalculator.NOC(_solution, _compilation, ExampleNamespaceName + ".D"), "Blah");
+
+                Console.WriteLine(nameOfThisMethod + " - OK");
+
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+            }
+        }
+
+        static public void TestCBO_0(String nameOfThisMethod)
+        {
+            try
+            {
+                Microsoft.VisualStudio.TestTools.UnitTesting.
+                Assert.AreEqual(4,
+                Metr.MetricCalculator.CBO(_solution, _compilation, ExampleNamespaceName + ".D"), "Blah");
+
+                Microsoft.VisualStudio.TestTools.UnitTesting.
+                Assert.AreEqual(2,
+                Metr.MetricCalculator.CBO(_solution, _compilation, ExampleNamespaceName + ".E"), "Blah");
+
+                Microsoft.VisualStudio.TestTools.UnitTesting.
+                Assert.AreEqual(0,
+                Metr.MetricCalculator.CBO(_solution, _compilation, ExampleNamespaceName + ".A"), "Blah");
+
+                Microsoft.VisualStudio.TestTools.UnitTesting.
+                Assert.AreEqual(0,
+                Metr.MetricCalculator.CBO(_solution, _compilation, ExampleNamespaceName + ".B"), "Blah");
 
                 Console.WriteLine(nameOfThisMethod + " - OK");
             }
@@ -239,21 +305,49 @@ namespace MetrTest {
 
 namespace Metr
 {
-    class MetricCalculator
-    {
-
-
+    class MetricCalculatorCore  {
         static private Dictionary<Compilation, Dictionary<ITypeSymbol, List<ITypeSymbol>>> _cacheTypesHierarchyField;
-        static private Dictionary<Compilation, Dictionary<ITypeSymbol, List<ITypeSymbol>>> _cacheTypesHierarchy {
-            get {
+        static protected Dictionary<Compilation, Dictionary<ITypeSymbol, List<ITypeSymbol>>> _cacheTypesHierarchy
+        {
+            get
+            {
                 if (_cacheTypesHierarchyField == null) _cacheTypesHierarchyField = new Dictionary<Compilation, Dictionary<ITypeSymbol, List<ITypeSymbol>>>();
                 return _cacheTypesHierarchyField;
             }
         }
-        private MetricCalculator() { }
+        /// <summary>
+        /// d.op() { b.meth(); } // calling method
+        /// b.op() { } // called method
+        ///calling Method -> called Method
+        /// it could be Method or Property 
+        /// 
+        /// </summary>
+        static private Dictionary<Compilation, Dictionary<ISymbol, List<ISymbol>>> _cacheMethodsCouplingField;
+        static protected Dictionary<Compilation, Dictionary<ISymbol, List<ISymbol>>> _cacheMethodsCoupling
+        {
+            get
+            {
+                if (_cacheMethodsCouplingField == null) _cacheMethodsCouplingField = new Dictionary<Compilation, Dictionary<ISymbol, List<ISymbol>>>();
+                return _cacheMethodsCouplingField;
+            }
+        }
 
+        static protected void BuildCompilationCacheMap(Solution solution, Compilation compilation)
+        {
+            _cacheTypesHierarchy.Add(compilation, new Dictionary<ITypeSymbol, List<ITypeSymbol>>());
+            _cacheMethodsCoupling.Add(compilation, new Dictionary<ISymbol, List<ISymbol>>());
 
-        static private void dfs(Compilation compilation, INamespaceOrTypeSymbol v)
+            //for every SyntaxTree was analysed in current compilation
+            //for every "global-declared" namespace member was present in this compilation
+            foreach (var syntaxTree in compilation.SyntaxTrees)
+                foreach (var member in ((CompilationUnitSyntax)syntaxTree.GetRoot()).Members)
+                {
+                    var ns = member as NamespaceDeclarationSyntax;
+                    dfs(solution, compilation, compilation.GlobalNamespace.GetMembers(ns.Name.ToString()).FirstOrDefault());
+                }
+        }
+
+        static private void dfs(Solution solution, Compilation compilation, INamespaceOrTypeSymbol v)
         {
             foreach (var cur in v.GetMembers())
             {
@@ -271,22 +365,40 @@ namespace Metr
                             _cacheTypesHierarchy[compilation][toAsType.BaseType].Add(toAsType);
                         }
                     }
-                    dfs(compilation, to);
+                    dfs(solution, compilation, to);
+                }
+
+                ISymbol meth = cur as IMethodSymbol;
+                if (meth == null) meth = cur as IPropertySymbol;
+                if (meth != null)
+                {
+                    var too = SymbolFinder.FindCallersAsync(meth, solution);
+                    too.Wait();
+                    foreach (var el in too.Result)
+                    {
+                        if (!_cacheMethodsCoupling[compilation].ContainsKey(el.CallingSymbol))
+                            _cacheMethodsCoupling[compilation].Add(el.CallingSymbol, new List<ISymbol>());
+
+                        _cacheMethodsCoupling[compilation][el.CallingSymbol].Add(meth);
+                    }
+
                 }
             }
         }
 
-        static private void BuildTypesHierarchyForCompilation(Compilation compilation)
-        {
-            _cacheTypesHierarchy.Add(compilation, new Dictionary<ITypeSymbol, List<ITypeSymbol>>());
-            dfs(compilation, compilation.GlobalNamespace);
-        }
+      
+    }
+
+    class MetricCalculator : MetricCalculatorCore
+    {
+       private MetricCalculator() { }
+
         /// <summary>
-        /// 
+        /// Counts of methods (including all constructors) of given class. Without members of parent class
         /// </summary>
         /// <param name="compilation"></param>
         /// <param name="className"></param>
-        /// <returns>Count of methods (including all constructors) of given class. Without members of parent class</returns>
+        /// <returns></returns>
         static public Int32 RS(Compilation compilation, String className)
         {
             ITypeSymbol cur = compilation.GetTypeByMetadataName(className);
@@ -299,7 +411,7 @@ namespace Metr
 
         static public Int32 WMC(Compilation compilation, String className)
         {
-            /// TODO Complexity of Methods Analysis 
+            /// TODO Complexity of Methods Analysis, not C==1 
             return RS(compilation, className);
         }
 
@@ -316,14 +428,31 @@ namespace Metr
             return k;
         }
 
-        static public Int32 NOC(Compilation compilation, String className)
+        static public Int32 NOC(Solution solution, Compilation compilation, String className)
         {
             ITypeSymbol cur = compilation.GetTypeByMetadataName(className);
-            if (!_cacheTypesHierarchy.ContainsKey(compilation)) BuildTypesHierarchyForCompilation(compilation);
+            if (!_cacheTypesHierarchy.ContainsKey(compilation))
+                BuildCompilationCacheMap(solution, compilation);
 
-            return _cacheTypesHierarchy[compilation][cur].Count;
+            return (_cacheTypesHierarchy[compilation].ContainsKey(cur)) ? _cacheTypesHierarchy[compilation][cur].Count : 0;
         }
 
+        static public Int32 CBO(Solution solution, Compilation compilation, String className)
+        {
+            ITypeSymbol cur = compilation.GetTypeByMetadataName(className);
+            if (!_cacheMethodsCoupling.ContainsKey(compilation))
+                BuildCompilationCacheMap(solution, compilation);
+
+            Int32 ret = 0;
+            foreach (ISymbol mem in cur.GetMembers()) {
+                ISymbol meth = mem as IMethodSymbol;
+                if (meth == null) meth = mem as IPropertySymbol;
+                if (meth == null) continue;
+                if (_cacheMethodsCoupling[compilation].ContainsKey(meth))
+                    ret += _cacheMethodsCoupling[compilation][meth].Count();    
+            }
+            return ret;
+        }
 
 
     }
