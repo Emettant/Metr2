@@ -645,19 +645,34 @@ namespace MetrExpertXML {
 
 namespace MetrMath {
     using Wolfram.NETLink;
+    using System.Text;
     using Adapter;
 
     static class Adapter {
-        static IKernelLink kl = null;
-        public static string Calc(string input) {
-            if (kl == null) {
-                kl = MathLinkFactory.CreateKernelLink();//"-linkmode launch -linkname 'c:\\program files\\wolfram research\\mathematica\\9.0\\mathkernel'");
-                kl.WaitAndDiscardAnswer();
+        public static class Mathematica
+        {
+            static IKernelLink kl = null;
+            static public IKernelLink Result { get { return kl; } }
+            /// <summary>
+            /// !!!Make sure you wrote N[...] for numerical!!!
+            /// Call math kernel to evaluate string.
+            /// </summary>
+            /// <param name="input"></param>
+            public static void Calc(string input)
+            {
+                if (kl == null)
+                {
+                    kl = MathLinkFactory.CreateKernelLink();//"-linkmode launch -linkname 'c:\\program files\\wolfram research\\mathematica\\9.0\\mathkernel'");
+                    kl.WaitAndDiscardAnswer();
+                }
+                Console.WriteLine(input);
+                kl.Evaluate(input);
+                kl.WaitForAnswer();
             }
-            return kl.EvaluateToOutputForm(input, input.Length);
+
         }
         public static string ListToString<T>(List<T> list){
-            var sb = new System.Text.StringBuilder("{");
+            var sb = new StringBuilder("{");
             var separator = ", ";
             foreach (var el in list) {
                 sb.Append(el.ToString());
@@ -670,18 +685,35 @@ namespace MetrMath {
     }
 
     class Model {
-        static public void Build() {
+        static List<double> _model = null;
+        static public List<double> model { get { return _model; }}
+        static public void Build<T>(List<List<T>> coefs, List<T> results) {
 
-            
+            var coefsString = new List<String>();
+            foreach (var el in coefs) coefsString.Add(ListToString<T>(el));
+
+            Mathematica.Calc("N[LeastSquares[" +
+            ListToString<String>(coefsString) + "," +
+            ListToString<T>(results) +
+            "]]");
+            var something = Mathematica.Result.GetDoubleArray();
+            _model = something.ToList();
+            foreach (var el in _model) Console.WriteLine(el.ToString() + " ");
+        }
+        static public void Build(List<List<Int32>> coefs, List<Int32> results) {
+            Build<Int32>(coefs, results);
         }
     }
 
     class ModelTest {
         
         static public void Run() {
-            //Model.Build();
-            Console.WriteLine(ListToString<Int32>(new List<Int32> { 2, 3, 4 }));
-            Console.WriteLine(Calc(ListToString<Int32>(new List<Int32> { 2, 3, 4 })+"+"+ ListToString<Int32>(new List<Int32> { 2, 3, 4 })));
+            Model.Build(new List<List<Int32>> { new List<Int32> { 1, 2, 3 }, new List<Int32> { 2, 3, 4 }, new List<Int32> { 3, 4, 5 } }, new List<Int32> { 1, 1, 1 });
+           
+            //Mathematica.Calc(ListToString<Int32>(new List<Int32> { 2, 3, 4 }) + "+" + ListToString<Int32>(new List<Int32> { 2, 3, 4 }));
+            //Console.WriteLine(Mathematica.Result.GetDoubleArray()[0]);
+            //Mathematica.Calc("3+4");
+            //Console.WriteLine(Mathematica.Result.GetDouble());
         }
     }
 
