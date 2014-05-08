@@ -1,0 +1,17 @@
+Bug:
+***************
+Property get and set come together everywhere
+SymbolFinder returns property symbol, instead of set OR get of property.
+****************
+
+TODO:
+LCOM
+NOO
+NOA
+SI
+
+Ideas:
+* CBO just class coupling //like in VS2013
+* LCOM not just by fields, but by methods
+
+
