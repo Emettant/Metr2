@@ -26,10 +26,23 @@ namespace Votes_Interface
             current_project = @"Metr2";
             Type[] estimationTypes = { typeof(EstimationOfElement) };
             serializer = new XmlSerializer(typeof(EstimationList), estimationTypes);
-
+            LoadVotesFromFile();
             InitTreeView();
         }
 
+        private void LoadVotesFromFile()
+        {
+            var fs = new FileStream(votesFileBox.Text, FileMode.Open);
+                try
+                {
+                    form_votes = (EstimationList)serializer.Deserialize(fs);
+
+                }
+                finally
+                {
+                    fs.Close();
+                }
+        }
 
         private void dfs_through_members(TreeNodeCollection treenode, Compilation compiltaion, INamespaceOrTypeSymbol symbol) {
             foreach (var el in symbol.GetMembers()) {
@@ -74,7 +87,16 @@ namespace Votes_Interface
 
         private void symbolView_AfterSelect(object sender, TreeViewEventArgs e)
         {
-            
+            var name = e.Node.FullPath.Replace('\\', '.');
+            foreach (var el in form_votes.Estimations) {
+                if (current_solution == el.Solution && current_project == el.Project && name == el.FullName) {
+                    voteBox.Value = el.Estimation;
+                    is_voted.Checked = true;
+                    return;
+                }
+            }
+            voteBox.Value = 0;
+            is_voted.Checked = false;
         }
 
         private void VotesBrowse_Click(object sender, EventArgs e)
@@ -111,7 +133,7 @@ namespace Votes_Interface
         private void SaveVotes_Click(object sender, EventArgs e)
         {
             form_votes = new EstimationList("TestVoteList");
-            form_votes.AddEstimation(new EstimationOfElement(current_solution, current_project, "MetrExamples.E", 33));
+            form_votes.AddEstimation(new EstimationOfElement(current_solution, current_project, "MetrExamples.C", 33));
             
             FileStream fs = new FileStream(votesFileBox.Text, FileMode.Create);
             serializer.Serialize(fs, form_votes);
@@ -121,16 +143,17 @@ namespace Votes_Interface
 
         private void LoadVotes_Click(object sender, EventArgs e)
         {
-            var fs = new FileStream(votesFileBox.Text, FileMode.Open);
-            try
-            {
-                form_votes = (EstimationList)serializer.Deserialize(fs);
+            LoadVotesFromFile();
+        }
 
-            }
-            finally
-            {
-                fs.Close();
-            }
+        private void textBox1_TextChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void numericUpDown1_ValueChanged(object sender, EventArgs e)
+        {
+
         }
     }
 }
