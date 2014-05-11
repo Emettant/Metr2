@@ -5,6 +5,8 @@ VisualStudioVersion = 12.0.21005.1
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Metr2", "Metr2\Metr2.csproj", "{D93DC04A-28B4-4B43-ABE5-0DE3BC88B703}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Votes_Interface", "Votes_Interface\Votes_Interface.csproj", "{AB0E189B-96EE-4FF6-88A2-B8AFC69AD6DB}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -25,6 +27,16 @@ Global
 		{D93DC04A-28B4-4B43-ABE5-0DE3BC88B703}.Release|Mixed Platforms.Build.0 = Release|x86
 		{D93DC04A-28B4-4B43-ABE5-0DE3BC88B703}.Release|x86.ActiveCfg = Release|x86
 		{D93DC04A-28B4-4B43-ABE5-0DE3BC88B703}.Release|x86.Build.0 = Release|x86
+		{AB0E189B-96EE-4FF6-88A2-B8AFC69AD6DB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AB0E189B-96EE-4FF6-88A2-B8AFC69AD6DB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AB0E189B-96EE-4FF6-88A2-B8AFC69AD6DB}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{AB0E189B-96EE-4FF6-88A2-B8AFC69AD6DB}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{AB0E189B-96EE-4FF6-88A2-B8AFC69AD6DB}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{AB0E189B-96EE-4FF6-88A2-B8AFC69AD6DB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AB0E189B-96EE-4FF6-88A2-B8AFC69AD6DB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{AB0E189B-96EE-4FF6-88A2-B8AFC69AD6DB}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{AB0E189B-96EE-4FF6-88A2-B8AFC69AD6DB}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{AB0E189B-96EE-4FF6-88A2-B8AFC69AD6DB}.Release|x86.ActiveCfg = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

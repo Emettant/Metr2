@@ -112,7 +112,7 @@ namespace MetrExamples
         }
     }
 
-    class E
+    class ParentChildExternalMethodCalled
     {
         //CBO == 2, because B.PublicMethod1_B() and C.PublicMethod1_B() are the same
         public void e_op1()
@@ -217,12 +217,13 @@ namespace MetrTest {
         
         public static void Run()
         {
-                string solutionPath = @"C:\Users\Vitaliy\Documents\Visual Studio 2013\Projects\Metr2\Metr2.sln";
-                var workspace = MSBuildWorkspace.Create();
-                _solution = workspace.OpenSolutionAsync(solutionPath).Result;
-                var project = _solution.Projects.Where(p => p.Name == "Metr2").First();
-                _compilation = project.GetCompilationAsync().Result;
-            // var temp = _compilation.GetCompilationNamespace(_compilation.GlobalNamespace);
+            Metr.RoslynAPI.ProjectCompile(@"C:\Users\Vitaliy\Documents\Visual Studio 2013\Projects\Metr2\Metr2.sln", "Metr2", out _solution, out _compilation);
+            //    string solutionPath = @"C:\Users\Vitaliy\Documents\Visual Studio 2013\Projects\Metr2\Metr2.sln";
+            //    var workspace = MSBuildWorkspace.Create();
+            //    _solution = workspace.OpenSolutionAsync(solutionPath).Result;
+            //    var project = _solution.Projects.Where(p => p.Name == "Metr2").First();
+            //    _compilation = project.GetCompilationAsync().Result;
+            //// var temp = _compilation.GetCompilationNamespace(_compilation.GlobalNamespace);
 
                 var classType = Type.GetType("MetrTest.MetricCalculatorTest");
                 var methodInfos = classType.GetMethods(//System.Reflection.BindingFlags
@@ -280,7 +281,7 @@ namespace MetrTest {
 
                 Microsoft.VisualStudio.TestTools.UnitTesting.
                    Assert.AreEqual(0,
-                   Metr.MetricCalculator.NOC(_solution, _compilation, ExampleNamespaceName + ".D"), "Blah");
+                   Metr.MetricCalculator.NOC(_solution, _compilation, ExampleNamespaceName + ".PropertyClass"), "Blah");
 
                 Console.WriteLine(nameOfThisMethod + " - OK");
 
@@ -297,21 +298,21 @@ namespace MetrTest {
             {
                 Microsoft.VisualStudio.TestTools.UnitTesting.
                 Assert.AreEqual(2,
-                Metr.MetricCalculator.CBO(_solution, _compilation, ExampleNamespaceName + ".E"), "Blah");
+                Metr.MetricCalculator.CBO(_solution, _compilation, ExampleNamespaceName + ".ParentChildExternalMethodCalled"), "Blah");
 
                 Microsoft.VisualStudio.TestTools.UnitTesting.
                 Assert.AreEqual(0,
                 Metr.MetricCalculator.CBO(_solution, _compilation, ExampleNamespaceName + ".SingleClass"), "Blah");
 
                 Microsoft.VisualStudio.TestTools.UnitTesting.
-                Assert.AreEqual(0,
+                Assert.AreEqual(2,
                 Metr.MetricCalculator.CBO(_solution, _compilation, ExampleNamespaceName + ".DiffPlaceSameExternalMethodCall"), "Blah");
 
                 
 
                 Microsoft.VisualStudio.TestTools.UnitTesting.
-                Assert.AreEqual(5,
-                Metr.MetricCalculator.CBO(_solution, _compilation, ExampleNamespaceName + ".D"), "Blah");
+                Assert.AreEqual(4,
+                Metr.MetricCalculator.CBO(_solution, _compilation, ExampleNamespaceName + ".PropertyClass"), "Blah");
                
                 Microsoft.VisualStudio.TestTools.UnitTesting.
                 Assert.AreEqual(0,
@@ -518,8 +519,17 @@ namespace Metr
 
     }
 
+    static class RoslynAPI {
+        static public void ProjectCompile(String solutionPath, String projectToPick, out Solution _solution, out Compilation _compilation) {
+            //string solutionPath = @"C:\Users\Vitaliy\Documents\Visual Studio 2013\Projects\Metr2\Metr2.sln";
+            var workspace = MSBuildWorkspace.Create();
+            _solution = workspace.OpenSolutionAsync(solutionPath).Result;
+            var project = _solution.Projects.Where(p => p.Name == projectToPick).First();
+            _compilation = project.GetCompilationAsync().Result;
+            // var temp = _compilation.GetCompilationNamespace(_compilation.GlobalNamespace);
+        }
+    }
 
-  
    
 }
 
@@ -528,9 +538,9 @@ namespace MetrMain {
     {
         static void Main(string[] args)
         {
-            //MetrTest.MetricCalculatorTest.Run();
+            MetrTest.MetricCalculatorTest.Run();
             // MetrExpertXML.EstimationListTest.Run();
-            MetrMath.ModelTest.Run();
+            //MetrMath.ModelTest.Run();
 
 
 
