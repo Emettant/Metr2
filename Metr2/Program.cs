@@ -696,7 +696,7 @@ namespace MetrMath {
             ListToString<String>(coefsString) + "," +
             ListToString<T>(results) +
             "]]");
-            var something = Mathematica.Result.GetDoubleArray();
+            var something = Mathematica.Result.GetDoubleArray();    
             _model = something.ToList();
             foreach (var el in _model) Console.WriteLine(el.ToString() + " ");
         }
