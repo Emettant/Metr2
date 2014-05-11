@@ -519,15 +519,18 @@ namespace Metr
 
     }
 
-    static class RoslynAPI {
+    public class RoslynAPI {
         static public void ProjectCompile(String solutionPath, String projectToPick, out Solution _solution, out Compilation _compilation) {
             //string solutionPath = @"C:\Users\Vitaliy\Documents\Visual Studio 2013\Projects\Metr2\Metr2.sln";
             var workspace = MSBuildWorkspace.Create();
             _solution = workspace.OpenSolutionAsync(solutionPath).Result;
-            var project = _solution.Projects.Where(p => p.Name == projectToPick).First();
-            _compilation = project.GetCompilationAsync().Result;
+            var projects = _solution.Projects;
+            var project = projects.Where(p => p.Name.ToString() == projectToPick).First();
+            _compilation = project.GetCompilationAsync().Result; 
             // var temp = _compilation.GetCompilationNamespace(_compilation.GlobalNamespace);
         }
+
+       
     }
 
    
