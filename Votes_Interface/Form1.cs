@@ -9,6 +9,9 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
+using System.IO;
+using MetrExpertXML;
+using System.Xml.Serialization;
 
 namespace Votes_Interface
 {
@@ -17,9 +20,12 @@ namespace Votes_Interface
         public Form1()
         {
             InitializeComponent();
-            form_votes = new Dictionary<Tuple<string, string, string>, int>();
+            
             current_solution = @"C:\Users\Vitaliy\Documents\Visual Studio 2013\Projects\Metr2\Metr2.sln";
+            votesFileBox.Text = @"C:\temp2\Metr2.xml";
             current_project = @"Metr2";
+            Type[] estimationTypes = { typeof(EstimationOfElement) };
+            serializer = new XmlSerializer(typeof(EstimationList), estimationTypes);
 
             InitTreeView();
         }
@@ -35,9 +41,10 @@ namespace Votes_Interface
             }
         }
 
-        private Dictionary<Tuple<string, string, string>, Int32> form_votes;
+        private EstimationList form_votes;
         private String current_solution;
         private String current_project;
+        XmlSerializer serializer;
 
         private void InitTreeView(){
             Solution _solution;
@@ -68,6 +75,62 @@ namespace Votes_Interface
         private void symbolView_AfterSelect(object sender, TreeViewEventArgs e)
         {
             
+        }
+
+        private void VotesBrowse_Click(object sender, EventArgs e)
+        {
+            Stream myStream = null;
+            OpenFileDialog openFileDialog1 = new OpenFileDialog();
+
+            var tt = Directory.GetParent(votesFileBox.Text).ToString();
+            openFileDialog1.InitialDirectory = tt;
+            //openFileDialog1.Filter = "txt files (*.txt)|*.txt|All files (*.*)|*.*";
+            //openFileDialog1.FilterIndex = 2;
+            //openFileDialog1.RestoreDirectory = true;
+
+            if (openFileDialog1.ShowDialog() == DialogResult.OK)
+            {
+                try
+                {
+                    if ((myStream = openFileDialog1.OpenFile()) != null)
+                    {
+                        votesFileBox.Text = openFileDialog1.FileName;
+                        using (myStream)
+                        {
+                          
+                        }
+                    }
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show("Error: Could not read file from disk. Original error: " + ex.Message);
+                }
+            }
+        }
+
+        private void SaveVotes_Click(object sender, EventArgs e)
+        {
+            form_votes = new EstimationList("TestVoteList");
+            form_votes.AddEstimation(new EstimationOfElement(current_solution, current_project, "MetrExamples.E", 33));
+            
+            FileStream fs = new FileStream(votesFileBox.Text, FileMode.Create);
+            serializer.Serialize(fs, form_votes);
+            fs.Close();
+            form_votes = null;
+        }
+
+        private void LoadVotes_Click(object sender, EventArgs e)
+        {
+            var fs = new FileStream(votesFileBox.Text, FileMode.Open);
+            try
+            {
+                form_votes = (EstimationList)serializer.Deserialize(fs);
+
+            }
+            finally
+            {
+                fs.Close();
+            }
         }
     }
 }
