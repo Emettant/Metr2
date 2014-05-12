@@ -539,11 +539,13 @@ namespace Metr
 namespace MetrMain {
     class Program
     {
+        
+
         static void Main(string[] args)
         {
-            MetrTest.MetricCalculatorTest.Run();
+            //MetrTest.MetricCalculatorTest.Run();
             // MetrExpertXML.EstimationListTest.Run();
-            //MetrMath.ModelTest.Run();
+            MetrMath.ModelTest.Run();
 
 
 
@@ -657,8 +659,11 @@ namespace MetrExpertXML {
 }
 
 namespace MetrMath {
+    using System.Xml.Serialization;
     using Wolfram.NETLink;
     using System.Text;
+    using System.IO;
+    using MetrExpertXML;
     using Adapter;
 
     static class Adapter {
@@ -698,6 +703,8 @@ namespace MetrMath {
     }
 
     class Model {
+        
+
         static List<double> _model = null;
         static public List<double> model { get { return _model; }}
         static public void Build<T>(List<List<T>> coefs, List<T> results) {
@@ -716,13 +723,52 @@ namespace MetrMath {
         static public void Build(List<List<Int32>> coefs, List<Int32> results) {
             Build<Int32>(coefs, results);
         }
+
+        static public void Build(string fileMetricName) {
+            Type[] estimationTypes = { typeof(EstimationOfElement) };
+            XmlSerializer serializer = new XmlSerializer(typeof(EstimationList), estimationTypes);
+
+            var fs = new FileStream(fileMetricName, FileMode.Open);
+            try
+            {
+                var votesList = (EstimationList)serializer.Deserialize(fs);
+                Solution solution = null;
+                Compilation compilation = null;
+                string solutionPath = null;
+                string projectToPick = null;
+                var coefs = new List<List<Int32>>();
+                var ress = new List<Int32>();
+                foreach (var v in votesList.Estimations) {
+                    if (v.Solution != solutionPath || v.Project != projectToPick)
+                        Metr.RoslynAPI.ProjectCompile((solutionPath = v.Solution), (projectToPick = v.Project), out solution, out compilation);
+
+                    coefs.Add(new List<Int32>()
+                    {
+                        Metr.MetricCalculator.RS(compilation,v.FullName),
+                        Metr.MetricCalculator.DIT(compilation,v.FullName),
+                        Metr.MetricCalculator.NOC(solution,compilation,v.FullName),
+                        Metr.MetricCalculator.CBO(solution, compilation,v.FullName)
+                    });
+                    ress.Add(v.Estimation);
+
+                }
+                Build(coefs, ress);
+            }
+            finally
+            {
+                fs.Close();
+            }
+
+
+        }
     }
 
     class ModelTest {
         
         static public void Run() {
-            Model.Build(new List<List<Int32>> { new List<Int32> { 1, 2, 3 }, new List<Int32> { 2, 3, 4 }, new List<Int32> { 3, 4, 5 } }, new List<Int32> { 1, 1, 1 });
-           
+            //Model.Build(new List<List<Int32>> { new List<Int32> { 1, 2, 3 }, new List<Int32> { 2, 3, 4 }, new List<Int32> { 3, 4, 5 } }, new List<Int32> { 1, 1, 1 });
+            Model.Build(@"C:\temp2\Metr2 - Copy.xml");
+
             //Mathematica.Calc(ListToString<Int32>(new List<Int32> { 2, 3, 4 }) + "+" + ListToString<Int32>(new List<Int32> { 2, 3, 4 }));
             //Console.WriteLine(Mathematica.Result.GetDoubleArray()[0]);
             //Mathematica.Calc("3+4");

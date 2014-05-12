@@ -41,9 +41,9 @@
             // 
             // symbolView
             // 
-            this.symbolView.Location = new System.Drawing.Point(33, 27);
+            this.symbolView.Location = new System.Drawing.Point(33, 55);
             this.symbolView.Name = "symbolView";
-            this.symbolView.Size = new System.Drawing.Size(206, 411);
+            this.symbolView.Size = new System.Drawing.Size(364, 383);
             this.symbolView.TabIndex = 0;
             this.symbolView.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.symbolView_AfterSelect);
             // 
@@ -59,10 +59,10 @@
             // 
             // votesFileBox
             // 
-            this.votesFileBox.Location = new System.Drawing.Point(245, 27);
+            this.votesFileBox.Location = new System.Drawing.Point(33, 27);
             this.votesFileBox.Name = "votesFileBox";
             this.votesFileBox.ReadOnly = true;
-            this.votesFileBox.Size = new System.Drawing.Size(102, 22);
+            this.votesFileBox.Size = new System.Drawing.Size(717, 22);
             this.votesFileBox.TabIndex = 2;
             // 
             // SaveVotes
@@ -87,7 +87,7 @@
             // 
             // voteBox
             // 
-            this.voteBox.Location = new System.Drawing.Point(342, 175);
+            this.voteBox.Location = new System.Drawing.Point(496, 188);
             this.voteBox.Name = "voteBox";
             this.voteBox.Size = new System.Drawing.Size(87, 22);
             this.voteBox.TabIndex = 5;
@@ -97,7 +97,7 @@
             // is_voted
             // 
             this.is_voted.AutoSize = true;
-            this.is_voted.Location = new System.Drawing.Point(259, 176);
+            this.is_voted.Location = new System.Drawing.Point(413, 189);
             this.is_voted.Name = "is_voted";
             this.is_voted.Size = new System.Drawing.Size(65, 21);
             this.is_voted.TabIndex = 6;
@@ -107,7 +107,7 @@
             // 
             // voteBut
             // 
-            this.voteBut.Location = new System.Drawing.Point(342, 212);
+            this.voteBut.Location = new System.Drawing.Point(496, 225);
             this.voteBut.Name = "voteBut";
             this.voteBut.Size = new System.Drawing.Size(87, 30);
             this.voteBut.TabIndex = 7;
