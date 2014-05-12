@@ -35,6 +35,7 @@
             this.LoadVotes = new System.Windows.Forms.Button();
             this.voteBox = new System.Windows.Forms.NumericUpDown();
             this.is_voted = new System.Windows.Forms.CheckBox();
+            this.voteBut = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.voteBox)).BeginInit();
             this.SuspendLayout();
             // 
@@ -61,7 +62,7 @@
             this.votesFileBox.Location = new System.Drawing.Point(245, 27);
             this.votesFileBox.Name = "votesFileBox";
             this.votesFileBox.ReadOnly = true;
-            this.votesFileBox.Size = new System.Drawing.Size(505, 22);
+            this.votesFileBox.Size = new System.Drawing.Size(102, 22);
             this.votesFileBox.TabIndex = 2;
             // 
             // SaveVotes
@@ -86,11 +87,12 @@
             // 
             // voteBox
             // 
-            this.voteBox.Location = new System.Drawing.Point(354, 175);
+            this.voteBox.Location = new System.Drawing.Point(342, 175);
             this.voteBox.Name = "voteBox";
             this.voteBox.Size = new System.Drawing.Size(87, 22);
             this.voteBox.TabIndex = 5;
-            this.voteBox.ValueChanged += new System.EventHandler(this.numericUpDown1_ValueChanged);
+            this.voteBox.ValueChanged += new System.EventHandler(this.voteBox_ValueChanged);
+            this.voteBox.Enter += new System.EventHandler(this.voteBox_Enter);
             // 
             // is_voted
             // 
@@ -101,12 +103,24 @@
             this.is_voted.TabIndex = 6;
             this.is_voted.Text = "voted";
             this.is_voted.UseVisualStyleBackColor = true;
+            this.is_voted.CheckedChanged += new System.EventHandler(this.is_voted_CheckedChanged);
+            // 
+            // voteBut
+            // 
+            this.voteBut.Location = new System.Drawing.Point(342, 212);
+            this.voteBut.Name = "voteBut";
+            this.voteBut.Size = new System.Drawing.Size(87, 30);
+            this.voteBut.TabIndex = 7;
+            this.voteBut.Text = "Apply";
+            this.voteBut.UseVisualStyleBackColor = true;
+            this.voteBut.Click += new System.EventHandler(this.voteBut_Click);
             // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(762, 450);
+            this.Controls.Add(this.voteBut);
             this.Controls.Add(this.is_voted);
             this.Controls.Add(this.voteBox);
             this.Controls.Add(this.LoadVotes);
@@ -132,6 +146,7 @@
         private System.Windows.Forms.Button LoadVotes;
         private System.Windows.Forms.NumericUpDown voteBox;
         private System.Windows.Forms.CheckBox is_voted;
+        private System.Windows.Forms.Button voteBut;
     }
 }
 

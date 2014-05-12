@@ -132,8 +132,8 @@ namespace Votes_Interface
 
         private void SaveVotes_Click(object sender, EventArgs e)
         {
-            form_votes = new EstimationList("TestVoteList");
-            form_votes.AddEstimation(new EstimationOfElement(current_solution, current_project, "MetrExamples.C", 33));
+            //form_votes = new EstimationList("TestVoteList");
+            //form_votes.AddEstimation(new EstimationOfElement(current_solution, current_project, "MetrExamples.C", 33));
             
             FileStream fs = new FileStream(votesFileBox.Text, FileMode.Create);
             serializer.Serialize(fs, form_votes);
@@ -154,6 +154,52 @@ namespace Votes_Interface
         private void numericUpDown1_ValueChanged(object sender, EventArgs e)
         {
 
+        }
+
+        private void voteAction() {
+            var name = symbolView.SelectedNode.FullPath.Replace('\\', '.');
+            foreach (var el in form_votes.Estimations)
+            {
+                if (current_solution == el.Solution && current_project == el.Project && name == el.FullName)
+                {
+                    el.Estimation = (int)voteBox.Value;
+                    return;
+                }
+            }
+            is_voted.Checked = true;
+            form_votes.AddEstimation(new EstimationOfElement(current_solution, current_project, name, (int)voteBox.Value));
+        }
+        private void voteBox_ValueChanged(object sender, EventArgs e)
+        {
+            
+        }
+
+        private void is_voted_CheckedChanged(object sender, EventArgs e)
+        {
+            if (is_voted.Checked) voteAction();
+            else
+            {
+                var name = symbolView.SelectedNode.FullPath.Replace('\\', '.');
+                foreach (var el in form_votes.Estimations)
+                {
+                    if (current_solution == el.Solution && current_project == el.Project && name == el.FullName)
+                    {
+                        form_votes.Estimations.Remove(el);
+                        return;
+                    }
+                }
+            }
+        }
+
+        private void voteBox_Enter(object sender, EventArgs e)
+        {
+            
+        }
+
+        private void voteBut_Click(object sender, EventArgs e)
+        {
+            is_voted.Checked = true;
+            voteAction();
         }
     }
 }
