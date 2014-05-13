@@ -42,6 +42,7 @@ namespace Votes_Interface
                 {
                     fs.Close();
                 }
+            RefreshSelected(symbolView.SelectedNode);
         }
 
         private void dfs_through_members(TreeNodeCollection treenode, Compilation compiltaion, INamespaceOrTypeSymbol symbol) {
@@ -84,12 +85,14 @@ namespace Votes_Interface
         {
         
         }
-
-        private void symbolView_AfterSelect(object sender, TreeViewEventArgs e)
+        private void RefreshSelected(TreeNode boo)
         {
-            var name = e.Node.FullPath.Replace('\\', '.');
-            foreach (var el in form_votes.Estimations) {
-                if (current_solution == el.Solution && current_project == el.Project && name == el.FullName) {
+            if (boo == null) return;
+            var name = boo.FullPath.Replace('\\', '.');
+            foreach (var el in form_votes.Estimations)
+            {
+                if (current_solution == el.Solution && current_project == el.Project && name == el.FullName)
+                {
                     voteBox.Value = el.Estimation;
                     is_voted.Checked = true;
                     return;
@@ -97,6 +100,10 @@ namespace Votes_Interface
             }
             voteBox.Value = 0;
             is_voted.Checked = false;
+        }
+        private void symbolView_AfterSelect(object sender, TreeViewEventArgs e)
+        {
+            RefreshSelected(e.Node);
         }
 
         private void VotesBrowse_Click(object sender, EventArgs e)
@@ -128,22 +135,34 @@ namespace Votes_Interface
                     MessageBox.Show("Error: Could not read file from disk. Original error: " + ex.Message);
                 }
             }
+            LoadVotesFromFile();
         }
 
         private void SaveVotes_Click(object sender, EventArgs e)
         {
             //form_votes = new EstimationList("TestVoteList");
             //form_votes.AddEstimation(new EstimationOfElement(current_solution, current_project, "MetrExamples.C", 33));
-            
+
+            form_votes.Estimations.Sort((EstimationOfElement a, EstimationOfElement b) => {
+
+                if (String.Compare(a.Solution, b.Solution) == 1) return 1;
+                else if (a.Solution == b.Solution && String.Compare(a.Project , b.Project)==1) return 1;
+                else if (a.Solution == b.Solution && a.Project == b.Project && String.Compare(a.FullName , b.FullName)==1) return 1;
+                else if (a.Solution == b.Solution && a.Project == b.Project && a.FullName == b.FullName) return 0;
+                else return -1;
+
+            });
+
             FileStream fs = new FileStream(votesFileBox.Text, FileMode.Create);
             serializer.Serialize(fs, form_votes);
             fs.Close();
-            form_votes = null;
+            
         }
 
         private void LoadVotes_Click(object sender, EventArgs e)
         {
             LoadVotesFromFile();
+            
         }
 
         private void textBox1_TextChanged(object sender, EventArgs e)

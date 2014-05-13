@@ -109,7 +109,7 @@
             // 
             // applyBut
             // 
-            this.applyBut.Location = new System.Drawing.Point(413, 226);
+            this.applyBut.Location = new System.Drawing.Point(516, 228);
             this.applyBut.Name = "applyBut";
             this.applyBut.Size = new System.Drawing.Size(87, 30);
             this.applyBut.TabIndex = 7;
@@ -119,7 +119,7 @@
             // 
             // clearBut
             // 
-            this.clearBut.Location = new System.Drawing.Point(516, 226);
+            this.clearBut.Location = new System.Drawing.Point(413, 228);
             this.clearBut.Name = "clearBut";
             this.clearBut.Size = new System.Drawing.Size(87, 30);
             this.clearBut.TabIndex = 8;
