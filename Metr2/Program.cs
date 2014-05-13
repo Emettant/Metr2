@@ -520,20 +520,40 @@ namespace Metr
     }
 
     public class RoslynAPI {
-        static public void ProjectCompile(String solutionPath, String projectToPick, out Solution _solution, out Compilation _compilation) {
+
+        static public Solution GetSolution(String solutionPath) {
+            return MSBuildWorkspace.Create().OpenSolutionAsync(solutionPath).Result; 
+        }
+        static private Compilation GetCompilation(Solution _solution, String projectToPick)
+        {
+            return _solution.Projects.Where(p => p.Name.ToString() == projectToPick).First().GetCompilationAsync().Result;
+        }
+
+        //static public IEnumerable<Project> GetProjects(String solutionPath) {
+        //    return GetSolution(solutionPath).Projects;
+        //}
+
+        static public Compilation ProjectCompile(Project project)
+        {
             //string solutionPath = @"C:\Users\Vitaliy\Documents\Visual Studio 2013\Projects\Metr2\Metr2.sln";
-            var workspace = MSBuildWorkspace.Create();
-            _solution = workspace.OpenSolutionAsync(solutionPath).Result;
-            var projects = _solution.Projects;
-            var project = projects.Where(p => p.Name.ToString() == projectToPick).First();
-            _compilation = project.GetCompilationAsync().Result; 
+            //var workspace = MSBuildWorkspace.Create();
+            //_solution = workspace.OpenSolutionAsync(solutionPath).Result;
+            //var projects = _solution.Projects;
+            //var project = projects.Where(p => p.Name.ToString() == projectToPick).First();
+            return project.GetCompilationAsync().Result;
             // var temp = _compilation.GetCompilationNamespace(_compilation.GlobalNamespace);
         }
 
-       
+        static public void ProjectCompile(String solutionPath, String projectToPick, out Solution _solution, out Compilation _compilation)
+        {
+            _solution = GetSolution(solutionPath);
+            _compilation = GetCompilation(_solution, projectToPick);
+        }
+
+
     }
 
-   
+
 }
 
 namespace MetrMain {
@@ -767,7 +787,7 @@ namespace MetrMath {
         
         static public void Run() {
             //Model.Build(new List<List<Int32>> { new List<Int32> { 1, 2, 3 }, new List<Int32> { 2, 3, 4 }, new List<Int32> { 3, 4, 5 } }, new List<Int32> { 1, 1, 1 });
-            Model.Build(@"C:\temp2\Metr2 - Copy.xml");
+            Model.Build(@"C:\temp2\Metr2.xml");
 
             //Mathematica.Calc(ListToString<Int32>(new List<Int32> { 2, 3, 4 }) + "+" + ListToString<Int32>(new List<Int32> { 2, 3, 4 }));
             //Console.WriteLine(Mathematica.Result.GetDoubleArray()[0]);

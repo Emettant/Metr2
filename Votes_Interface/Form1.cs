@@ -13,6 +13,7 @@ using System.IO;
 using MetrExpertXML;
 using System.Xml.Serialization;
 
+
 namespace Votes_Interface
 {
     public partial class Form1 : Form
@@ -20,19 +21,26 @@ namespace Votes_Interface
         public Form1()
         {
             InitializeComponent();
-            
+
             current_solution = @"C:\Users\Vitaliy\Documents\Visual Studio 2013\Projects\Metr2\Metr2.sln";
-            votesFileBox.Text = @"C:\temp2\Metr2.xml";
+            current_solution = 
+            solutionBox.Text = current_solution;
+
+            votesFileBox.Text = @"C:\temp3\temp3\Metr2.xml";
             current_project = @"Metr2";
             Type[] estimationTypes = { typeof(EstimationOfElement) };
             serializer = new XmlSerializer(typeof(EstimationList), estimationTypes);
-            LoadVotesFromFile();
-            InitTreeView();
+            InitSolution();
         }
 
         private void LoadVotesFromFile()
         {
-            var fs = new FileStream(votesFileBox.Text, FileMode.Open);
+            if (!File.Exists(votesFileBox.Text.ToString())) {
+                var path = votesFileBox.Text.ToString();
+                Directory.CreateDirectory(Directory.GetParent(path).ToString());
+                File.Create(path);
+            }
+            var fs = new FileStream(votesFileBox.Text.ToString(), FileMode.Open);
                 try
                 {
                     form_votes = (EstimationList)serializer.Deserialize(fs);
@@ -42,15 +50,16 @@ namespace Votes_Interface
                 {
                     fs.Close();
                 }
-            RefreshSelected(symbolView.SelectedNode);
+            if (symbolView.Nodes.Count > 0) RefreshSelected(symbolView.SelectedNode);
         }
 
-        private void dfs_through_members(TreeNodeCollection treenode, Compilation compiltaion, INamespaceOrTypeSymbol symbol) {
+        private void dfs_through_members(TreeNodeCollection treenode, INamespaceOrTypeSymbol symbol) {
+            if (symbol != null && symbol.GetMembers() != null)
             foreach (var el in symbol.GetMembers()) {
                 var cur = el as INamespaceOrTypeSymbol;
                 if (cur != null) {
                     treenode.Add(cur.Name.ToString());
-                    dfs_through_members(treenode[treenode.Count - 1].Nodes, compiltaion, cur);
+                    dfs_through_members(treenode[treenode.Count - 1].Nodes, cur);
                 }
             }
         }
@@ -59,11 +68,31 @@ namespace Votes_Interface
         private String current_solution;
         private String current_project;
         XmlSerializer serializer;
+        Solution _solution;
 
-        private void InitTreeView(){
-            Solution _solution;
-            Compilation compilation;
-            Metr.RoslynAPI.ProjectCompile(current_solution, current_project, out _solution, out compilation);
+
+        private void InitSolution()
+        {
+            _solution = Metr.RoslynAPI.GetSolution(current_solution);
+            var projects = _solution.Projects;
+
+            comboProjects.Items.Clear();
+            foreach (var el in projects) {
+                comboProjects.Items.Add(el.Name.ToString());
+            }
+            comboProjects.SelectedIndex = 0;
+            InitProject();
+        }
+
+        private void InitProject() {
+            String projectToPick = comboProjects.Items[comboProjects.SelectedIndex].ToString();
+            var project = _solution.Projects.Where(x => x.Name == projectToPick).FirstOrDefault();
+            current_project = project.Name.ToString();
+            InitTreeView(Metr.RoslynAPI.ProjectCompile(project));
+        }
+
+        private void InitTreeView(Compilation compilation){
+            symbolView.Nodes.Clear();
 
             symbolView.BeginUpdate();
             foreach (var syntaxTree in compilation.SyntaxTrees)
@@ -74,17 +103,13 @@ namespace Votes_Interface
                     {
                         symbolView.Nodes.Add(ns.Name.ToString());
                         //  var treenode = symbolView.Nodes[symbolView.Nodes.Count - 1];
-                        dfs_through_members(symbolView.Nodes[symbolView.Nodes.Count-1].Nodes, compilation, compilation.GlobalNamespace.GetMembers(ns.Name.ToString()).FirstOrDefault());
+                        dfs_through_members(symbolView.Nodes[symbolView.Nodes.Count-1].Nodes, compilation.GlobalNamespace.GetMembers(ns.Name.ToString()).FirstOrDefault());
                     }
                 }
             symbolView.EndUpdate();
-
+            LoadVotesFromFile();
         }
 
-        private void Form1_Load(object sender, EventArgs e)
-        {
-        
-        }
         private void RefreshSelected(TreeNode boo)
         {
             if (boo == null) return;
@@ -101,33 +126,26 @@ namespace Votes_Interface
             voteBox.Value = 0;
             is_voted.Checked = false;
         }
-        private void symbolView_AfterSelect(object sender, TreeViewEventArgs e)
-        {
-            RefreshSelected(e.Node);
-        }
 
-        private void VotesBrowse_Click(object sender, EventArgs e)
+        private string openDialogWork(string startPath)
         {
             Stream myStream = null;
             OpenFileDialog openFileDialog1 = new OpenFileDialog();
 
-            var tt = Directory.GetParent(votesFileBox.Text).ToString();
+            var tt = Directory.GetParent(startPath).ToString();
             openFileDialog1.InitialDirectory = tt;
             //openFileDialog1.Filter = "txt files (*.txt)|*.txt|All files (*.*)|*.*";
             //openFileDialog1.FilterIndex = 2;
             //openFileDialog1.RestoreDirectory = true;
-
+            String ret = startPath;
             if (openFileDialog1.ShowDialog() == DialogResult.OK)
             {
                 try
                 {
                     if ((myStream = openFileDialog1.OpenFile()) != null)
                     {
-                        votesFileBox.Text = openFileDialog1.FileName;
-                        using (myStream)
-                        {
-                          
-                        }
+                        ret = openFileDialog1.FileName;
+                        myStream.Close();// Super-imporant
                     }
                 }
                 catch (Exception ex)
@@ -135,7 +153,49 @@ namespace Votes_Interface
                     MessageBox.Show("Error: Could not read file from disk. Original error: " + ex.Message);
                 }
             }
-            LoadVotesFromFile();
+            return ret;
+        }
+
+        /// <summary>
+        /// After Apply button pushed (vote Action is done)
+        /// </summary>
+
+        private void voteAction()
+        {
+            var name = symbolView.SelectedNode.FullPath.Replace('\\', '.');
+            foreach (var el in form_votes.Estimations)
+            {
+                if (current_solution == el.Solution && current_project == el.Project && name == el.FullName)
+                {
+                    el.Estimation = (int)voteBox.Value;
+                    return;
+                }
+            }
+            is_voted.Checked = true;
+            form_votes.AddEstimation(new EstimationOfElement(current_solution, current_project, name, (int)voteBox.Value));
+        }
+
+        private void Form1_Load(object sender, EventArgs e)
+        {
+        
+        }
+    
+        private void symbolView_AfterSelect(object sender, TreeViewEventArgs e)
+        {
+            try
+            {
+                RefreshSelected(e.Node);
+            }
+            catch
+            { }
+        }
+
+ 
+
+        private void VotesBrowse_Click(object sender, EventArgs e)
+        {
+           votesFileBox.Text = openDialogWork(votesFileBox.Text);
+           LoadVotesFromFile();
         }
 
         private void SaveVotes_Click(object sender, EventArgs e)
@@ -175,19 +235,7 @@ namespace Votes_Interface
 
         }
 
-        private void voteAction() {
-            var name = symbolView.SelectedNode.FullPath.Replace('\\', '.');
-            foreach (var el in form_votes.Estimations)
-            {
-                if (current_solution == el.Solution && current_project == el.Project && name == el.FullName)
-                {
-                    el.Estimation = (int)voteBox.Value;
-                    return;
-                }
-            }
-            is_voted.Checked = true;
-            form_votes.AddEstimation(new EstimationOfElement(current_solution, current_project, name, (int)voteBox.Value));
-        }
+
         private void voteBox_ValueChanged(object sender, EventArgs e)
         {
             
@@ -222,6 +270,28 @@ namespace Votes_Interface
                     return;
                 }
             }
+        }
+
+       
+        private void browseSolutionBut_Click(object sender, EventArgs e)
+        {
+            solutionBox.Text = openDialogWork(solutionBox.Text);
+            InitSolution();
+        }
+
+        private void solutionBox_TextChanged(object sender, EventArgs e)
+        {
+            current_solution = solutionBox.Text;
+        }
+
+        private void loadProjectBut_Click(object sender, EventArgs e)
+        {
+            InitProject();
+        }
+
+        private void votesFileBox_TextChanged(object sender, EventArgs e)
+        {
+            
         }
     }
 }
