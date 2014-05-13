@@ -22,9 +22,10 @@ namespace Votes_Interface
         {
             InitializeComponent();
 
-            current_solution = @"C:\Users\Vitaliy\Documents\Visual Studio 2013\Projects\Metr2\Metr2.sln";
-            current_solution = 
-            solutionBox.Text = current_solution;
+            //              current_solution = @"C:\Users\Vitaliy\Documents\Visual Studio 2013\Projects\Metr2\Metr2.sln";
+
+            solutionBox.Text = openDialogWork("", "sln");
+            //current_solution;
 
             votesFileBox.Text = @"C:\temp3\temp3\Metr2.xml";
             current_project = @"Metr2";
@@ -32,24 +33,53 @@ namespace Votes_Interface
             serializer = new XmlSerializer(typeof(EstimationList), estimationTypes);
             InitSolution();
         }
+        private void saveToFile() {
 
+            form_votes.Estimations.Sort((EstimationOfElement a, EstimationOfElement b) =>
+            {
+
+                if (String.Compare(a.Solution, b.Solution) == 1) return 1;
+                else if (a.Solution == b.Solution && String.Compare(a.Project, b.Project) == 1) return 1;
+                else if (a.Solution == b.Solution && a.Project == b.Project && String.Compare(a.FullName, b.FullName) == 1) return 1;
+                else if (a.Solution == b.Solution && a.Project == b.Project && a.FullName == b.FullName) return 0;
+                else return -1;
+
+            });
+
+            FileStream fs = new FileStream(votesFileBox.Text, FileMode.Create);
+            serializer.Serialize(fs, form_votes);
+            fs.Close();
+        }
         private void LoadVotesFromFile()
         {
-            if (!File.Exists(votesFileBox.Text.ToString())) {
-                var path = votesFileBox.Text.ToString();
-                Directory.CreateDirectory(Directory.GetParent(path).ToString());
-                File.Create(path);
-            }
-            var fs = new FileStream(votesFileBox.Text.ToString(), FileMode.Open);
+            
+            
+            {
+                var fs = new FileStream(votesFileBox.Text.ToString(), FileMode.Open);
                 try
                 {
                     form_votes = (EstimationList)serializer.Deserialize(fs);
-
-                }
-                finally
-                {
                     fs.Close();
                 }
+                catch
+                {
+                    var path = votesFileBox.Text.ToString();
+                    try
+                    {
+                        fs.Close();
+                        Directory.CreateDirectory(Directory.GetParent(path).ToString());
+                        File.Delete(path);
+                    }
+                    catch
+                    {
+                    }
+                    File.Create(path).Close();
+
+                    form_votes = new EstimationList();
+                    saveToFile();
+                }
+               
+            }
             if (symbolView.Nodes.Count > 0) RefreshSelected(symbolView.SelectedNode);
         }
 
@@ -127,13 +157,19 @@ namespace Votes_Interface
             is_voted.Checked = false;
         }
 
-        private string openDialogWork(string startPath)
+        private string openDialogWork(string startPath, string extention)
         {
             Stream myStream = null;
             OpenFileDialog openFileDialog1 = new OpenFileDialog();
 
-            var tt = Directory.GetParent(startPath).ToString();
-            openFileDialog1.InitialDirectory = tt;
+            try
+            {
+                var tt = Directory.GetParent(startPath).ToString();
+                openFileDialog1.InitialDirectory = tt;
+            }
+            catch
+            { }
+            openFileDialog1.Filter = "files (*." + extention + ")|*." + extention;
             //openFileDialog1.Filter = "txt files (*.txt)|*.txt|All files (*.*)|*.*";
             //openFileDialog1.FilterIndex = 2;
             //openFileDialog1.RestoreDirectory = true;
@@ -194,29 +230,13 @@ namespace Votes_Interface
 
         private void VotesBrowse_Click(object sender, EventArgs e)
         {
-           votesFileBox.Text = openDialogWork(votesFileBox.Text);
+           votesFileBox.Text = openDialogWork(votesFileBox.Text,"xml");
            LoadVotesFromFile();
         }
 
         private void SaveVotes_Click(object sender, EventArgs e)
         {
-            //form_votes = new EstimationList("TestVoteList");
-            //form_votes.AddEstimation(new EstimationOfElement(current_solution, current_project, "MetrExamples.C", 33));
-
-            form_votes.Estimations.Sort((EstimationOfElement a, EstimationOfElement b) => {
-
-                if (String.Compare(a.Solution, b.Solution) == 1) return 1;
-                else if (a.Solution == b.Solution && String.Compare(a.Project , b.Project)==1) return 1;
-                else if (a.Solution == b.Solution && a.Project == b.Project && String.Compare(a.FullName , b.FullName)==1) return 1;
-                else if (a.Solution == b.Solution && a.Project == b.Project && a.FullName == b.FullName) return 0;
-                else return -1;
-
-            });
-
-            FileStream fs = new FileStream(votesFileBox.Text, FileMode.Create);
-            serializer.Serialize(fs, form_votes);
-            fs.Close();
-            
+            saveToFile();
         }
 
         private void LoadVotes_Click(object sender, EventArgs e)
@@ -275,7 +295,7 @@ namespace Votes_Interface
        
         private void browseSolutionBut_Click(object sender, EventArgs e)
         {
-            solutionBox.Text = openDialogWork(solutionBox.Text);
+            solutionBox.Text = openDialogWork(solutionBox.Text,"sln");
             InitSolution();
         }
 

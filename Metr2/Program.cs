@@ -638,7 +638,7 @@ namespace MetrExpertXML {
         [XmlElement("ListName")]
         public string ListName { get; set; }
 
-        public EstimationList() { }
+        public EstimationList() { ListName = "EstimationList"; }
 
         public EstimationList(string name)
         {
