@@ -35,7 +35,8 @@
             this.LoadVotes = new System.Windows.Forms.Button();
             this.voteBox = new System.Windows.Forms.NumericUpDown();
             this.is_voted = new System.Windows.Forms.CheckBox();
-            this.voteBut = new System.Windows.Forms.Button();
+            this.applyBut = new System.Windows.Forms.Button();
+            this.clearBut = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.voteBox)).BeginInit();
             this.SuspendLayout();
             // 
@@ -87,7 +88,7 @@
             // 
             // voteBox
             // 
-            this.voteBox.Location = new System.Drawing.Point(496, 188);
+            this.voteBox.Location = new System.Drawing.Point(516, 188);
             this.voteBox.Name = "voteBox";
             this.voteBox.Size = new System.Drawing.Size(87, 22);
             this.voteBox.TabIndex = 5;
@@ -97,30 +98,42 @@
             // is_voted
             // 
             this.is_voted.AutoSize = true;
+            this.is_voted.Enabled = false;
             this.is_voted.Location = new System.Drawing.Point(413, 189);
             this.is_voted.Name = "is_voted";
-            this.is_voted.Size = new System.Drawing.Size(65, 21);
+            this.is_voted.Size = new System.Drawing.Size(79, 21);
             this.is_voted.TabIndex = 6;
-            this.is_voted.Text = "voted";
+            this.is_voted.Text = "is voted";
             this.is_voted.UseVisualStyleBackColor = true;
             this.is_voted.CheckedChanged += new System.EventHandler(this.is_voted_CheckedChanged);
             // 
-            // voteBut
+            // applyBut
             // 
-            this.voteBut.Location = new System.Drawing.Point(496, 225);
-            this.voteBut.Name = "voteBut";
-            this.voteBut.Size = new System.Drawing.Size(87, 30);
-            this.voteBut.TabIndex = 7;
-            this.voteBut.Text = "Apply";
-            this.voteBut.UseVisualStyleBackColor = true;
-            this.voteBut.Click += new System.EventHandler(this.voteBut_Click);
+            this.applyBut.Location = new System.Drawing.Point(413, 226);
+            this.applyBut.Name = "applyBut";
+            this.applyBut.Size = new System.Drawing.Size(87, 30);
+            this.applyBut.TabIndex = 7;
+            this.applyBut.Text = "Apply";
+            this.applyBut.UseVisualStyleBackColor = true;
+            this.applyBut.Click += new System.EventHandler(this.applyBut_Click);
+            // 
+            // clearBut
+            // 
+            this.clearBut.Location = new System.Drawing.Point(516, 226);
+            this.clearBut.Name = "clearBut";
+            this.clearBut.Size = new System.Drawing.Size(87, 30);
+            this.clearBut.TabIndex = 8;
+            this.clearBut.Text = "Clear";
+            this.clearBut.UseVisualStyleBackColor = true;
+            this.clearBut.Click += new System.EventHandler(this.clearBut_Click);
             // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(762, 450);
-            this.Controls.Add(this.voteBut);
+            this.Controls.Add(this.clearBut);
+            this.Controls.Add(this.applyBut);
             this.Controls.Add(this.is_voted);
             this.Controls.Add(this.voteBox);
             this.Controls.Add(this.LoadVotes);
@@ -146,7 +159,8 @@
         private System.Windows.Forms.Button LoadVotes;
         private System.Windows.Forms.NumericUpDown voteBox;
         private System.Windows.Forms.CheckBox is_voted;
-        private System.Windows.Forms.Button voteBut;
+        private System.Windows.Forms.Button applyBut;
+        private System.Windows.Forms.Button clearBut;
     }
 }
 

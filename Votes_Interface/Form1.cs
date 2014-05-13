@@ -176,19 +176,7 @@ namespace Votes_Interface
 
         private void is_voted_CheckedChanged(object sender, EventArgs e)
         {
-            if (is_voted.Checked) voteAction();
-            else
-            {
-                var name = symbolView.SelectedNode.FullPath.Replace('\\', '.');
-                foreach (var el in form_votes.Estimations)
-                {
-                    if (current_solution == el.Solution && current_project == el.Project && name == el.FullName)
-                    {
-                        form_votes.Estimations.Remove(el);
-                        return;
-                    }
-                }
-            }
+           
         }
 
         private void voteBox_Enter(object sender, EventArgs e)
@@ -196,10 +184,25 @@ namespace Votes_Interface
             
         }
 
-        private void voteBut_Click(object sender, EventArgs e)
+        private void applyBut_Click(object sender, EventArgs e)
         {
             is_voted.Checked = true;
             voteAction();
+        }
+
+        private void clearBut_Click(object sender, EventArgs e)
+        {
+            is_voted.Checked = false;
+            voteBox.Value = 0;
+            var name = symbolView.SelectedNode.FullPath.Replace('\\', '.');
+            foreach (var el in form_votes.Estimations)
+            {
+                if (current_solution == el.Solution && current_project == el.Project && name == el.FullName)
+                {
+                    form_votes.Estimations.Remove(el);
+                    return;
+                }
+            }
         }
     }
 }
