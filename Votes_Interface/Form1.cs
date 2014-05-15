@@ -20,15 +20,17 @@ namespace Votes_Interface
     {
         public Form1()
         {
+            
             InitializeComponent();
+            
+            solutionBox.Text = "";
+            if ((solutionBox.Text = openDialogWork("", "sln")) == "") Application.Exit();
 
-            //              current_solution = @"C:\Users\Vitaliy\Documents\Visual Studio 2013\Projects\Metr2\Metr2.sln";
 
-            solutionBox.Text = openDialogWork("", "sln");
-            //current_solution;
+            //current_solution = @"C:\Users\Vitaliy\Documents\Visual Studio 2013\Projects\Metr2\Metr2.sln";
 
-            votesFileBox.Text = @"C:\temp3\temp3\Metr2.xml";
-            current_project = @"Metr2";
+            votesFileBox.Text = @"C:\temp\Metr.xml";
+            //current_project = @"Metr2";
             Type[] estimationTypes = { typeof(EstimationOfElement) };
             serializer = new XmlSerializer(typeof(EstimationList), estimationTypes);
             InitSolution();
@@ -55,9 +57,10 @@ namespace Votes_Interface
             
             
             {
-                var fs = new FileStream(votesFileBox.Text.ToString(), FileMode.Open);
+                FileStream fs = null;
                 try
                 {
+                    fs = new FileStream(votesFileBox.Text.ToString(), FileMode.Open);
                     form_votes = (EstimationList)serializer.Deserialize(fs);
                     fs.Close();
                 }
@@ -66,7 +69,7 @@ namespace Votes_Interface
                     var path = votesFileBox.Text.ToString();
                     try
                     {
-                        fs.Close();
+                        if (fs != null) fs.Close();
                         Directory.CreateDirectory(Directory.GetParent(path).ToString());
                         File.Delete(path);
                     }
@@ -82,6 +85,8 @@ namespace Votes_Interface
             }
             if (symbolView.Nodes.Count > 0) RefreshSelected(symbolView.SelectedNode);
         }
+
+        
 
         private void dfs_through_members(TreeNodeCollection treenode, INamespaceOrTypeSymbol symbol) {
             if (symbol != null && symbol.GetMembers() != null)
@@ -99,6 +104,8 @@ namespace Votes_Interface
         private String current_project;
         XmlSerializer serializer;
         Solution _solution;
+
+        
 
 
         private void InitSolution()
@@ -133,7 +140,11 @@ namespace Votes_Interface
                     {
                         symbolView.Nodes.Add(ns.Name.ToString());
                         //  var treenode = symbolView.Nodes[symbolView.Nodes.Count - 1];
+
+                        
                         dfs_through_members(symbolView.Nodes[symbolView.Nodes.Count-1].Nodes, compilation.GlobalNamespace.GetMembers(ns.Name.ToString()).FirstOrDefault());
+                        //TODO: kill duplicates
+                        //MakeUnique(symbolView.Nodes);
                     }
                 }
             symbolView.EndUpdate();
@@ -189,6 +200,7 @@ namespace Votes_Interface
                     MessageBox.Show("Error: Could not read file from disk. Original error: " + ex.Message);
                 }
             }
+            
             return ret;
         }
 

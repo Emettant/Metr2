@@ -381,6 +381,7 @@ namespace Metr
 
         static private void dfs(Solution solution, Compilation compilation, INamespaceOrTypeSymbol v)
         {
+            if (v == null) return;
             foreach (var cur in v.GetMembers())
             {
                 var to = cur as INamespaceOrTypeSymbol;
@@ -556,49 +557,6 @@ namespace Metr
 
 }
 
-namespace MetrMain {
-    class Program
-    {
-        
-
-        static void Main(string[] args)
-        {
-            //MetrTest.MetricCalculatorTest.Run();
-            // MetrExpertXML.EstimationListTest.Run();
-            MetrMath.ModelTest.Run();
-
-
-
-            //string solutionPath = @"C:\Users\Vitaliy\Documents\Visual Studio 2013\Projects\Metr2\Metr2.sln";
-            //var workspace = MSBuildWorkspace.Create();
-            //var solution = workspace.OpenSolutionAsync(solutionPath).Result;
-            //var project = solution.Projects.Where(p => p.Name == "Metr2").First();
-            //var compilation = project.GetCompilationAsync().Result;
-
-
-            //var programClass = compilation.GetTypeByMetadataName("RoslynTest.Program");
-
-            //var barMethod = programClass.GetMembers("Bar").First();
-            //var fooMethod = programClass.GetMembers("Foo").First();
-
-            //var barResult = SymbolFinder.FindReferencesAsync(barMethod, solution).Result.ToList();
-            //var fooResult = SymbolFinder.FindReferencesAsync(fooMethod, solution).Result.ToList();
-
-            //Debug.Assert(barResult.First().Locations.Count() == 1);
-            //Debug.Assert(fooResult.First().Locations.Count() == 0);
-        }
-
-        //public bool Foo()
-        //{
-        //    return "Bar" == Bar();
-        //}
-
-        //public string Bar()
-        //{
-        //    return "Bar";
-        //}
-    }
-}
 
 namespace MetrExpertXML {
     using System.Xml.Serialization;
@@ -679,9 +637,9 @@ namespace MetrExpertXML {
 }
 
 namespace MetrMath {
-    using System.Xml.Serialization;
     using Wolfram.NETLink;
     using System.Text;
+    using System.Xml.Serialization;
     using System.IO;
     using MetrExpertXML;
     using Adapter;
@@ -798,3 +756,249 @@ namespace MetrMath {
 
 
 }
+
+namespace MetrLearn
+{
+    using System.Xml.Serialization;
+    using System.IO;
+    using MetrExpertXML;
+
+
+    [XmlType("TrainPoint")]
+    public class TrainPoint
+    //[XmlType("EstimationOfElement")]
+    //public class EstimationOfElement
+    {
+        [XmlAttribute("RS")]
+        public int RS { get; set; }
+
+        [XmlAttribute("DIT")]
+        public int DIT { get; set; }
+
+        [XmlAttribute("NOC")]
+        public int NOC { get; set; }
+
+        [XmlAttribute("CBO")]
+        public int CBO { get; set; }
+
+        [XmlAttribute("Answer")]
+        public int Answer { get; set; }
+
+        public TrainPoint() { }
+        public TrainPoint(List<int> list)
+        {
+            RS = list[0];
+            DIT = list[1];
+            NOC = list[2];
+            CBO = list[3];
+
+            Answer = list.Last();
+        }
+    }
+
+
+    [XmlRoot("TrainPointsList")]
+    [XmlInclude(typeof(TrainPoint))]
+    public class TrainPointsList
+    //[XmlRoot("EstimationList")]
+    //[XmlInclude(typeof(EstimationOfElement))] // include type class EstimationOfElement
+    //public class EstimationList
+    //
+    {
+        [XmlArray("TrainPointsList")]
+        [XmlArrayItem("TrainPointsListItem")]
+        public List<TrainPoint> Points = new List<TrainPoint>();
+        //[XmlArray("EstimationArray")]
+        //[XmlArrayItem("EstimationObject")]
+        //public List<EstimationOfElement> Estimations = new List<EstimationOfElement>();
+
+       
+        public TrainPointsList() { }
+
+        //public TrainPointsList(string name)
+        //{
+        //    this.ListName = name;
+        //}
+
+        public void AddPoint(TrainPoint point)
+        {
+            Points.Add(point);
+        }
+    }
+
+    
+
+
+
+
+    class Train
+    {
+        
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="sourceFileName">Voted Metrics by experts</param>
+        /// <param name="targetFileName">Points for train (already calculated metrics as coefficients)</param>
+        static public void toTrainPoints(string sourceFileName, string targetFileName)
+        {
+            Type[] estimationTypes = { typeof(EstimationOfElement) };
+            XmlSerializer serializer = new XmlSerializer(typeof(EstimationList), estimationTypes);
+            var fs = new FileStream(sourceFileName, FileMode.Open);
+            try
+            {
+                var votesList = (EstimationList)serializer.Deserialize(fs);
+                Solution solution = null;
+                Compilation compilation = null;
+                string solutionPath = null;
+                string projectToPick = null;
+                //var coefs = new List<List<Int32>>();
+                var coefs = new TrainPointsList();
+                var ress = new List<Int32>();
+                foreach (var v in votesList.Estimations)
+                {
+                    if (v.Solution != solutionPath || v.Project != projectToPick)
+                        Metr.RoslynAPI.ProjectCompile((solutionPath = v.Solution), (projectToPick = v.Project), out solution, out compilation);
+
+                    
+                    coefs.AddPoint(new TrainPoint(new List<Int32>()
+                    {
+                        Metr.MetricCalculator.RS(compilation,v.FullName),
+                        Metr.MetricCalculator.DIT(compilation,v.FullName),
+                        Metr.MetricCalculator.NOC(solution,compilation,v.FullName),
+                        Metr.MetricCalculator.CBO(solution, compilation,v.FullName),
+                        v.Estimation
+                    })
+                    );
+                    //ress.Add(v.Estimation);
+                    
+
+                }
+                Type[] estimationTypes2 = { typeof(TrainPoint) };
+                XmlSerializer serializer2 = new XmlSerializer(typeof(TrainPointsList), estimationTypes2);
+                FileStream fs2 = new FileStream("TrainPointsList.xml", FileMode.Create);
+                serializer2.Serialize(fs2, coefs);
+                fs.Close();
+                //Build(coefs, ress);
+                //save to new file
+            }
+            finally
+            {
+                fs.Close();
+            }
+        }
+    }
+
+    class TrainTest {
+        static public void Run() {
+            Train.toTrainPoints(@"C:\temp2\Another-Metric.xml", "");
+        }
+    }
+}
+
+namespace MetrMain
+{
+    class Program
+    {
+
+
+        static void Main(string[] args)
+        {
+            //MetrTest.MetricCalculatorTest.Run();
+            // MetrExpertXML.EstimationListTest.Run();
+            //MetrMath.ModelTest.Run();
+            MetrLearn.TrainTest.Run();
+
+
+            //string solutionPath = @"C:\Users\Vitaliy\Documents\Visual Studio 2013\Projects\Metr2\Metr2.sln";
+            //var workspace = MSBuildWorkspace.Create();
+            //var solution = workspace.OpenSolutionAsync(solutionPath).Result;
+            //var project = solution.Projects.Where(p => p.Name == "Metr2").First();
+            //var compilation = project.GetCompilationAsync().Result;
+
+
+            //var programClass = compilation.GetTypeByMetadataName("RoslynTest.Program");
+
+            //var barMethod = programClass.GetMembers("Bar").First();
+            //var fooMethod = programClass.GetMembers("Foo").First();
+
+            //var barResult = SymbolFinder.FindReferencesAsync(barMethod, solution).Result.ToList();
+            //var fooResult = SymbolFinder.FindReferencesAsync(fooMethod, solution).Result.ToList();
+
+            //Debug.Assert(barResult.First().Locations.Count() == 1);
+            //Debug.Assert(fooResult.First().Locations.Count() == 0);
+        }
+
+        //public bool Foo()
+        //{
+        //    return "Bar" == Bar();
+        //}
+
+        //public string Bar()
+        //{
+        //    return "Bar";
+        //}
+    }
+}
+
+
+//namespace MetrGit {
+//    using System.IO;
+//    public class GitIterator
+//    {
+
+//        readonly String nameIteratorBranch = "git_iterator";
+//        ProcessStartInfo StartInfo = new ProcessStartInfo();
+//        Process proc = new Process();
+//        static public StreamWriter streamWriter = (StreamWriter)Console.Out;
+
+//        //static public void Run() {
+//        //    var gi = new GitIterator("front");
+//        //    do
+//        //    {
+//        //        ProcessCommitFiles(GetFilesList());
+//        //    }
+//        //    while (!gi.isErrorToRollBack());
+//        //}
+
+//        void InvokeAction(String Arg, out String Cerr)
+//        {
+
+//            proc.StartInfo.Arguments = Arg;
+//            proc.Start();
+//            Cerr = proc.StandardError.ReadToEnd();
+//            streamWriter.WriteLine(proc.StandardOutput.ReadToEnd());
+//            streamWriter.WriteLine(Cerr);
+//            proc.WaitForExit();
+//        }
+//        void InvokeAction(String Arg)
+//        {
+//            String c;
+//            InvokeAction(Arg, out c);
+//        }
+//        public bool isErrorToRollBack()
+//        {
+//            proc.StartInfo = StartInfo;
+//            InvokeAction("checkout " + nameIteratorBranch);
+
+//            String result;
+//            InvokeAction("reset --hard HEAD~1", out result);
+//            return result.IndexOf("fatal") == 0;
+//        }
+//        public GitIterator(String endBranchName, String workingDirectory)
+//        {
+
+//            StartInfo.FileName = "C:\\Program Files (x86)\\Git\\bin\\git.exe";
+//            StartInfo.WorkingDirectory = workingDirectory;
+//            StartInfo.UseShellExecute = false;
+//            StartInfo.RedirectStandardOutput = true;
+//            StartInfo.RedirectStandardError = true;
+
+//            proc.StartInfo = StartInfo;
+//            InvokeAction("checkout " + endBranchName);
+//            InvokeAction("branch -D " + nameIteratorBranch);
+//            InvokeAction("branch " + nameIteratorBranch);
+//            InvokeAction("checkout " + nameIteratorBranch);
+//        }
+
+//    }
+//}
