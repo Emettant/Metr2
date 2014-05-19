@@ -452,14 +452,18 @@ namespace Metr
         /// <param name="compilation"></param>
         /// <param name="className"></param>
         /// <returns></returns>
-        static public Int32 RS(Compilation compilation, String className)
+        static public Int32 RS(Compilation compilation, ITypeSymbol cur)
         {
-            ITypeSymbol cur = compilation.GetTypeByMetadataName(className);
-
             var t = cur.GetMembers()
             .Where(x => x is IMethodSymbol);
             var res = t.Count();
             return res;
+        }
+
+        static public Int32 RS(Compilation compilation, String className)
+        {
+            ITypeSymbol cur = compilation.GetTypeByMetadataName(className);
+            return RS(compilation, cur);
         }
 
         static public Int32 WMC(Compilation compilation, String className)
@@ -468,11 +472,9 @@ namespace Metr
             return RS(compilation, className);
         }
 
-
-        static public Int32 DIT(Compilation compilation, String className)
+        static public Int32 DIT(Compilation compilation, ITypeSymbol cur)
         {
             int k = -1;
-            ITypeSymbol cur = compilation.GetTypeByMetadataName(className);
             while (cur != null)
             {
                 cur = cur.BaseType;
@@ -480,19 +482,27 @@ namespace Metr
             }
             return k;
         }
-
-        static public Int32 NOC(Solution solution, Compilation compilation, String className)
+        static public Int32 DIT(Compilation compilation, String className)
         {
             ITypeSymbol cur = compilation.GetTypeByMetadataName(className);
+            return DIT(compilation, cur);
+        }
+
+        static public Int32 NOC(Solution solution, Compilation compilation, ITypeSymbol cur)
+        {
             if (!_cacheTypesHierarchy.ContainsKey(compilation))
                 BuildCompilationCacheMap(solution, compilation);
 
             return (_cacheTypesHierarchy[compilation].ContainsKey(cur)) ? _cacheTypesHierarchy[compilation][cur].Count : 0;
         }
-
-        static public Int32 CBO(Solution solution, Compilation compilation, String className)
+        static public Int32 NOC(Solution solution, Compilation compilation, String className)
         {
             ITypeSymbol cur = compilation.GetTypeByMetadataName(className);
+            return NOC(solution, compilation, cur);
+        }
+
+        static public Int32 CBO(Solution solution, Compilation compilation, ITypeSymbol cur)
+        {
             if (!_cacheMethodsCoupling.ContainsKey(compilation))
                 BuildCompilationCacheMap(solution, compilation);
 
@@ -512,6 +522,11 @@ namespace Metr
             }
             return ret;
         }
+        static public Int32 CBO(Solution solution, Compilation compilation, String className)
+        {
+            ITypeSymbol cur = compilation.GetTypeByMetadataName(className);
+            return NOC(solution, compilation, cur);
+        }
 
         static public Int32 RFC(Solution solution, Compilation compilation, String className) {
             return 0;//CBO(Solution solution, Compilation compilation, String className) 
@@ -527,7 +542,7 @@ namespace Metr
         }
         static private Compilation GetCompilation(Solution _solution, String projectToPick)
         {
-            return _solution.Projects.Where(p => p.Name.ToString() == projectToPick).First().GetCompilationAsync().Result;
+            return _solution.Projects.ToList().Where(p => p.Name.ToString() == projectToPick).First().GetCompilationAsync().Result;
         }
 
         //static public IEnumerable<Project> GetProjects(String solutionPath) {
@@ -766,8 +781,6 @@ namespace MetrLearn
 
     [XmlType("TrainPoint")]
     public class TrainPoint
-    //[XmlType("EstimationOfElement")]
-    //public class EstimationOfElement
     {
         [XmlAttribute("RS")]
         public int RS { get; set; }
@@ -800,38 +813,22 @@ namespace MetrLearn
     [XmlRoot("TrainPointsList")]
     [XmlInclude(typeof(TrainPoint))]
     public class TrainPointsList
-    //[XmlRoot("EstimationList")]
-    //[XmlInclude(typeof(EstimationOfElement))] // include type class EstimationOfElement
-    //public class EstimationList
-    //
     {
         [XmlArray("TrainPointsList")]
         [XmlArrayItem("TrainPointsListItem")]
         public List<TrainPoint> Points = new List<TrainPoint>();
-        //[XmlArray("EstimationArray")]
-        //[XmlArrayItem("EstimationObject")]
-        //public List<EstimationOfElement> Estimations = new List<EstimationOfElement>();
-
+        
        
         public TrainPointsList() { }
 
-        //public TrainPointsList(string name)
-        //{
-        //    this.ListName = name;
-        //}
+     
 
         public void AddPoint(TrainPoint point)
         {
             Points.Add(point);
         }
     }
-
-    
-
-
-
-
-    class Train
+    public class Train
     {
         
         /// <summary>
@@ -859,13 +856,14 @@ namespace MetrLearn
                     if (v.Solution != solutionPath || v.Project != projectToPick)
                         Metr.RoslynAPI.ProjectCompile((solutionPath = v.Solution), (projectToPick = v.Project), out solution, out compilation);
 
-                    
+                    var curClass = compilation.GetTypeByMetadataName(v.FullName);
+                    if (curClass != null)
                     coefs.AddPoint(new TrainPoint(new List<Int32>()
                     {
-                        Metr.MetricCalculator.RS(compilation,v.FullName),
-                        Metr.MetricCalculator.DIT(compilation,v.FullName),
-                        Metr.MetricCalculator.NOC(solution,compilation,v.FullName),
-                        Metr.MetricCalculator.CBO(solution, compilation,v.FullName),
+                        Metr.MetricCalculator.RS(compilation,curClass),
+                        Metr.MetricCalculator.DIT(compilation,curClass),
+                        Metr.MetricCalculator.NOC(solution,compilation,curClass),
+                        Metr.MetricCalculator.CBO(solution, compilation,curClass),
                         v.Estimation
                     })
                     );
@@ -875,7 +873,7 @@ namespace MetrLearn
                 }
                 Type[] estimationTypes2 = { typeof(TrainPoint) };
                 XmlSerializer serializer2 = new XmlSerializer(typeof(TrainPointsList), estimationTypes2);
-                FileStream fs2 = new FileStream("TrainPointsList.xml", FileMode.Create);
+                FileStream fs2 = new FileStream(targetFileName, FileMode.Create);
                 serializer2.Serialize(fs2, coefs);
                 fs.Close();
                 //Build(coefs, ress);
@@ -886,11 +884,31 @@ namespace MetrLearn
                 fs.Close();
             }
         }
+
+        static public void RunMathFunction() {
+            MetrMath.Adapter.Mathematica.Calc(
+                @"
+
+givenDataUnNorm = {{1, 2, 3, 4, 5}, {11, 33, 22, 44, 55}, {6, 7, 8, 9, 0}, {66, 77, 88,
+    99, 0}, {2, 4, 6, 8, 0}};
+NormalizeMaxMin [Data_] := 
+ Module[{NormalizationCoefs = {}, MinCoefs = {}},
+  Do[AppendTo[NormalizationCoefs, 
+    1/(Max[Data[[All, kkk]]] - Min[Data[[All, kkk]]])];
+   AppendTo[MinCoefs, Min[Data[[All, kkk]]]];
+   , {kkk, Length[Data]}];
+  (# - MinCoefs)*NormalizationCoefs & /@ Data
+  ];
+N[NormalizeMaxMin[givenDataUnNorm],20][[2]]"
+                );
+            var t = MetrMath.Adapter.Mathematica.Result.GetDoubleArray();
+        }
     }
 
     class TrainTest {
         static public void Run() {
-            Train.toTrainPoints(@"C:\temp2\Another-Metric.xml", "");
+             Train.toTrainPoints(@"C:\temp2\Another-Metric.xml", "");
+            //Train.RunMathFunction();
         }
     }
 }
@@ -940,6 +958,47 @@ namespace MetrMain
     }
 }
 
+namespace MetrInterface {
+    using System.IO;
+    using System.Windows.Forms;
+    public static class Tools {
+        public static string openDialogWork(string startPath, string extention)
+        {
+            Stream myStream = null;
+            OpenFileDialog openFileDialog1 = new OpenFileDialog();
+
+            try
+            {
+                var tt = Directory.GetParent(startPath).ToString();
+                openFileDialog1.InitialDirectory = tt;
+            }
+            catch
+            { }
+            openFileDialog1.Filter = "files (*." + extention + ")|*." + extention;
+            //openFileDialog1.Filter = "txt files (*.txt)|*.txt|All files (*.*)|*.*";
+            //openFileDialog1.FilterIndex = 2;
+            //openFileDialog1.RestoreDirectory = true;
+            String ret = startPath;
+            if (openFileDialog1.ShowDialog() == DialogResult.OK)
+            {
+                try
+                {
+                    if ((myStream = openFileDialog1.OpenFile()) != null)
+                    {
+                        ret = openFileDialog1.FileName;
+                        myStream.Close();// Super-imporant
+                    }
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show("Error: Could not read file from disk. Original error: " + ex.Message);
+                }
+            }
+
+            return ret;
+        }
+    }
+}
 
 //namespace MetrGit {
 //    using System.IO;

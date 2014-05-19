@@ -12,13 +12,13 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 using System.IO;
 using MetrExpertXML;
 using System.Xml.Serialization;
-
+using MetrInterface.Tools;
 
 namespace Votes_Interface
 {
-    public partial class Form1 : Form
+    public partial class Votes_Form : Form
     {
-        public Form1()
+        public Votes_Form()
         {
             
             InitializeComponent();
@@ -168,41 +168,41 @@ namespace Votes_Interface
             is_voted.Checked = false;
         }
 
-        private string openDialogWork(string startPath, string extention)
-        {
-            Stream myStream = null;
-            OpenFileDialog openFileDialog1 = new OpenFileDialog();
+        //private string openDialogWork(string startPath, string extention)
+        //{
+        //    Stream myStream = null;
+        //    OpenFileDialog openFileDialog1 = new OpenFileDialog();
 
-            try
-            {
-                var tt = Directory.GetParent(startPath).ToString();
-                openFileDialog1.InitialDirectory = tt;
-            }
-            catch
-            { }
-            openFileDialog1.Filter = "files (*." + extention + ")|*." + extention;
-            //openFileDialog1.Filter = "txt files (*.txt)|*.txt|All files (*.*)|*.*";
-            //openFileDialog1.FilterIndex = 2;
-            //openFileDialog1.RestoreDirectory = true;
-            String ret = startPath;
-            if (openFileDialog1.ShowDialog() == DialogResult.OK)
-            {
-                try
-                {
-                    if ((myStream = openFileDialog1.OpenFile()) != null)
-                    {
-                        ret = openFileDialog1.FileName;
-                        myStream.Close();// Super-imporant
-                    }
-                }
-                catch (Exception ex)
-                {
-                    MessageBox.Show("Error: Could not read file from disk. Original error: " + ex.Message);
-                }
-            }
+        //    try
+        //    {
+        //        var tt = Directory.GetParent(startPath).ToString();
+        //        openFileDialog1.InitialDirectory = tt;
+        //    }
+        //    catch
+        //    { }
+        //    openFileDialog1.Filter = "files (*." + extention + ")|*." + extention;
+        //    //openFileDialog1.Filter = "txt files (*.txt)|*.txt|All files (*.*)|*.*";
+        //    //openFileDialog1.FilterIndex = 2;
+        //    //openFileDialog1.RestoreDirectory = true;
+        //    String ret = startPath;
+        //    if (openFileDialog1.ShowDialog() == DialogResult.OK)
+        //    {
+        //        try
+        //        {
+        //            if ((myStream = openFileDialog1.OpenFile()) != null)
+        //            {
+        //                ret = openFileDialog1.FileName;
+        //                myStream.Close();// Super-imporant
+        //            }
+        //        }
+        //        catch (Exception ex)
+        //        {
+        //            MessageBox.Show("Error: Could not read file from disk. Original error: " + ex.Message);
+        //        }
+        //    }
             
-            return ret;
-        }
+        //    return ret;
+        //}
 
         /// <summary>
         /// After Apply button pushed (vote Action is done)

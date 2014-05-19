@@ -1,0 +1,78 @@
+(* Content-type: application/vnd.wolfram.mathematica *)
+
+(*** Wolfram Notebook File ***)
+(* http://www.wolfram.com/nb *)
+
+(* CreatedBy='Mathematica 9.0' *)
+
+(*CacheID: 234*)
+(* Internal cache information:
+NotebookFileLineBreakTest
+NotebookFileLineBreakTest
+NotebookDataPosition[       157,          7]
+NotebookDataLength[      2111,         69]
+NotebookOptionsPosition[      1797,         53]
+NotebookOutlinePosition[      2141,         68]
+CellTagsIndexPosition[      2098,         65]
+WindowFrame->Normal*)
+
+(* Beginning of Notebook Content *)
+Notebook[{
+
+Cell[CellGroupData[{
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"(*", 
+   RowBox[{"Error", " ", "based", " ", "on", " ", "learned", " ", "data"}], 
+   "*)"}], "\[IndentingNewLine]", 
+  RowBox[{
+   RowBox[{
+    RowBox[{"givenData0", " ", "=", " ", 
+     RowBox[{"NormalizeMaxMin", "[", "givenDataUnNorm", "]"}]}], ";"}], 
+   "\[IndentingNewLine]", 
+   RowBox[{"EuclideanDistance", "[", "\[IndentingNewLine]", 
+    RowBox[{
+     RowBox[{"ApplyLearnedModel", "[", 
+      RowBox[{
+       RowBox[{"getRequest", "[", "givenData0", "]"}], ",", 
+       "\[IndentingNewLine]", 
+       RowBox[{"GetLearnedModel", "[", 
+        RowBox[{
+         RowBox[{"getRequest", "[", "givenData0", "]"}], ",", " ", 
+         RowBox[{"getAnswer", "[", "givenData0", "]"}], ",", "precision"}], 
+        "]"}]}], "]"}], ",", " ", "\[IndentingNewLine]", 
+     RowBox[{"getAnswer", "[", "givenData0", "]"}]}], "]"}]}]}]], "Input",
+ CellChangeTimes->{{3.6092533076214247`*^9, 3.6092534081003656`*^9}, {
+  3.6092541587134075`*^9, 3.609254194965558*^9}, {3.6092542317010307`*^9, 
+  3.609254235013237*^9}}],
+
+Cell[BoxData["0.0813115628181741705078698148548188477`8.842007435083765"], \
+"Output",
+ CellChangeTimes->{3.6092533741287336`*^9, 3.6092541981076517`*^9}]
+}, Open  ]]
+},
+WindowSize->{707, 602},
+WindowMargins->{{49, Automatic}, {Automatic, 62}},
+FrontEndVersion->"9.0 for Microsoft Windows (64-bit) (January 25, 2013)",
+StyleDefinitions->"Default.nb"
+]
+(* End of Notebook Content *)
+
+(* Internal cache information *)
+(*CellTagsOutline
+CellTagsIndex->{}
+*)
+(*CellTagsIndex
+CellTagsIndex->{}
+*)
+(*NotebookFileOutline
+Notebook[{
+Cell[CellGroupData[{
+Cell[579, 22, 1045, 24, 152, "Input"],
+Cell[1627, 48, 154, 2, 63, "Output"]
+}, Open  ]]
+}
+]
+*)
+
+(* End of internal cache information *)

@@ -1,6 +1,6 @@
 ﻿namespace Votes_Interface
 {
-    partial class Form1
+    partial class Votes_Form
     {
         /// <summary>
         /// Required designer variable.
@@ -159,7 +159,7 @@
             this.loadProjectBut.UseVisualStyleBackColor = true;
             this.loadProjectBut.Click += new System.EventHandler(this.loadProjectBut_Click);
             // 
-            // Form1
+            // Votes_Form
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
@@ -176,8 +176,8 @@
             this.Controls.Add(this.votesFileBox);
             this.Controls.Add(this.VotesBrowse);
             this.Controls.Add(this.symbolView);
-            this.Name = "Form1";
-            this.Text = "Form1";
+            this.Name = "Votes_Form";
+            this.Text = "Votes";
             this.Load += new System.EventHandler(this.Form1_Load);
             ((System.ComponentModel.ISupportInitialize)(this.voteBox)).EndInit();
             this.ResumeLayout(false);
