@@ -36,6 +36,12 @@
             this.label2 = new System.Windows.Forms.Label();
             this.genTrainPoints = new System.Windows.Forms.Button();
             this.pointsFileStatus = new System.Windows.Forms.Label();
+            this.label3 = new System.Windows.Forms.Label();
+            this.modelFileBox = new System.Windows.Forms.TextBox();
+            this.browseModel = new System.Windows.Forms.Button();
+            this.buildModel = new System.Windows.Forms.Button();
+            this.modelFileStatus = new System.Windows.Forms.Label();
+            this.comboBox1 = new System.Windows.Forms.ComboBox();
             this.SuspendLayout();
             // 
             // metricsBox
@@ -72,7 +78,6 @@
             this.trainPointsBox.ReadOnly = true;
             this.trainPointsBox.Size = new System.Drawing.Size(624, 22);
             this.trainPointsBox.TabIndex = 7;
-            this.trainPointsBox.TextChanged += new System.EventHandler(this.trainPointsBox_TextChanged);
             // 
             // browseTrainPoints
             // 
@@ -82,7 +87,7 @@
             this.browseTrainPoints.TabIndex = 6;
             this.browseTrainPoints.Text = "Browse";
             this.browseTrainPoints.UseVisualStyleBackColor = true;
-            this.browseTrainPoints.Click += new System.EventHandler(this.button1_Click);
+            this.browseTrainPoints.Click += new System.EventHandler(this.browseTrainPoints_Click);
             // 
             // label2
             // 
@@ -106,16 +111,77 @@
             // pointsFileStatus
             // 
             this.pointsFileStatus.AutoSize = true;
-            this.pointsFileStatus.Location = new System.Drawing.Point(480, 116);
+            this.pointsFileStatus.Location = new System.Drawing.Point(165, 156);
             this.pointsFileStatus.Name = "pointsFileStatus";
-            this.pointsFileStatus.Size = new System.Drawing.Size(0, 17);
+            this.pointsFileStatus.Size = new System.Drawing.Size(124, 17);
             this.pointsFileStatus.TabIndex = 10;
+            this.pointsFileStatus.Text = "Train Status Label";
+            // 
+            // label3
+            // 
+            this.label3.AutoSize = true;
+            this.label3.Location = new System.Drawing.Point(15, 386);
+            this.label3.Name = "label3";
+            this.label3.Size = new System.Drawing.Size(68, 17);
+            this.label3.TabIndex = 13;
+            this.label3.Text = "Model file";
+            // 
+            // modelFileBox
+            // 
+            this.modelFileBox.Location = new System.Drawing.Point(18, 414);
+            this.modelFileBox.Name = "modelFileBox";
+            this.modelFileBox.ReadOnly = true;
+            this.modelFileBox.Size = new System.Drawing.Size(624, 22);
+            this.modelFileBox.TabIndex = 12;
+            // 
+            // browseModel
+            // 
+            this.browseModel.Location = new System.Drawing.Point(648, 386);
+            this.browseModel.Name = "browseModel";
+            this.browseModel.Size = new System.Drawing.Size(93, 50);
+            this.browseModel.TabIndex = 11;
+            this.browseModel.Text = "Browse";
+            this.browseModel.UseVisualStyleBackColor = true;
+            this.browseModel.Click += new System.EventHandler(this.browseModel_Click);
+            // 
+            // buildModel
+            // 
+            this.buildModel.Location = new System.Drawing.Point(292, 322);
+            this.buildModel.Name = "buildModel";
+            this.buildModel.Size = new System.Drawing.Size(162, 51);
+            this.buildModel.TabIndex = 14;
+            this.buildModel.Text = "Build model";
+            this.buildModel.UseVisualStyleBackColor = true;
+            this.buildModel.Click += new System.EventHandler(this.buildModel_Click);
+            // 
+            // modelFileStatus
+            // 
+            this.modelFileStatus.AutoSize = true;
+            this.modelFileStatus.Location = new System.Drawing.Point(165, 386);
+            this.modelFileStatus.Name = "modelFileStatus";
+            this.modelFileStatus.Size = new System.Drawing.Size(129, 17);
+            this.modelFileStatus.TabIndex = 15;
+            this.modelFileStatus.Text = "Model Status Label";
+            // 
+            // comboBox1
+            // 
+            this.comboBox1.FormattingEnabled = true;
+            this.comboBox1.Location = new System.Drawing.Point(108, 268);
+            this.comboBox1.Name = "comboBox1";
+            this.comboBox1.Size = new System.Drawing.Size(121, 24);
+            this.comboBox1.TabIndex = 16;
             // 
             // Learn_form
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(774, 457);
+            this.Controls.Add(this.comboBox1);
+            this.Controls.Add(this.modelFileStatus);
+            this.Controls.Add(this.buildModel);
+            this.Controls.Add(this.label3);
+            this.Controls.Add(this.modelFileBox);
+            this.Controls.Add(this.browseModel);
             this.Controls.Add(this.pointsFileStatus);
             this.Controls.Add(this.genTrainPoints);
             this.Controls.Add(this.label2);
@@ -141,6 +207,12 @@
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.Button genTrainPoints;
         private System.Windows.Forms.Label pointsFileStatus;
+        private System.Windows.Forms.Label label3;
+        private System.Windows.Forms.TextBox modelFileBox;
+        private System.Windows.Forms.Button browseModel;
+        private System.Windows.Forms.Button buildModel;
+        private System.Windows.Forms.Label modelFileStatus;
+        private System.Windows.Forms.ComboBox comboBox1;
     }
 }
 

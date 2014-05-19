@@ -798,8 +798,11 @@ namespace MetrLearn
         [XmlAttribute("Answer")]
         public int Answer { get; set; }
 
+        [XmlAttribute("ClassName")]
+        public string className { get; set; }
+
         public TrainPoint() { }
-        public TrainPoint(List<int> list)
+        public TrainPoint(List<int> list, string _className)
         {
             RS = list[0];
             DIT = list[1];
@@ -807,11 +810,12 @@ namespace MetrLearn
             CBO = list[3];
 
             Answer = list.Last();
+            className = _className;
         }
 
         public List<int> ToList() {
-            var classType = this.GetType(); 
-            var propertiesInfos = classType.GetProperties();
+            var classType = this.GetType();
+            var propertiesInfos = classType.GetProperties().Where(x=>x.Name != "className");
             return propertiesInfos.Select(x => (Int32)x.GetValue(this)).ToList();
         }
     }
@@ -840,18 +844,28 @@ namespace MetrLearn
     [XmlType("TrainedModelElement")]
     public class TrainedModelElement {
         [XmlAttribute("element")]
-        public int get { get; set; }
+        public double Val { get; set; }
+
+        public TrainedModelElement() { Val = -1; }
+        public TrainedModelElement(double _val) { Val = _val; }
     }
 
     [XmlRoot("TrainedModel")]
     [XmlInclude(typeof(TrainedModelElement))]
     public class TrainedModel
     {
+        [XmlElement("MethodName")]
+        public string methodName { get; set; }
+
         [XmlArray("TrainedModelList")]
         [XmlArrayItem("TrainedModelListItem")]
         public List<TrainedModelElement> Items = new List<TrainedModelElement>();
 
         public TrainedModel() { }
+        public TrainedModel(List<double> _list, string _methodName) {
+            Items = _list.Select(x => new TrainedModelElement(x)).ToList();
+            methodName = _methodName;
+        }
 
     }
 
@@ -895,7 +909,8 @@ namespace MetrLearn
                         Metr.MetricCalculator.NOC(solution,compilation,curClass),
                         Metr.MetricCalculator.CBO(solution, compilation,curClass),
                         v.Estimation
-                    })
+                    },
+                    v.FullName)
                     );
                     //ress.Add(v.Estimation);
                     
@@ -921,16 +936,23 @@ namespace MetrLearn
             XmlSerializer serializer1 = new XmlSerializer(typeof(TrainPointsList), Types1);
             TrainPointsList trainPoints = null;
             using (var fs = new FileStream(sourceFileName, FileMode.Open)) {
-                trainPoints = (TrainPointsList)serializer1.Deserialize(fs); 
+                //try { // TODO: write file not exist, not deserialize
+                    trainPoints = (TrainPointsList)serializer1.Deserialize(fs);
             }
-            if (trainPoints == null) { int ttt = 0; ttt /= ttt; }
+          
 
-            
-
+            var model = getTrainedModel(trainPoints, ModelToTrainMethod.LeastSquaresMethod);
 
             Type[] Types2 = { typeof(TrainedModelElement) };
             XmlSerializer serializer2 = new XmlSerializer(typeof(TrainedModel), Types2);
-
+            using (var fs = new FileStream(targetFileName, FileMode.Create)) {
+                try
+                {
+                    serializer2.Serialize(fs, model);
+                }
+                catch
+                { }
+            }
 
         }
         
@@ -940,9 +962,19 @@ namespace MetrLearn
             KNN_Method
         };
 
-        //static public TrainedModel getTrainedModel(TrainPointsList trainPoints, ModelToTrainMethod method ) {
-        //    MetrMath.Model.Build();
-        //}
+        static public TrainedModel getTrainedModel(TrainPointsList trainPoints, ModelToTrainMethod method)
+        {
+            if (method == ModelToTrainMethod.LeastSquaresMethod)
+            {
+                var ReAn = trainPoints.Points.Select(x => x.ToList());
+                var Request = ReAn.Select(x => x.GetRange(0, x.Count - 1)).ToList();
+                var Answer = ReAn.Select(x => x.Last()).ToList();
+
+                MetrMath.Model.Build(Request, Answer);
+                return new TrainedModel(MetrMath.Model.model, method.ToString());
+            }
+            else return null;
+        }
 
 
         static public void RunMathFunction() {
@@ -968,9 +1000,12 @@ N[NormalizeMaxMin[givenDataUnNorm],20][[2]]"
     class TrainTest {
         static public void Run() {
             // Train.toTrainPoints(@"C:\temp2\Another-Metric.xml", "");
-            var ttt = new TrainPoint(new List<int> { 1, 2, 3, 4, 5 });
-            var myList = ttt.ToList();
+
             //Train.RunMathFunction();
+            Train.toTrainedModel("C:\\temp2\\Another-Metric - points.xml", "C:\\temp2\\test.xml");
+            //var ttt = new TrainPoint(new List<int> { 1, 2, 3, 4, 5 });
+            //var myList = ttt.ToList();
+
         }
     }
 }
