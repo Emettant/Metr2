@@ -206,6 +206,7 @@ namespace MetrExamples
 
     }
 }
+
 namespace MetrTest { 
     //  [Microsoft.VisualStudio.TestTools.UnitTesting.TestClass]
     class MetricCalculatorTest
@@ -777,7 +778,7 @@ namespace MetrLearn
     using System.Xml.Serialization;
     using System.IO;
     using MetrExpertXML;
-
+    using System.Reflection;
 
     [XmlType("TrainPoint")]
     public class TrainPoint
@@ -807,6 +808,12 @@ namespace MetrLearn
 
             Answer = list.Last();
         }
+
+        public List<int> ToList() {
+            var classType = this.GetType(); 
+            var propertiesInfos = classType.GetProperties();
+            return propertiesInfos.Select(x => (Int32)x.GetValue(this)).ToList();
+        }
     }
 
 
@@ -828,9 +835,32 @@ namespace MetrLearn
             Points.Add(point);
         }
     }
+
+
+    [XmlType("TrainedModelElement")]
+    public class TrainedModelElement {
+        [XmlAttribute("element")]
+        public int get { get; set; }
+    }
+
+    [XmlRoot("TrainedModel")]
+    [XmlInclude(typeof(TrainedModelElement))]
+    public class TrainedModel
+    {
+        [XmlArray("TrainedModelList")]
+        [XmlArrayItem("TrainedModelListItem")]
+        public List<TrainedModelElement> Items = new List<TrainedModelElement>();
+
+        public TrainedModel() { }
+
+    }
+
+
+
+
     public class Train
     {
-        
+
         /// <summary>
         /// 
         /// </summary>
@@ -885,6 +915,36 @@ namespace MetrLearn
             }
         }
 
+        static public void toTrainedModel(string sourceFileName, string targetFileName) {
+
+            Type[] Types1 = { typeof(TrainPoint) };
+            XmlSerializer serializer1 = new XmlSerializer(typeof(TrainPointsList), Types1);
+            TrainPointsList trainPoints = null;
+            using (var fs = new FileStream(sourceFileName, FileMode.Open)) {
+                trainPoints = (TrainPointsList)serializer1.Deserialize(fs); 
+            }
+            if (trainPoints == null) { int ttt = 0; ttt /= ttt; }
+
+            
+
+
+            Type[] Types2 = { typeof(TrainedModelElement) };
+            XmlSerializer serializer2 = new XmlSerializer(typeof(TrainedModel), Types2);
+
+
+        }
+        
+
+        public enum  ModelToTrainMethod{
+            LeastSquaresMethod,
+            KNN_Method
+        };
+
+        //static public TrainedModel getTrainedModel(TrainPointsList trainPoints, ModelToTrainMethod method ) {
+        //    MetrMath.Model.Build();
+        //}
+
+
         static public void RunMathFunction() {
             MetrMath.Adapter.Mathematica.Calc(
                 @"
@@ -907,7 +967,9 @@ N[NormalizeMaxMin[givenDataUnNorm],20][[2]]"
 
     class TrainTest {
         static public void Run() {
-             Train.toTrainPoints(@"C:\temp2\Another-Metric.xml", "");
+            // Train.toTrainPoints(@"C:\temp2\Another-Metric.xml", "");
+            var ttt = new TrainPoint(new List<int> { 1, 2, 3, 4, 5 });
+            var myList = ttt.ToList();
             //Train.RunMathFunction();
         }
     }
