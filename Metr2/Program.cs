@@ -930,7 +930,7 @@ namespace MetrLearn
             }
         }
 
-        static public void toTrainedModel(string sourceFileName, string targetFileName) {
+        static public void toTrainedModel(string sourceFileName, string targetFileName, ModelToTrainMethod method) {
 
             Type[] Types1 = { typeof(TrainPoint) };
             XmlSerializer serializer1 = new XmlSerializer(typeof(TrainPointsList), Types1);
@@ -941,7 +941,7 @@ namespace MetrLearn
             }
           
 
-            var model = getTrainedModel(trainPoints, ModelToTrainMethod.LeastSquaresMethod);
+            var model = getTrainedModel(trainPoints, method);
 
             Type[] Types2 = { typeof(TrainedModelElement) };
             XmlSerializer serializer2 = new XmlSerializer(typeof(TrainedModel), Types2);
@@ -958,7 +958,7 @@ namespace MetrLearn
         
 
         public enum  ModelToTrainMethod{
-            LeastSquaresMethod,
+            LeastSquaresMethod = 0,
             KNN_Method
         };
 
@@ -1002,7 +1002,7 @@ N[NormalizeMaxMin[givenDataUnNorm],20][[2]]"
             // Train.toTrainPoints(@"C:\temp2\Another-Metric.xml", "");
 
             //Train.RunMathFunction();
-            Train.toTrainedModel("C:\\temp2\\Another-Metric - points.xml", "C:\\temp2\\test.xml");
+            Train.toTrainedModel("C:\\temp2\\Another-Metric - points.xml", "C:\\temp2\\test.xml",Train.ModelToTrainMethod.LeastSquaresMethod);
             //var ttt = new TrainPoint(new List<int> { 1, 2, 3, 4, 5 });
             //var myList = ttt.ToList();
 

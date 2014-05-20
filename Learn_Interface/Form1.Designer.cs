@@ -41,7 +41,7 @@
             this.browseModel = new System.Windows.Forms.Button();
             this.buildModel = new System.Windows.Forms.Button();
             this.modelFileStatus = new System.Windows.Forms.Label();
-            this.comboBox1 = new System.Windows.Forms.ComboBox();
+            this.methodComboBox = new System.Windows.Forms.ComboBox();
             this.SuspendLayout();
             // 
             // metricsBox
@@ -163,20 +163,20 @@
             this.modelFileStatus.TabIndex = 15;
             this.modelFileStatus.Text = "Model Status Label";
             // 
-            // comboBox1
+            // methodComboBox
             // 
-            this.comboBox1.FormattingEnabled = true;
-            this.comboBox1.Location = new System.Drawing.Point(108, 268);
-            this.comboBox1.Name = "comboBox1";
-            this.comboBox1.Size = new System.Drawing.Size(121, 24);
-            this.comboBox1.TabIndex = 16;
+            this.methodComboBox.FormattingEnabled = true;
+            this.methodComboBox.Location = new System.Drawing.Point(18, 269);
+            this.methodComboBox.Name = "methodComboBox";
+            this.methodComboBox.Size = new System.Drawing.Size(187, 24);
+            this.methodComboBox.TabIndex = 16;
             // 
             // Learn_form
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(774, 457);
-            this.Controls.Add(this.comboBox1);
+            this.Controls.Add(this.methodComboBox);
             this.Controls.Add(this.modelFileStatus);
             this.Controls.Add(this.buildModel);
             this.Controls.Add(this.label3);
@@ -212,7 +212,7 @@
         private System.Windows.Forms.Button browseModel;
         private System.Windows.Forms.Button buildModel;
         private System.Windows.Forms.Label modelFileStatus;
-        private System.Windows.Forms.ComboBox comboBox1;
+        private System.Windows.Forms.ComboBox methodComboBox;
     }
 }
 

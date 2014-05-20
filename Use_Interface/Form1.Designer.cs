@@ -77,6 +77,7 @@
             this.browseModel.TabIndex = 14;
             this.browseModel.Text = "Browse";
             this.browseModel.UseVisualStyleBackColor = true;
+            this.browseModel.Click += new System.EventHandler(this.browseModel_Click);
             // 
             // UseForm
             // 

@@ -19,6 +19,10 @@ namespace Learn_Interface
             InitializeComponent();
             fillMetricsAndPointsBoxTogether(@"C:\temp2\Metr2.xml");
             clearModelPart();
+            foreach (var el in Enum.GetValues(typeof(MetrLearn.Train.ModelToTrainMethod))) {
+                methodComboBox.Items.Add(el.ToString());
+                 }
+            methodComboBox.SelectedIndex = 0;
         }
 
         static string pointsFileEnding = " - points.xml";
@@ -84,6 +88,7 @@ namespace Learn_Interface
 
         private void genTrainPoints_Click(object sender, EventArgs e)
         {
+            //TODO: Move this part to votes_interface
             pointsFileStatus.Text = inProgressStatus;
             clearModelPart();
             MetrLearn.Train.toTrainPoints(metricsBox.Text, trainPointsBox.Text);
@@ -94,7 +99,7 @@ namespace Learn_Interface
         private void buildModel_Click(object sender, EventArgs e)
         {
             modelFileStatus.Text = inProgressStatus;
-            MetrLearn.Train.toTrainedModel(trainPointsBox.Text, modelFileBox.Text);
+            MetrLearn.Train.toTrainedModel(trainPointsBox.Text, modelFileBox.Text, (MetrLearn.Train.ModelToTrainMethod)methodComboBox.SelectedIndex);
             modelFileStatus.Text = isDoneStatus;
         }
 
