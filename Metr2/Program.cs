@@ -1094,6 +1094,69 @@ namespace MetrInterface {
 
             return ret;
         }
+
+    }
+
+    public class OpenFileGroup {
+
+        Label nameLabel;
+        Label statusLabel;
+        TextBox fileBox;
+        Button browseButton;
+        Form parent;
+
+        private static int enumeratorOpenFileGroup = 0;
+
+        public OpenFileGroup(Form parent, int y, string startPath, string buttonText)
+        {
+            enumeratorOpenFileGroup++;
+            browseButton = new Button();
+            nameLabel = new Label();
+            statusLabel = new Label();
+            fileBox = new TextBox();
+
+            browseButton.Location = new System.Drawing.Point(648, y + 23);
+            browseButton.Name = "browseButton" + enumeratorOpenFileGroup.ToString();
+            browseButton.Size = new System.Drawing.Size(93, 50);
+            browseButton.Text = buttonText;
+            browseButton.UseVisualStyleBackColor = true;
+            browseButton.Click += new System.EventHandler(browseClick);
+            // 
+            // nameLabel
+            // 
+            nameLabel.AutoSize = true;
+            nameLabel.Location = new System.Drawing.Point(15, y + 23);
+            nameLabel.Name = "nameLabel" + enumeratorOpenFileGroup.ToString();
+            nameLabel.Size = new System.Drawing.Size(75, 17);
+            nameLabel.Text = "file";
+            // 
+            // statusLabel
+            // 
+            statusLabel.AutoSize = true;
+            statusLabel.Location = new System.Drawing.Point(165, y + 23);
+            statusLabel.Name = "statusLabel" + enumeratorOpenFileGroup.ToString();
+            statusLabel.Size = new System.Drawing.Size(124, 17);
+            statusLabel.Text = "Status";
+            // 
+            // fileBox
+            // 
+            fileBox.Location = new System.Drawing.Point(18, y + 51);
+            fileBox.Name = "fileBox" + enumeratorOpenFileGroup.ToString();
+            fileBox.ReadOnly = true;
+            fileBox.Size = new System.Drawing.Size(624, 22);
+            fileBox.Text = startPath;
+
+            parent.Controls.Add(browseButton);
+            parent.Controls.Add(nameLabel);
+            parent.Controls.Add(statusLabel);
+            parent.Controls.Add(fileBox);
+
+
+        }
+        private void browseClick(object sender, EventArgs e) {
+
+        }
+
     }
 }
 

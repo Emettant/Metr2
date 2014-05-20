@@ -10,18 +10,19 @@ using System.Windows.Forms;
 
 namespace Use_Interface
 {
+
     public partial class UseForm : Form
     {
+
+        MetrInterface.OpenFileGroup openFileGroup, openFileGroup2;
         public UseForm()
         {
+            openFileGroup = new MetrInterface.OpenFileGroup(this, 20, @"C:\", "Browse");
+            openFileGroup2 = new MetrInterface.OpenFileGroup(this, 70, @"C:\", "Browse");
             InitializeComponent();
-            modelFileBox.Text = @"C:\temp2\Metr2 - .xml";
+           
         }
 
-        private void browseModel_Click(object sender, EventArgs e)
-        {
-            modelFileBox.Text = MetrInterface.Tools.openDialogWork(modelFileBox.Text,"xml");
-
-        }
+      
     }
 }
