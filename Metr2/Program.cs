@@ -1336,7 +1336,15 @@ namespace MetrInterface {
         string current_project;
         string current_solution_file;
         SortedSet<string> current_names;
-        List<Tuple<string, int>> dataGridSourceList;
+        List<DataGridSourceItem> dataGridSourceList;
+        class DataGridSourceItem {
+            public string TypeOrNamespaceName { get; set; }
+            public int ModelEstimation { get; set; }
+            public DataGridSourceItem(string name, int est) {
+                TypeOrNamespaceName = name;
+                ModelEstimation = est;
+            }
+        }
 
         string curent_model_file;
 
@@ -1359,8 +1367,8 @@ namespace MetrInterface {
         }
 
         void TryInitAll() {
-            //try
-            //{
+            try
+            {
                 _solution = Metr.RoslynAPI.GetSolution(current_solution_file);
             if (_solution == null) return;
                 var projects = _solution.Projects;
@@ -1373,11 +1381,11 @@ namespace MetrInterface {
                 comboProjects.SelectedIndex = 0;
                 InitProject();
                 BlockedGroup = false;
-            //}
-            //catch
-            //{
-            //    BlockedGroup = true;
-            //}
+            }
+            catch
+            {
+                BlockedGroup = true;
+            }
         }
         public void InitSolution(string solutionPath)
         {
@@ -1443,7 +1451,7 @@ namespace MetrInterface {
 
         private void InitGridView() {
             symbolTableView.DataSource = dataGridSourceList;//current_names.ToList();
-            symbolTableView.Columns[0].Width = Math.Max(symbolTableView.Width - 50, 20);
+            symbolTableView.Columns[0].Width = 300;
 
         }
         private void InitTreeView(Compilation compilation)
@@ -1472,7 +1480,7 @@ namespace MetrInterface {
 
         void CalculateModel() {
             dataGridSourceList = current_names.Select(x =>
-                new Tuple<string,int>(
+                new DataGridSourceItem(
                     x, 
                 MetrLearn.Train.getAnswerForClassByModel(curent_model_file, current_solution_file, current_project, x
                 )
