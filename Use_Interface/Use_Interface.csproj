@@ -63,9 +63,6 @@
     <Reference Include="System.Drawing" />
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
-    <Reference Include="Votes_Interface">
-      <HintPath>..\Votes_Interface\bin\Debug\Votes_Interface.exe</HintPath>
-    </Reference>
     <Reference Include="Wolfram.NETLink">
       <HintPath>..\..\..\..\..\..\..\Metr\try1\Wolfram.NETLink.dll</HintPath>
     </Reference>

@@ -420,7 +420,8 @@ namespace Metr
                             var property = el.CallingSymbol as IPropertySymbol;
                             if (property != null)
                             {
-                                CallingMethods.Add(property.GetMethod); CallingMethods.Add(property.SetMethod);
+                                if (property.GetMethod != null) CallingMethods.Add(property.GetMethod);
+                                if (property.SetMethod != null) CallingMethods.Add(property.SetMethod);
                             }
                         }
                    
@@ -538,12 +539,41 @@ namespace Metr
 
     public class RoslynAPI {
 
+        
         static public Solution GetSolution(String solutionPath) {
-            return MSBuildWorkspace.Create().OpenSolutionAsync(solutionPath).Result; 
+            Solution solution = null;
+            try { solution = MSBuildWorkspace.Create().OpenSolutionAsync(solutionPath).Result; }
+            catch { }
+            return solution;
         }
+
+        static Dictionary<Tuple<string, string>, Compilation> _compilation_cache;
+        static Dictionary<Tuple<string, string>, Compilation> compilation_cache
+        {
+            get
+            {
+                if (_compilation_cache == null)
+                    _compilation_cache = new Dictionary<Tuple<string, string>, Compilation>();
+                return _compilation_cache;
+            }
+        }
+
+        static public Compilation GetCompilation(String solutionPath, String projectToPick) {
+            return GetCompilation(GetSolution(solutionPath), projectToPick);
+        }
+
         static private Compilation GetCompilation(Solution _solution, String projectToPick)
         {
-            return _solution.Projects.ToList().Where(p => p.Name.ToString() == projectToPick).First().GetCompilationAsync().Result;
+            var keySolutionProject = new Tuple<string, string>(_solution.FilePath, projectToPick);
+            Compilation compilation;
+            if (compilation_cache.Keys.Contains(keySolutionProject))
+                compilation = compilation_cache[keySolutionProject];
+            else
+            {
+                compilation = _solution.Projects.ToList().Where(p => p.Name.ToString() == projectToPick).First().GetCompilationAsync().Result;
+                compilation_cache[keySolutionProject] = compilation;
+            }
+            return compilation;
         }
 
         //static public IEnumerable<Project> GetProjects(String solutionPath) {
@@ -672,6 +702,7 @@ namespace MetrMath {
             /// <param name="input"></param>
             public static void Calc(string input)
             {
+                Console.WriteLine("To Math kernel: \n" + input);
                 if (kl == null)
                 {
                     kl = MathLinkFactory.CreateKernelLink();//"-linkmode launch -linkname 'c:\\program files\\wolfram research\\mathematica\\9.0\\mathkernel'");
@@ -683,7 +714,7 @@ namespace MetrMath {
             }
 
         }
-        public static string ListToString<T>(List<T> list){
+        public static string ListToString<T>(IEnumerable<T> list){
             var sb = new StringBuilder("{");
             var separator = ", ";
             foreach (var el in list) {
@@ -693,6 +724,13 @@ namespace MetrMath {
             sb.Remove(sb.Length - separator.Length, separator.Length);
             sb.Append("}");
             return sb.ToString();
+        }
+        public static string ListToString(List<double> list) {
+            return ListToString(list.Select(x => DoubleToString_ComaToDot_ForMathematica(x)));
+        }
+        //TODO: for every float type ComaToDot ... Environment settings
+        public static string DoubleToString_ComaToDot_ForMathematica(double d) {
+            return d.ToString().Replace(',','.');
         }
     }
 
@@ -718,50 +756,62 @@ namespace MetrMath {
             Build<Int32>(coefs, results);
         }
 
-        static public void Build(string fileMetricName) {
-            Type[] estimationTypes = { typeof(EstimationOfElement) };
-            XmlSerializer serializer = new XmlSerializer(typeof(EstimationList), estimationTypes);
+        static public double Apply(List<int> coefs, List<double> model) {
+            var coefsString = ListToString(coefs);
+            var modelString = ListToString(model);
+            
+            Mathematica.Calc(coefsString + "." + modelString);
 
-            var fs = new FileStream(fileMetricName, FileMode.Open);
-            try
-            {
-                var votesList = (EstimationList)serializer.Deserialize(fs);
-                Solution solution = null;
-                Compilation compilation = null;
-                string solutionPath = null;
-                string projectToPick = null;
-                var coefs = new List<List<Int32>>();
-                var ress = new List<Int32>();
-                foreach (var v in votesList.Estimations) {
-                    if (v.Solution != solutionPath || v.Project != projectToPick)
-                        Metr.RoslynAPI.ProjectCompile((solutionPath = v.Solution), (projectToPick = v.Project), out solution, out compilation);
-
-                    coefs.Add(new List<Int32>()
-                    {
-                        Metr.MetricCalculator.RS(compilation,v.FullName),
-                        Metr.MetricCalculator.DIT(compilation,v.FullName),
-                        Metr.MetricCalculator.NOC(solution,compilation,v.FullName),
-                        Metr.MetricCalculator.CBO(solution, compilation,v.FullName)
-                    });
-                    ress.Add(v.Estimation);
-
-                }
-                Build(coefs, ress);
-            }
-            finally
-            {
-                fs.Close();
-            }
-
-
+            var res = Mathematica.Result.GetDouble(); 
+            Console.WriteLine(res);
+            return res;
         }
+
+        //static public void Build(string fileMetricName) {
+        //    Type[] estimationTypes = { typeof(EstimationOfElement) };
+        //    XmlSerializer serializer = new XmlSerializer(typeof(EstimationList), estimationTypes);
+
+        //    var fs = new FileStream(fileMetricName, FileMode.Open);
+        //    try
+        //    {
+        //        var votesList = (EstimationList)serializer.Deserialize(fs);
+        //        Solution solution = null;
+        //        Compilation compilation = null;
+        //        string solutionPath = null;
+        //        string projectToPick = null;
+        //        var coefs = new List<List<Int32>>();
+        //        var ress = new List<Int32>();
+        //        foreach (var v in votesList.Estimations) {
+        //            if (v.Solution != solutionPath || v.Project != projectToPick)
+        //                Metr.RoslynAPI.ProjectCompile((solutionPath = v.Solution), (projectToPick = v.Project), out solution, out compilation);
+
+        //            coefs.Add(new List<Int32>()
+        //            {
+        //                Metr.MetricCalculator.RS(compilation,v.FullName),
+        //                Metr.MetricCalculator.DIT(compilation,v.FullName),
+        //                Metr.MetricCalculator.NOC(solution,compilation,v.FullName),
+        //                Metr.MetricCalculator.CBO(solution, compilation,v.FullName)
+        //            });
+        //            ress.Add(v.Estimation);
+
+        //        }
+        //        Build(coefs, ress);
+        //    }
+        //    finally
+        //    {
+        //        fs.Close();
+        //    }
+
+
+        //}
     }
 
     class ModelTest {
         
         static public void Run() {
             //Model.Build(new List<List<Int32>> { new List<Int32> { 1, 2, 3 }, new List<Int32> { 2, 3, 4 }, new List<Int32> { 3, 4, 5 } }, new List<Int32> { 1, 1, 1 });
-            Model.Build(@"C:\temp2\Metr2.xml");
+            
+            //Model.Build(@"C:\temp2\Metr2.xml");
 
             //Mathematica.Calc(ListToString<Int32>(new List<Int32> { 2, 3, 4 }) + "+" + ListToString<Int32>(new List<Int32> { 2, 3, 4 }));
             //Console.WriteLine(Mathematica.Result.GetDoubleArray()[0]);
@@ -813,11 +863,46 @@ namespace MetrLearn
             className = _className;
         }
 
-        public List<int> ToList() {
-            var classType = this.GetType();
-            var propertiesInfos = classType.GetProperties().Where(x=>x.Name != "className");
-            return propertiesInfos.Select(x => (Int32)x.GetValue(this)).ToList();
+        List<int> _cached_list;
+        List<int> cached_list { get {
+                if (_cached_list == null)
+                {
+                    var classType = this.GetType();
+                    var propertiesInfos = classType.GetProperties().Where(x => x.Name != "className");
+                    _cached_list = propertiesInfos.Select(x => (Int32)x.GetValue(this)).ToList();
+                }
+                return _cached_list;
+            }
         }
+        public List<int> ToList() {
+            return cached_list;
+        }
+
+        public List<int> getRequest() {
+            return cached_list.GetRange(0, cached_list.Count - 1);
+        }
+
+        public int getAnswer() {
+            return cached_list.Last();
+        }
+
+
+        const int defaultEstimation = -1;
+        public static TrainPoint getClassRequestAnswerPoint(Solution solution, Compilation compilation, string className, int estimation = defaultEstimation)
+        {
+            var curClass = compilation.GetTypeByMetadataName(className);
+            if (curClass != null)
+                return new TrainPoint(new List<Int32>()
+                    {
+                        Metr.MetricCalculator.RS(compilation,curClass),
+                        Metr.MetricCalculator.DIT(compilation,curClass),
+                        Metr.MetricCalculator.NOC(solution,compilation,curClass),
+                        Metr.MetricCalculator.CBO(solution, compilation,curClass),
+                        estimation
+                    }, className);
+            else return null;
+        }
+
     }
 
 
@@ -867,6 +952,10 @@ namespace MetrLearn
             methodName = _methodName;
         }
 
+        public List<double> ToList() {
+            return Items.Select(x => x.Val).ToList();
+        }
+
     }
 
 
@@ -874,7 +963,8 @@ namespace MetrLearn
 
     public class Train
     {
-
+        
+       
         /// <summary>
         /// 
         /// </summary>
@@ -902,15 +992,21 @@ namespace MetrLearn
 
                     var curClass = compilation.GetTypeByMetadataName(v.FullName);
                     if (curClass != null)
-                    coefs.AddPoint(new TrainPoint(new List<Int32>()
-                    {
-                        Metr.MetricCalculator.RS(compilation,curClass),
-                        Metr.MetricCalculator.DIT(compilation,curClass),
-                        Metr.MetricCalculator.NOC(solution,compilation,curClass),
-                        Metr.MetricCalculator.CBO(solution, compilation,curClass),
-                        v.Estimation
-                    },
-                    v.FullName)
+                        coefs.AddPoint(
+
+
+                    //    new TrainPoint(new List<Int32>()
+                    //{
+                    //    Metr.MetricCalculator.RS(compilation,curClass),
+                    //    Metr.MetricCalculator.DIT(compilation,curClass),
+                    //    Metr.MetricCalculator.NOC(solution,compilation,curClass),
+                    //    Metr.MetricCalculator.CBO(solution, compilation,curClass),
+                    //    v.Estimation
+                    //},
+                    //v.FullName)
+
+                    TrainPoint.getClassRequestAnswerPoint(solution, compilation, v.FullName, v.Estimation)
+
                     );
                     //ress.Add(v.Estimation);
                     
@@ -953,9 +1049,48 @@ namespace MetrLearn
                 catch
                 { }
             }
+            model = null;
+
+            
 
         }
-        
+
+        static Dictionary<string, TrainedModel> _cached_model;
+        static Dictionary<string, TrainedModel> cached_model { get {
+                if (_cached_model == null) {
+                    _cached_model = new Dictionary<string, TrainedModel>();
+                }
+                return _cached_model;
+            }
+        }
+        static public int getAnswerForClassByModel(string sourceFile, string solutionPath, string projectToPick, string className)
+        {
+            TrainedModel model = null;
+            if (cached_model.Keys.Contains(sourceFile))
+                model = cached_model[sourceFile];
+            else
+            {
+
+                Type[] Types2 = { typeof(TrainedModelElement) };
+                XmlSerializer serializer2 = new XmlSerializer(typeof(TrainedModel), Types2);
+                using (var fs = new FileStream(sourceFile, FileMode.Open))
+                {
+                    try
+                    {
+                        model = (TrainedModel)serializer2.Deserialize(fs);
+                    }
+                    catch
+                    { }
+                }
+
+                cached_model[sourceFile] = model;
+            }
+
+            Compilation compilation = Metr.RoslynAPI.GetCompilation(solutionPath, projectToPick);
+            var point = TrainPoint.getClassRequestAnswerPoint(Metr.RoslynAPI.GetSolution(solutionPath), compilation, className);
+            if (point == null) return -1;// if (className is namespace name)
+            else return (int)Math.Round(MetrMath.Model.Apply(point.getRequest(), model.ToList()));
+        }
 
         public enum  ModelToTrainMethod{
             LeastSquaresMethod = 0,
@@ -972,9 +1107,12 @@ namespace MetrLearn
 
                 MetrMath.Model.Build(Request, Answer);
                 return new TrainedModel(MetrMath.Model.model, method.ToString());
+                
             }
             else return null;
         }
+
+
 
 
         static public void RunMathFunction() {
@@ -1043,21 +1181,14 @@ namespace MetrMain
             //Debug.Assert(fooResult.First().Locations.Count() == 0);
         }
 
-        //public bool Foo()
-        //{
-        //    return "Bar" == Bar();
-        //}
 
-        //public string Bar()
-        //{
-        //    return "Bar";
-        //}
     }
 }
 
 namespace MetrInterface {
     using System.IO;
     using System.Windows.Forms;
+    using System.Text;
     public static class Tools {
         public static string openDialogWork(string startPath, string extention)
         {
@@ -1097,30 +1228,65 @@ namespace MetrInterface {
 
     }
 
-    public class OpenFileGroup {
+    public class ControlsGroup {
+        protected static int enumeratorOpenFileGroup = 0;
+        protected ControlsGroup()
+        {
+            enumeratorOpenFileGroup++;
+        }
+    }
+
+    public class OpenFileGroup : ControlsGroup {
 
         Label nameLabel;
         Label statusLabel;
         TextBox fileBox;
         Button browseButton;
         Form parent;
+        Action<OpenFileGroup> action;
 
-        private static int enumeratorOpenFileGroup = 0;
+        string extention;
 
-        public OpenFileGroup(Form parent, int y, string startPath, string buttonText)
+        static string status = "Status: ";
+        static string yesFileStatus = status + "!!! There is a file already with such name !!! ";
+        static string noFileStatus = status + "File does not exist.";
+        static string inProgressStatus = status + "In progress...";
+        static string isDoneStatus = status + "Done :) ";
+
+
+        public bool FileExist { get; private set; }
+        public string FileName { get; private set; }
+
+        void refreshFileExistence()
         {
-            enumeratorOpenFileGroup++;
+            statusLabel.Text = (FileExist = File.Exists(fileBox.Text)) ?
+                yesFileStatus : noFileStatus;
+            FileName = fileBox.Text;
+
+        }
+        private void Browse_Click(object sender, EventArgs e)
+        {
+            fileBox.Text = Tools.openDialogWork(fileBox.Text, extention);
+            refreshFileExistence();
+            action.Invoke(this);
+        }
+
+        public OpenFileGroup(Form parent, int y, string startPath, string buttonText, string nameLabelText, string _extention, Action<OpenFileGroup> _action) : base()
+        {
+            action = _action;
+
             browseButton = new Button();
             nameLabel = new Label();
             statusLabel = new Label();
             fileBox = new TextBox();
+            extention = _extention;
 
             browseButton.Location = new System.Drawing.Point(648, y + 23);
             browseButton.Name = "browseButton" + enumeratorOpenFileGroup.ToString();
             browseButton.Size = new System.Drawing.Size(93, 50);
             browseButton.Text = buttonText;
             browseButton.UseVisualStyleBackColor = true;
-            browseButton.Click += new System.EventHandler(browseClick);
+            browseButton.Click += new System.EventHandler(Browse_Click);
             // 
             // nameLabel
             // 
@@ -1128,7 +1294,7 @@ namespace MetrInterface {
             nameLabel.Location = new System.Drawing.Point(15, y + 23);
             nameLabel.Name = "nameLabel" + enumeratorOpenFileGroup.ToString();
             nameLabel.Size = new System.Drawing.Size(75, 17);
-            nameLabel.Text = "file";
+            nameLabel.Text = nameLabelText;
             // 
             // statusLabel
             // 
@@ -1151,10 +1317,234 @@ namespace MetrInterface {
             parent.Controls.Add(statusLabel);
             parent.Controls.Add(fileBox);
 
+            refreshFileExistence();
+            action.Invoke(this);
+        }
+       
+
+    }
+
+    public class CompilationViewGroup : ControlsGroup
+    {
+        TreeView symbolView;
+        ComboBox comboProjects;
+        Button loadProjectBut;
+        DataGridView symbolTableView;
+        List<Control> current_controls;
+
+        Solution _solution;
+        string current_project;
+        string current_solution_file;
+        SortedSet<string> current_names;
+        List<Tuple<string, int>> dataGridSourceList;
+
+        string curent_model_file;
+
+        bool _is_blocked = false;
+
+        const int defaultMetricValue = -1;
+
+        private bool BlockedGroup {
+            get {
+                return _is_blocked;
+            }
+            set {
+                _is_blocked = value;
+                refreshBlocked();
+            }
+        }
+
+        public void refreshBlocked() {
+            foreach (var control in current_controls) control.Enabled = !_is_blocked;
+        }
+
+        void TryInitAll() {
+            //try
+            //{
+                _solution = Metr.RoslynAPI.GetSolution(current_solution_file);
+            if (_solution == null) return;
+                var projects = _solution.Projects;
+
+                comboProjects.Items.Clear();
+                foreach (var el in projects)
+                {
+                    comboProjects.Items.Add(el.Name.ToString());
+                }
+                comboProjects.SelectedIndex = 0;
+                InitProject();
+                BlockedGroup = false;
+            //}
+            //catch
+            //{
+            //    BlockedGroup = true;
+            //}
+        }
+        public void InitSolution(string solutionPath)
+        {
+            current_solution_file = solutionPath;
+            TryInitAll();
+        }
+        public void InitModel(string modelFilePath)
+        {
+            curent_model_file = modelFilePath;
+            TryInitAll();
+        }
+
+        private void InitProject()
+        {
+            String projectToPick = comboProjects.Items[comboProjects.SelectedIndex].ToString();
+            var project = _solution.Projects.Where(x => x.Name == projectToPick).FirstOrDefault();
+            current_project = project.Name.ToString();
+
+            Compilation compilation = Metr.RoslynAPI.ProjectCompile(project);
+            InitListOfUniqueNames(compilation);
+
+            CalculateModel();
+
+            //InitTreeView(Metr.RoslynAPI.ProjectCompile(project));
+            InitGridView();
+        }
+
+        private void dfs_through_members_build_name(String name, INamespaceOrTypeSymbol symbol)
+        {
+            if (symbol != null && symbol.GetMembers() != null)
+                foreach (var el in symbol.GetMembers())
+                {
+                    var cur = el as INamespaceOrTypeSymbol;
+                    if (cur != null)
+                    {
+                        var cur_name = name + "." + cur.Name.ToString();
+                        current_names.Add(cur_name);
+                        dfs_through_members_build_name(cur_name, cur);
+                    }
+                }
+        }
+        private void InitListOfUniqueNames(Compilation compilation) {
+
+            current_names = new SortedSet<string>();
+
+            foreach (var syntaxTree in compilation.SyntaxTrees)
+                foreach (var member in ((CompilationUnitSyntax)syntaxTree.GetRoot()).Members)
+                {
+                    var ns = member as NamespaceDeclarationSyntax;
+                    if (ns != null)
+                    {
+                        //symbolView.Nodes.Add(ns.Name.ToString());
+                        current_names.Add(ns.Name.ToString());
+                        //  var treenode = symbolView.Nodes[symbolView.Nodes.Count - 1];
+
+                        dfs_through_members_build_name(ns.Name.ToString(), compilation.GlobalNamespace.GetMembers(ns.Name.ToString()).FirstOrDefault());
+                        // dfs_through_members(symbolView.Nodes[symbolView.Nodes.Count - 1].Nodes, compilation.GlobalNamespace.GetMembers(ns.Name.ToString()).FirstOrDefault());
+                        //TODO: kill duplicates
+                        //MakeUnique(symbolView.Nodes);
+                    }
+                }
+        }
+
+        private void InitGridView() {
+            symbolTableView.DataSource = dataGridSourceList;//current_names.ToList();
+            symbolTableView.Columns[0].Width = Math.Max(symbolTableView.Width - 50, 20);
 
         }
-        private void browseClick(object sender, EventArgs e) {
+        private void InitTreeView(Compilation compilation)
+        {
+            //symbolView.Nodes.Clear();
 
+            //symbolView.BeginUpdate();
+            //foreach (var syntaxTree in compilation.SyntaxTrees)
+            //    foreach (var member in ((CompilationUnitSyntax)syntaxTree.GetRoot()).Members)
+            //    {
+            //        var ns = member as NamespaceDeclarationSyntax;
+            //        if (ns != null)
+            //        {
+            //            symbolView.Nodes.Add(ns.Name.ToString());
+            //            //  var treenode = symbolView.Nodes[symbolView.Nodes.Count - 1];
+
+
+            //            dfs_through_members(symbolView.Nodes[symbolView.Nodes.Count - 1].Nodes, compilation.GlobalNamespace.GetMembers(ns.Name.ToString()).FirstOrDefault());
+            //            //TODO: kill duplicates
+            //            //MakeUnique(symbolView.Nodes);
+            //        }
+            //    }
+            //symbolView.EndUpdate();
+            //LoadVotesFromFile();
+        }
+
+        void CalculateModel() {
+            dataGridSourceList = current_names.Select(x =>
+                new Tuple<string,int>(
+                    x, 
+                MetrLearn.Train.getAnswerForClassByModel(curent_model_file, current_solution_file, current_project, x
+                )
+            )).ToList();
+        }
+
+
+        private void loadProjectBut_Click(object sender, EventArgs e)
+        {
+            InitProject();
+        }
+        private void InitNotInterfaceElements(string solutionPath)
+        {
+            InitSolution(solutionPath);
+        }
+
+        public CompilationViewGroup(Form parent, int y, string solutionPath)
+        {
+            
+            symbolView = new System.Windows.Forms.TreeView();
+            comboProjects = new System.Windows.Forms.ComboBox();
+            loadProjectBut = new System.Windows.Forms.Button();
+            symbolTableView = new DataGridView();
+            // 
+            // symbolView
+            // 
+            this.symbolView.Location = new System.Drawing.Point(33, y+55);
+            this.symbolView.Name = "symbolView";
+            this.symbolView.Size = new System.Drawing.Size(364, 183);
+            //this.symbolView.TabIndex = 0;
+            //symbolView.Visible = false;
+            //this.symbolView.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.symbolView_AfterSelect);
+
+            // 
+            // comboProjects
+            // 
+            this.comboProjects.ForeColor = System.Drawing.Color.Black;
+            this.comboProjects.FormattingEnabled = true;
+            this.comboProjects.Location = new System.Drawing.Point(413, y+270);
+            this.comboProjects.Name = "comboProjects";
+            this.comboProjects.Size = new System.Drawing.Size(337, 24);
+           
+            
+            //this.comboProjects.TabIndex = 11;
+            // 
+            // loadProjectBut
+            // 
+            this.loadProjectBut.Location = new System.Drawing.Point(625, y+300);
+            this.loadProjectBut.Name = "loadProjectBut";
+            this.loadProjectBut.Size = new System.Drawing.Size(125, 23);
+            //this.loadProjectBut.TabIndex = 12;
+            this.loadProjectBut.Text = "Load Project";
+            this.loadProjectBut.UseVisualStyleBackColor = true;
+            this.loadProjectBut.Click += new System.EventHandler(this.loadProjectBut_Click);
+            // 
+            // symbolTableView
+            // 
+            ((System.ComponentModel.ISupportInitialize)(this.symbolTableView)).BeginInit();
+            parent.SuspendLayout();
+            this.symbolTableView.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.symbolTableView.Location = new System.Drawing.Point(43, y+330);
+            this.symbolTableView.Name = "symbolTableView";
+            this.symbolTableView.RowTemplate.Height = 24;
+            this.symbolTableView.Size = new System.Drawing.Size(669, 170);
+            //this.symbolTableView.TabIndex = 0;
+            ((System.ComponentModel.ISupportInitialize)(this.symbolTableView)).EndInit();
+            parent.ResumeLayout(false);
+
+            current_controls = new List<Control>() { symbolView, symbolTableView, loadProjectBut, comboProjects };
+            foreach (var control in current_controls) parent.Controls.Add(control);
+            
+            InitNotInterfaceElements(solutionPath);
         }
 
     }
