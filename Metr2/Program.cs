@@ -74,6 +74,18 @@ using System.Collections.Generic;
 
 namespace MetrExamples
 {
+
+    partial class PartialClass {
+        partial void method();
+    }
+
+    partial class PartialClass
+    {
+        partial void method() {
+            classFromAnotherSyntaxTree.method();
+        }
+    }
+
     class PropertyClass {
 
         int d_field1;
@@ -367,20 +379,26 @@ namespace Metr
 
         static protected void BuildCompilationCacheMap(Solution solution, Compilation compilation)
         {
+            int ttt = Environment.TickCount;
             _cacheTypesHierarchy.Add(compilation, new Dictionary<ITypeSymbol, List<ITypeSymbol>>());
             _cacheMethodsCoupling.Add(compilation, new Dictionary<ISymbol, HashSet<ISymbol>>());
 
             //for every SyntaxTree was analysed in current compilation
             //for every "global-declared" namespace member was present in this compilation
+            var semanticModels = compilation.SyntaxTrees.Select(x => compilation.GetSemanticModel(x));
+
             foreach (var syntaxTree in compilation.SyntaxTrees)
+            {
                 foreach (var member in ((CompilationUnitSyntax)syntaxTree.GetRoot()).Members)
                 {
                     var ns = member as NamespaceDeclarationSyntax;
-                    dfs(solution, compilation, compilation.GlobalNamespace.GetMembers(ns.Name.ToString()).FirstOrDefault());
+                    dfs(solution, compilation, semanticModels, compilation.GlobalNamespace.GetMembers(ns.Name.ToString()).FirstOrDefault());
                 }
+            }
+            Console.WriteLine(Environment.TickCount - ttt);
         }
 
-        static private void dfs(Solution solution, Compilation compilation, INamespaceOrTypeSymbol v)
+        static private void dfs(Solution solution, Compilation compilation, IEnumerable<SemanticModel> models, INamespaceOrTypeSymbol v)
         {
             if (v == null) return;
             foreach (var cur in v.GetMembers())
@@ -399,45 +417,91 @@ namespace Metr
                             _cacheTypesHierarchy[compilation][toAsType.BaseType].Add(toAsType);
                         }
                     }
-                    dfs(solution, compilation, to);
+                    dfs(solution, compilation, models, to);
                 }
 
                 var asMeth = cur as IMethodSymbol;
-                var asPro = cur as IPropertySymbol;
-                var MethodList = new List<IMethodSymbol> { asMeth };
-                //we do not need analyse property, because its methods already is members to see
-                //if (asPro != null) MethodList = new List<IMethodSymbol> { asPro.GetMethod, asPro.SetMethod};
+                if (asMeth != null)
+                {
+                    if (asMeth.PartialImplementationPart != null)
+                        asMeth = asMeth.PartialImplementationPart; // if partial method => work with implementation
 
-                foreach (var meth in MethodList) {
-                    if (meth != null)
-                    {
-                        var too = SymbolFinder.FindCallersAsync(meth, solution);
-                        too.Wait();
-                        var CallingMethods = new List<IMethodSymbol>();
-                        foreach (var el in too.Result) {
-                            var method = el.CallingSymbol as IMethodSymbol;
-                            if (method != null) CallingMethods.Add(method);
-                            var property = el.CallingSymbol as IPropertySymbol;
-                            if (property != null)
+                    var declarings = asMeth.DeclaringSyntaxReferences;
+                    if (declarings != null && declarings.Length == 1)// it is a method, so it could not be implemented in two places.
+                        foreach (var invocationExpression in
+                                 declarings
+                                 .First()
+                                 .GetSyntax()
+                                 .DescendantNodes()
+                                 .OfType<InvocationExpressionSyntax>())
+                            foreach (var model in models)
                             {
-                                if (property.GetMethod != null) CallingMethods.Add(property.GetMethod);
-                                if (property.SetMethod != null) CallingMethods.Add(property.SetMethod);
-                            }
-                        }
-                   
-                        foreach (var el in CallingMethods)
-                        {
-                            if (el.ContainingType != meth.ContainingType)
-                            {
-                                if (!_cacheMethodsCoupling[compilation].ContainsKey(el))
-                                    _cacheMethodsCoupling[compilation].Add(el, new HashSet<ISymbol>());
+                                try
+                                {
+                                    //var t1 = invocationExpression.Parent;
+                                    //var t2 = invocationExpression.Parent.Parent;
+                                    //var t3 = invocationExpression.Parent.Parent.Parent;
+                                    //var t4 = invocationExpression.Parent.Parent.Parent.Parent;
 
-                                _cacheMethodsCoupling[compilation][el].Add(meth);
-                            }
-                        }
 
-                    }
+                                    SymbolInfo symbolInfo = model.GetSymbolInfo(invocationExpression);
+                                    var calledMethod = (IMethodSymbol)symbolInfo.Symbol;
+
+
+                                    if (!_cacheMethodsCoupling[compilation].ContainsKey(asMeth))
+                                        _cacheMethodsCoupling[compilation].Add(asMeth, new HashSet<ISymbol>());
+
+                                    _cacheMethodsCoupling[compilation][asMeth].Add(calledMethod);
+                                    
+                                    break;
+                                }
+                                catch
+                                { }
+                            }
+
+
                 }
+
+
+                //var asPro = cur as IPropertySymbol;
+                //var MethodList = new List<IMethodSymbol> { asMeth };
+                ////we do not need analyse property, because its methods already is members to see
+                ////if (asPro != null) MethodList = new List<IMethodSymbol> { asPro.GetMethod, asPro.SetMethod};
+
+                //foreach (var meth in MethodList)
+                //{
+                //    if (meth != null)
+                //    {
+                //        var too = SymbolFinder.FindCallersAsync(meth, solution);
+                //        too.Wait();
+                //        var CallingMethods = new List<IMethodSymbol>();
+                //        foreach (var el in too.Result)
+                //        {
+                //            var method = el.CallingSymbol as IMethodSymbol;
+                //            if (method != null) CallingMethods.Add(method);
+                //            var property = el.CallingSymbol as IPropertySymbol;
+                //            if (property != null)
+                //            {
+                //                if (property.GetMethod != null) CallingMethods.Add(property.GetMethod);
+                //                if (property.SetMethod != null) CallingMethods.Add(property.SetMethod);
+                //            }
+                //        }
+
+                //        foreach (var el in CallingMethods)
+                //        {
+                //            if (el.ContainingType != meth.ContainingType)
+                //            {
+                //                if (!_cacheMethodsCoupling[compilation].ContainsKey(el))
+                //                    _cacheMethodsCoupling[compilation].Add(el, new HashSet<ISymbol>());
+
+                //                _cacheMethodsCoupling[compilation][el].Add(meth);
+                //            }
+                //        }
+
+                //    }
+                // }
+
+                ///////////////////////////////////////////////////////////////
             }
         }
 
@@ -961,6 +1025,133 @@ namespace MetrLearn
 
 
 
+    [XmlRoot("Model")]
+    public class ModelParent
+    {
+        [XmlElement("ApproachName")]
+        public string ApproachName { get; set; }
+        public ModelParent(string name) { ApproachName = name; }
+        public ModelParent() { }
+    }
+
+    [XmlRoot("MyLeastSquaresModel")]
+    [XmlInclude(typeof(TrainedModelElement))]
+    public class LeastSquaresModel : ModelParent
+    {
+        [XmlArray("LeastSquaresModelList")]
+        [XmlArrayItem("LeastSquaresModelListItem")]
+        public List<TrainedModelElement> Items = new List<TrainedModelElement>();
+        public LeastSquaresModel(string name, IEnumerable<double> list) : base(name) {
+            Items = list.Select(x => new TrainedModelElement(x)).ToList();
+        }
+        public LeastSquaresModel(string name) : base(name) { }
+        public LeastSquaresModel() { }
+
+    }
+
+    [XmlInclude(typeof(TrainPoint))]
+    public class KNNModel : ModelParent
+    {
+        [XmlElement("MethodName")]
+        public int Distance { get; set; }
+
+        [XmlElement("kNeighbour")]
+        public int kNeighbour { get; set; }
+
+        [XmlArray("KNNModelList")]
+        [XmlArrayItem("KNNModelListItem")]
+        public List<TrainPoint> Points = new List<TrainPoint>();
+
+        public KNNModel(string name) : base(name) { }
+    }
+
+    class Ser {
+
+        public static void loadFromFile(string fileName, out ModelParent model) {
+            model = null;
+            {
+                XmlSerializer serializer = new XmlSerializer(typeof(LeastSquaresModel));
+                using (var fs = new FileStream(fileName, FileMode.Open))
+                {
+                    try
+                    {
+                        model = (LeastSquaresModel)serializer.Deserialize(fs);
+                    }
+                    catch
+                    {
+                        model = null;
+                    }
+                }
+            }
+
+            if (model != null) return;
+
+            {
+                XmlSerializer serializer = new XmlSerializer(typeof(ModelParent));
+                using (var fs = new FileStream(fileName, FileMode.Open))
+                {
+                    try
+                    {
+                        model = (ModelParent)serializer.Deserialize(fs);
+                    }
+                    catch
+                    {
+                        model = null;
+                    }
+                }
+            }
+
+        }
+
+        public static void saveToFile(string fileName, LeastSquaresModel model)
+        {
+            //
+            //Type[] types = { };
+            XmlSerializer serializer = new XmlSerializer(typeof(LeastSquaresModel));
+            using (var fs = new FileStream(fileName, FileMode.Create))
+            {
+                try
+                {
+                    serializer.Serialize(fs, model);
+                }
+                catch
+                { }
+            }
+        }
+
+        public static void saveToFile(string fileName, ModelParent model)
+        {
+            //typeof(TrainedModelElement), typeof(TrainPoint)
+            Type[] types = { };
+            XmlSerializer serializer = new XmlSerializer(typeof(ModelParent));
+            using (var fs = new FileStream(fileName, FileMode.Create))
+            {
+                try
+                {
+                    serializer.Serialize(fs, model);
+                }
+                catch
+                { }
+            }
+
+
+
+        }
+
+    }
+    class SerTest {
+        public static void Run() {
+            MetrLearn.Ser.saveToFile(@"C:\temp3\model.xml", new MetrLearn.ModelParent("VitModel"));//, new double[] { 2, 3, 1 }));
+
+            //MetrLearn.Ser.saveToFile(@"C:\temp3\model.xml", new MetrLearn.LeastSquaresModel("VitModel", new double[] { 2, 3, 1 }));
+            MetrLearn.ModelParent model;
+            MetrLearn.Ser.loadFromFile(@"C:\temp3\model.xml", out model);
+            var ttt = (MetrLearn.LeastSquaresModel)model;
+            int t = 1;
+        }
+    }
+
+
     public class Train
     {
         
@@ -1139,10 +1330,15 @@ N[NormalizeMaxMin[givenDataUnNorm],20][[2]]"
         static public void Run() {
             // Train.toTrainPoints(@"C:\temp2\Another-Metric.xml", "");
 
-            //Train.RunMathFunction();
-            Train.toTrainedModel("C:\\temp2\\Another-Metric - points.xml", "C:\\temp2\\test.xml",Train.ModelToTrainMethod.LeastSquaresMethod);
+            Train.RunMathFunction();
+
+            //Train.toTrainedModel("C:\\temp2\\Another-Metric - points.xml", "C:\\temp2\\test.xml",Train.ModelToTrainMethod.LeastSquaresMethod);
+
             //var ttt = new TrainPoint(new List<int> { 1, 2, 3, 4, 5 });
             //var myList = ttt.ToList();
+
+
+            
 
         }
     }
@@ -1157,10 +1353,13 @@ namespace MetrMain
         static void Main(string[] args)
         {
             //MetrTest.MetricCalculatorTest.Run();
+
             // MetrExpertXML.EstimationListTest.Run();
             //MetrMath.ModelTest.Run();
-            MetrLearn.TrainTest.Run();
+            // MetrLearn.TrainTest.Run();
 
+            MetrLearn.SerTest.Run();
+            
 
             //string solutionPath = @"C:\Users\Vitaliy\Documents\Visual Studio 2013\Projects\Metr2\Metr2.sln";
             //var workspace = MSBuildWorkspace.Create();
