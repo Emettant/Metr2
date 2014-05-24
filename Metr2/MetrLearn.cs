@@ -37,12 +37,20 @@ namespace MetrLearn {
                 //var coefs = new List<List<Int32>>();
                 var coefs = new TrainPointsList();
                 var ress = new List<Int32>();
+
+                int ttt = Environment.TickCount;
+
                 foreach (var v in votesList.Estimations)
                 {
+                    int tt = Environment.TickCount;
+
                     if (v.Solution != solutionPath || v.Project != projectToPick)
                         Metr.RoslynAPI.ProjectCompile((solutionPath = v.Solution), (projectToPick = v.Project), out solution, out compilation);
 
                     var curClass = compilation.GetTypeByMetadataName(v.FullName);
+                    int tt2 = Environment.TickCount - tt;
+
+
                     if (curClass != null)
                         coefs.AddPoint(
 
@@ -64,6 +72,9 @@ namespace MetrLearn {
 
 
                 }
+
+                int ttt2 = Environment.TickCount - ttt;
+
                 Type[] estimationTypes2 = { typeof(TrainPoint) };
                 XmlSerializer serializer2 = new XmlSerializer(typeof(TrainPointsList), estimationTypes2);
                 FileStream fs2 = new FileStream(targetFileName, FileMode.Create);

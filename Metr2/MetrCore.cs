@@ -61,7 +61,8 @@ namespace Metr
                     dfs(solution, compilation, compilation.GlobalNamespace.GetMembers(ns.Name.ToString()).FirstOrDefault());
                 }
             }
-            Console.WriteLine(Environment.TickCount - ttt);
+            int ttt2 = Environment.TickCount - ttt;
+            
         }
 
         static private void dfs(Solution solution, Compilation compilation,  INamespaceOrTypeSymbol v)
@@ -138,6 +139,7 @@ namespace Metr
                 {
                     if (meth != null)
                     {
+                        //TODO : make it to parallel processes
                         var too = SymbolFinder.FindCallersAsync(meth, solution);
                         too.Wait();
                         var CallingMethods = new List<IMethodSymbol>();
