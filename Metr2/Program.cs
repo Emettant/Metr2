@@ -79,13 +79,13 @@ namespace MetrMain
     {
         static void Main(string[] args)
         {
-            //MetrTest.MetricCalculatorTest.Run();
+            MetrTest.MetricCalculatorTest.Run();
 
             // MetrExpertXML.EstimationListTest.Run();
             //MetrMath.ModelTest.Run();
             // MetrLearn.TrainTest.Run();
 
-            MetrLearn.GoodSerializerTest.Run();
+            //MetrLearn.GoodSerializerTest.Run();
             
 
             //string solutionPath = @"C:\Users\Vitaliy\Documents\Visual Studio 2013\Projects\Metr2\Metr2.sln";

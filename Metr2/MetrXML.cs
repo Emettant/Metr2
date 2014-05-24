@@ -96,6 +96,7 @@ namespace MetrLearn
     using System.Xml.Serialization;
     using System.IO;
     using MetrXML;
+    using System.Reflection;
 
     [XmlType("TrainPoint")]
     public class TrainPoint
@@ -118,15 +119,29 @@ namespace MetrLearn
         [XmlAttribute("ClassName")]
         public string className { get; set; }
 
-        public TrainPoint() { }
+        public List<PropertyInfo> properties_metrics_list { get; private set; }
+
+        private void InitComponents() {
+            properties_metrics_list = this.GetType().GetProperties().Where(x => x.Name != "className").ToList();
+        }
+        public TrainPoint() {
+            InitComponents();
+        }
         public TrainPoint(List<int> list, string _className)
         {
-            RS = list[0];
-            DIT = list[1];
-            NOC = list[2];
-            CBO = list[3];
+            InitComponents();
+            int k = 0;
+            foreach (var pro in this.GetType().GetProperties())
+            {
+                pro.SetValue(this, list[k++]);
+            }
+            //RS = list[0];
+            //DIT = list[1];
+            //NOC = list[2];
+            //CBO = list[3];
+            
+            //Answer = list.Last();
 
-            Answer = list.Last();
             className = _className;
         }
 
@@ -137,8 +152,7 @@ namespace MetrLearn
             {
                 if (_cached_list == null)
                 {
-                    var classType = this.GetType();
-                    var propertiesInfos = classType.GetProperties().Where(x => x.Name != "className");
+                    var propertiesInfos = properties_metrics_list;
                     _cached_list = propertiesInfos.Select(x => (Int32)x.GetValue(this)).ToList();
                 }
                 return _cached_list;

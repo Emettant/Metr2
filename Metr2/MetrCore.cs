@@ -4,7 +4,7 @@ using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.MSBuild;
-
+using Microsoft.CodeAnalysis.FindSymbols;
 using System.Collections.Generic;
 
 
@@ -13,15 +13,18 @@ namespace Metr
 {
     class MetricCalculatorCore
     {
-        static private Dictionary<Compilation, Dictionary<ITypeSymbol, List<ITypeSymbol>>> _cacheTypesHierarchyField;
-        static protected Dictionary<Compilation, Dictionary<ITypeSymbol, List<ITypeSymbol>>> _cacheTypesHierarchy
+
+
+        static private Dictionary<Compilation, Dictionary<ITypeSymbol, HashSet<ITypeSymbol>>> _cacheTypesHierarchyField;
+        static protected Dictionary<Compilation, Dictionary<ITypeSymbol, HashSet<ITypeSymbol>>> _cacheTypesHierarchy
         {
             get
             {
-                if (_cacheTypesHierarchyField == null) _cacheTypesHierarchyField = new Dictionary<Compilation, Dictionary<ITypeSymbol, List<ITypeSymbol>>>();
+                if (_cacheTypesHierarchyField == null) _cacheTypesHierarchyField = new Dictionary<Compilation, Dictionary<ITypeSymbol, HashSet<ITypeSymbol>>>();
                 return _cacheTypesHierarchyField;
             }
         }
+
         /// <summary>
         /// d.op() { b.meth(); } // calling method
         /// b.op() { } // called method
@@ -42,25 +45,26 @@ namespace Metr
         static protected void BuildCompilationCacheMap(Solution solution, Compilation compilation)
         {
             int ttt = Environment.TickCount;
-            _cacheTypesHierarchy.Add(compilation, new Dictionary<ITypeSymbol, List<ITypeSymbol>>());
+            _cacheTypesHierarchy.Add(compilation, new Dictionary<ITypeSymbol, HashSet<ITypeSymbol>>());
             _cacheMethodsCoupling.Add(compilation, new Dictionary<ISymbol, HashSet<ISymbol>>());
 
             //for every SyntaxTree was analysed in current compilation
             //for every "global-declared" namespace member was present in this compilation
-            var semanticModels = compilation.SyntaxTrees.Select(x => compilation.GetSemanticModel(x));
 
+            //var semanticModels = compilation.SyntaxTrees.Select(x => compilation.GetSemanticModel(x));
+            
             foreach (var syntaxTree in compilation.SyntaxTrees)
             {
                 foreach (var member in ((CompilationUnitSyntax)syntaxTree.GetRoot()).Members)
                 {
                     var ns = member as NamespaceDeclarationSyntax;
-                    dfs(solution, compilation, semanticModels, compilation.GlobalNamespace.GetMembers(ns.Name.ToString()).FirstOrDefault());
+                    dfs(solution, compilation, compilation.GlobalNamespace.GetMembers(ns.Name.ToString()).FirstOrDefault());
                 }
             }
             Console.WriteLine(Environment.TickCount - ttt);
         }
 
-        static private void dfs(Solution solution, Compilation compilation, IEnumerable<SemanticModel> models, INamespaceOrTypeSymbol v)
+        static private void dfs(Solution solution, Compilation compilation,  INamespaceOrTypeSymbol v)
         {
             if (v == null) return;
             foreach (var cur in v.GetMembers())
@@ -74,94 +78,94 @@ namespace Metr
                         if (toAsType.BaseType != null)
                         {
                             if (!_cacheTypesHierarchy[compilation].ContainsKey(toAsType.BaseType))
-                                _cacheTypesHierarchy[compilation].Add(toAsType.BaseType, new List<ITypeSymbol>());
+                                _cacheTypesHierarchy[compilation].Add(toAsType.BaseType, new HashSet<ITypeSymbol>());
 
                             _cacheTypesHierarchy[compilation][toAsType.BaseType].Add(toAsType);
                         }
                     }
-                    dfs(solution, compilation, models, to);
+                    dfs(solution, compilation,  to);
                 }
 
                 var asMeth = cur as IMethodSymbol;
-                if (asMeth != null)
-                {
-                    if (asMeth.PartialImplementationPart != null)
-                        asMeth = asMeth.PartialImplementationPart; // if partial method => work with implementation
-
-                    var declarings = asMeth.DeclaringSyntaxReferences;
-                    if (declarings != null && declarings.Length == 1)// it is a method, so it could not be implemented in two places.
-                        foreach (var invocationExpression in
-                                 declarings
-                                 .First()
-                                 .GetSyntax()
-                                 .DescendantNodes()
-                                 .OfType<InvocationExpressionSyntax>())
-                            foreach (var model in models)
-                            {
-                                try
-                                {
-                                    //var t1 = invocationExpression.Parent;
-                                    //var t2 = invocationExpression.Parent.Parent;
-                                    //var t3 = invocationExpression.Parent.Parent.Parent;
-                                    //var t4 = invocationExpression.Parent.Parent.Parent.Parent;
-
-
-                                    SymbolInfo symbolInfo = model.GetSymbolInfo(invocationExpression);
-                                    var calledMethod = (IMethodSymbol)symbolInfo.Symbol;
-
-
-                                    if (!_cacheMethodsCoupling[compilation].ContainsKey(asMeth))
-                                        _cacheMethodsCoupling[compilation].Add(asMeth, new HashSet<ISymbol>());
-
-                                    _cacheMethodsCoupling[compilation][asMeth].Add(calledMethod);
-
-                                    break;
-                                }
-                                catch
-                                { }
-                            }
-
-
-                }
-
-
-                //var asPro = cur as IPropertySymbol;
-                //var MethodList = new List<IMethodSymbol> { asMeth };
-                ////we do not need analyse property, because its methods already is members to see
-                ////if (asPro != null) MethodList = new List<IMethodSymbol> { asPro.GetMethod, asPro.SetMethod};
-
-                //foreach (var meth in MethodList)
+                //if (asMeth != null)
                 //{
-                //    if (meth != null)
-                //    {
-                //        var too = SymbolFinder.FindCallersAsync(meth, solution);
-                //        too.Wait();
-                //        var CallingMethods = new List<IMethodSymbol>();
-                //        foreach (var el in too.Result)
-                //        {
-                //            var method = el.CallingSymbol as IMethodSymbol;
-                //            if (method != null) CallingMethods.Add(method);
-                //            var property = el.CallingSymbol as IPropertySymbol;
-                //            if (property != null)
+                //    if (asMeth.PartialImplementationPart != null)
+                //        asMeth = asMeth.PartialImplementationPart; // if partial method => work with implementation
+
+                //    var declarings = asMeth.DeclaringSyntaxReferences;
+                //    if (declarings != null && declarings.Length == 1)// it is a method, so it could not be implemented in two places.
+                //        foreach (var invocationExpression in
+                //                 declarings
+                //                 .First()
+                //                 .GetSyntax()
+                //                 .DescendantNodes()
+                //                 .OfType<InvocationExpressionSyntax>())
+                //            foreach (var model in models)
                 //            {
-                //                if (property.GetMethod != null) CallingMethods.Add(property.GetMethod);
-                //                if (property.SetMethod != null) CallingMethods.Add(property.SetMethod);
+                //                try
+                //                {
+                //                    //var t1 = invocationExpression.Parent;
+                //                    //var t2 = invocationExpression.Parent.Parent;
+                //                    //var t3 = invocationExpression.Parent.Parent.Parent;
+                //                    //var t4 = invocationExpression.Parent.Parent.Parent.Parent;
+
+
+                //                    SymbolInfo symbolInfo = model.GetSymbolInfo(invocationExpression);
+                //                    var calledMethod = (IMethodSymbol)symbolInfo.Symbol;
+
+
+                //                    if (!_cacheMethodsCoupling[compilation].ContainsKey(asMeth))
+                //                        _cacheMethodsCoupling[compilation].Add(asMeth, new HashSet<ISymbol>());
+
+                //                    _cacheMethodsCoupling[compilation][asMeth].Add(calledMethod);
+
+                //                    break;
+                //                }
+                //                catch
+                //                { }
                 //            }
-                //        }
 
-                //        foreach (var el in CallingMethods)
-                //        {
-                //            if (el.ContainingType != meth.ContainingType)
-                //            {
-                //                if (!_cacheMethodsCoupling[compilation].ContainsKey(el))
-                //                    _cacheMethodsCoupling[compilation].Add(el, new HashSet<ISymbol>());
 
-                //                _cacheMethodsCoupling[compilation][el].Add(meth);
-                //            }
-                //        }
+                //}
 
-                //    }
-                // }
+
+                var asPro = cur as IPropertySymbol;
+                var MethodList = new List<IMethodSymbol> { asMeth };
+                //we do not need analyse property, because its methods already is members to see
+                //if (asPro != null) MethodList = new List<IMethodSymbol> { asPro.GetMethod, asPro.SetMethod};
+
+                foreach (var meth in MethodList)
+                {
+                    if (meth != null)
+                    {
+                        var too = SymbolFinder.FindCallersAsync(meth, solution);
+                        too.Wait();
+                        var CallingMethods = new List<IMethodSymbol>();
+                        foreach (var el in too.Result)
+                        {
+                            var method = el.CallingSymbol as IMethodSymbol;
+                            if (method != null) CallingMethods.Add(method);
+                            var property = el.CallingSymbol as IPropertySymbol;
+                            if (property != null)
+                            {
+                                if (property.GetMethod != null) CallingMethods.Add(property.GetMethod);
+                                if (property.SetMethod != null) CallingMethods.Add(property.SetMethod);
+                            }
+                        }
+
+                        foreach (var el in CallingMethods)
+                        {
+                            if (el.ContainingType != meth.ContainingType)
+                            {
+                                if (!_cacheMethodsCoupling[compilation].ContainsKey(el))
+                                    _cacheMethodsCoupling[compilation].Add(el, new HashSet<ISymbol>());
+
+                                _cacheMethodsCoupling[compilation][el].Add(meth);
+                            }
+                        }
+
+                    }
+                }
 
                 ///////////////////////////////////////////////////////////////
             }
@@ -254,7 +258,7 @@ namespace Metr
         static public Int32 CBO(Solution solution, Compilation compilation, String className)
         {
             ITypeSymbol cur = compilation.GetTypeByMetadataName(className);
-            return NOC(solution, compilation, cur);
+            return CBO(solution, compilation, cur);
         }
 
         static public Int32 RFC(Solution solution, Compilation compilation, String className)
