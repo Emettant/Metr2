@@ -84,7 +84,14 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="MetrCore.cs" />
+    <Compile Include="MetrExample.cs" />
     <Compile Include="classFromAnotherSyntaxTree.cs" />
+    <Compile Include="MetrInterface.cs" />
+    <Compile Include="MetrLearn.cs" />
+    <Compile Include="MetrMath.cs" />
+    <Compile Include="MetrTest.cs" />
+    <Compile Include="MetrXML.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

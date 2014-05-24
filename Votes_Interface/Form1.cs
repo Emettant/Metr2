@@ -10,7 +10,7 @@ using System.Windows.Forms;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using System.IO;
-using MetrExpertXML;
+using MetrXML;
 using System.Xml.Serialization;
 using MetrInterface.Tools;
 
