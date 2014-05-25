@@ -389,9 +389,10 @@ namespace MetrLearn
         public static Type loadFromFile(string fileName, out TMySerializable model)
         {
             model = TMySerializable.DeserializeFrom(fileName,typeof(ModelParent));
-            if (model != null) return typeof(ModelParent);
+            if (model != null && ((ModelParent)model).ApproachName == MetrLearn.Train.ModelMethod.ModelParent.ToString()) return typeof(ModelParent);
+
             model = TMySerializable.DeserializeFrom(fileName, typeof(LeastSquaresModel));
-            if (model != null) return typeof(LeastSquaresModel);
+            if (model != null && ((LeastSquaresModel)model).ApproachName == MetrLearn.Train.ModelMethod.LeastSquaresMethod.ToString()) return typeof(LeastSquaresModel);
             return null;
         }
 
@@ -405,7 +406,7 @@ namespace MetrLearn
     {
         public static void Run()
         {
-            MetrLearn.GoodSerializer.saveToFile(@"C:\temp3\model.xml", new MetrLearn.ModelParent("VitModel"));//, new double[] { 2, 3, 1 }));
+            MetrLearn.GoodSerializer.saveToFile(@"C:\temp3\model.xml", new MetrLearn.ModelParent(Train.ModelMethod.ModelParent.ToString()));//, new double[] { 2, 3, 1 }));
 
             //MetrLearn.GoodSerializer.saveToFile(@"C:\temp3\model.xml", new MetrLearn.LeastSquaresModel("VitModel", new double[] { 2, 3, 1 }));
             TMySerializable model;

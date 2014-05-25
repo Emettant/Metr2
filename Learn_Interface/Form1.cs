@@ -19,7 +19,7 @@ namespace Learn_Interface
             InitializeComponent();
             fillMetricsAndPointsBoxTogether(@"C:\temp2\Metr2.xml");
             clearModelPart();
-            foreach (var el in Enum.GetValues(typeof(MetrLearn.Train.ModelToTrainMethod))) {
+            foreach (var el in Enum.GetValues(typeof(MetrLearn.Train.ModelMethod))) {
                 methodComboBox.Items.Add(el.ToString());
                  }
             methodComboBox.SelectedIndex = 0;
@@ -99,7 +99,7 @@ namespace Learn_Interface
         private void buildModel_Click(object sender, EventArgs e)
         {
             modelFileStatus.Text = inProgressStatus;
-            MetrLearn.Train.toTrainedModel(trainPointsBox.Text, modelFileBox.Text, (MetrLearn.Train.ModelToTrainMethod)methodComboBox.SelectedIndex);
+            MetrLearn.Train.toTrainedModel(trainPointsBox.Text, modelFileBox.Text, (MetrLearn.Train.ModelMethod)methodComboBox.SelectedIndex);
             modelFileStatus.Text = isDoneStatus;
         }
 

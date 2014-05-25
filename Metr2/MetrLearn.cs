@@ -15,7 +15,16 @@ namespace MetrLearn {
     using MetrXML;
     public class Train
     {
-        //TODO: Serialization/Deserialization have move to MetrXML
+        public enum ModelMethod
+        {
+            ModelParent = 0,
+            LeastSquaresMethod,
+            KNN_Method
+
+        };
+
+
+        //TODO: Serialization/Deserialization from toTrainPoints have to move to MetrXML
 
         /// <summary>
         /// 
@@ -89,7 +98,7 @@ namespace MetrLearn {
             }
         }
 
-        static public void toTrainedModel(string sourceFileName, string targetFileName, ModelToTrainMethod method)
+        static public void toTrainedModel(string sourceFileName, string targetFileName, ModelMethod method)
         {
 
             Type[] Types1 = { typeof(TrainPoint) };
@@ -162,15 +171,10 @@ namespace MetrLearn {
             else return (int)Math.Round(MetrMath.Model.Apply(point.getRequest(), model.ToList()));
         }
 
-        public enum ModelToTrainMethod
+       
+        static public TrainedModel getTrainedModel(TrainPointsList trainPoints, ModelMethod method)
         {
-            LeastSquaresMethod = 0,
-            KNN_Method
-        };
-
-        static public TrainedModel getTrainedModel(TrainPointsList trainPoints, ModelToTrainMethod method)
-        {
-            if (method == ModelToTrainMethod.LeastSquaresMethod)
+            if (method == ModelMethod.LeastSquaresMethod)
             {
                 var ReAn = trainPoints.Points.Select(x => x.ToList());
                 var Request = ReAn.Select(x => x.GetRange(0, x.Count - 1)).ToList();
