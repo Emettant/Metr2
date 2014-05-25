@@ -299,8 +299,18 @@ namespace MetrLearn
     {
         [XmlElement("ApproachName")]
         public string ApproachName { get; set; }
-        public ModelParent(string name) { ApproachName = name; }
-        public ModelParent() { }
+        private ModelParent(string name) { ApproachName = name; }
+        public ModelParent() { ApproachName = this.GetType().ToString(); }
+
+        static private List<Type> _childs_and_self_list;
+        static public List<Type> ApproachList
+        {
+            get {
+                if (_childs_and_self_list == null)
+                    _childs_and_self_list = new List<Type> { typeof(ModelParent), typeof(LeastSquaresModel)};
+                return _childs_and_self_list;
+            }
+        }
 
         override public void SerializeTo(string fileName)
         {
@@ -311,11 +321,15 @@ namespace MetrLearn
             {
                 try
                 {
+                    
                     serializer.Serialize(fs, this);
                 }
                 catch
                 { }
             }
+        }
+        static public ModelParent getModel(TrainPointsList list) {
+            throw new NotImplementedException();
         }
 
     }
@@ -327,11 +341,10 @@ namespace MetrLearn
         [XmlArray("LeastSquaresModelList")]
         [XmlArrayItem("LeastSquaresModelListItem")]
         public List<TrainedModelElement> Items = new List<TrainedModelElement>();
-        public LeastSquaresModel(string name, IEnumerable<double> list) : base(name)
+        public LeastSquaresModel(IEnumerable<double> list) : base()
         {
             Items = list.Select(x => new TrainedModelElement(x)).ToList();
         }
-        public LeastSquaresModel(string name) : base(name) { }
         public LeastSquaresModel() { }
         //public static new LeastSquaresModel DeserializeFrom(string fileName)
         //{
@@ -365,6 +378,17 @@ namespace MetrLearn
                 { }
             }
         }
+        static public new LeastSquaresModel getModel(TrainPointsList trainPoints)
+        {
+            {
+                var ReAn = trainPoints.Points.Select(x => x.ToList());
+                var Request = ReAn.Select(x => x.GetRange(0, x.Count - 1)).ToList();
+                var Answer = ReAn.Select(x => x.Last()).ToList();
+
+                MetrMath.Model.Build(Request, Answer);
+                return new LeastSquaresModel(MetrMath.Model.model);
+            }
+        }
     }
 
     [XmlInclude(typeof(TrainPoint))]
@@ -380,7 +404,7 @@ namespace MetrLearn
         [XmlArrayItem("KNNModelListItem")]
         public List<TrainPoint> Points = new List<TrainPoint>();
 
-        public KNNModel(string name) : base(name) { }
+        public KNNModel() : base() { }
     }
 
     class GoodSerializer
@@ -389,10 +413,10 @@ namespace MetrLearn
         public static Type loadFromFile(string fileName, out TMySerializable model)
         {
             model = TMySerializable.DeserializeFrom(fileName,typeof(ModelParent));
-            if (model != null && ((ModelParent)model).ApproachName == MetrLearn.Train.ModelMethod.ModelParent.ToString()) return typeof(ModelParent);
+            if (model != null && ((ModelParent)model).ApproachName == typeof(ModelParent).ToString()) return typeof(ModelParent);
 
             model = TMySerializable.DeserializeFrom(fileName, typeof(LeastSquaresModel));
-            if (model != null && ((LeastSquaresModel)model).ApproachName == MetrLearn.Train.ModelMethod.LeastSquaresMethod.ToString()) return typeof(LeastSquaresModel);
+            if (model != null && ((ModelParent)model).ApproachName == typeof(LeastSquaresModel).ToString()) return typeof(LeastSquaresModel);
             return null;
         }
 
@@ -406,9 +430,9 @@ namespace MetrLearn
     {
         public static void Run()
         {
-            MetrLearn.GoodSerializer.saveToFile(@"C:\temp3\model.xml", new MetrLearn.ModelParent(Train.ModelMethod.ModelParent.ToString()));//, new double[] { 2, 3, 1 }));
+            //MetrLearn.GoodSerializer.saveToFile(@"C:\temp3\model.xml", new MetrLearn.ModelParent());//, new double[] { 2, 3, 1 }));
 
-            //MetrLearn.GoodSerializer.saveToFile(@"C:\temp3\model.xml", new MetrLearn.LeastSquaresModel("VitModel", new double[] { 2, 3, 1 }));
+            MetrLearn.GoodSerializer.saveToFile(@"C:\temp3\model.xml", new MetrLearn.LeastSquaresModel( new double[] { 2, 3, 1 }));
             TMySerializable model;
             Console.WriteLine(MetrLearn.GoodSerializer.loadFromFile(@"C:\temp3\model.xml", out model).ToString());
             int t = 1;

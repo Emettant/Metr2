@@ -19,10 +19,8 @@ namespace Learn_Interface
             InitializeComponent();
             fillMetricsAndPointsBoxTogether(@"C:\temp2\Metr2.xml");
             clearModelPart();
-            foreach (var el in Enum.GetValues(typeof(MetrLearn.Train.ModelMethod))) {
-                methodComboBox.Items.Add(el.ToString());
-                 }
-            methodComboBox.SelectedIndex = 0;
+            InitCombobox();
+
         }
 
         static string pointsFileEnding = " - points.xml";
@@ -34,6 +32,19 @@ namespace Learn_Interface
         static string inProgressStatus = status + "In progress...";
         static string isDoneStatus = status + "Done :) ";
         static string ToBuildModelAdvise = " You can build a model";
+
+        void InitCombobox()
+        {
+
+            //foreach (var el in Enum.GetValues(typeof(MetrLearn.Train.ModelMethod)))
+            //{
+            //    methodComboBox.Items.Add(el.ToString());
+            //}
+            foreach (var el in MetrLearn.ModelParent.ApproachList.Select(x => x.ToString()))
+                methodComboBox.Items.Add(el);
+
+            methodComboBox.SelectedIndex = 0;
+        }
 
         private void fillMetricsAndPointsBoxTogether(string name) {
             metricsBox.Text = name;
@@ -99,7 +110,7 @@ namespace Learn_Interface
         private void buildModel_Click(object sender, EventArgs e)
         {
             modelFileStatus.Text = inProgressStatus;
-            MetrLearn.Train.toTrainedModel(trainPointsBox.Text, modelFileBox.Text, (MetrLearn.Train.ModelMethod)methodComboBox.SelectedIndex);
+            MetrLearn.Train.toTrainedModel(trainPointsBox.Text, modelFileBox.Text, MetrLearn.ModelParent.ApproachList[methodComboBox.SelectedIndex]);
             modelFileStatus.Text = isDoneStatus;
         }
 

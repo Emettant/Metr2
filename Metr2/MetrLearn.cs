@@ -15,13 +15,7 @@ namespace MetrLearn {
     using MetrXML;
     public class Train
     {
-        public enum ModelMethod
-        {
-            ModelParent = 0,
-            LeastSquaresMethod,
-            KNN_Method
-
-        };
+       
 
 
         //TODO: Serialization/Deserialization from toTrainPoints have to move to MetrXML
@@ -98,7 +92,7 @@ namespace MetrLearn {
             }
         }
 
-        static public void toTrainedModel(string sourceFileName, string targetFileName, ModelMethod method)
+        static public void toTrainedModel(string sourceFileName, string targetFileName, Type method)
         {
 
             Type[] Types1 = { typeof(TrainPoint) };
@@ -110,21 +104,23 @@ namespace MetrLearn {
                 trainPoints = (TrainPointsList)serializer1.Deserialize(fs);
             }
 
-
+            
             var model = getTrainedModel(trainPoints, method);
 
-            Type[] Types2 = { typeof(TrainedModelElement) };
-            XmlSerializer serializer2 = new XmlSerializer(typeof(TrainedModel), Types2);
-            using (var fs = new FileStream(targetFileName, FileMode.Create))
-            {
-                try
-                {
-                    serializer2.Serialize(fs, model);
-                }
-                catch
-                { }
-            }
-            model = null;
+            GoodSerializer.saveToFile(targetFileName, model);
+
+            //Type[] Types2 = { typeof(TrainedModelElement) };
+            //XmlSerializer serializer2 = new XmlSerializer(typeof(TrainedModel), Types2);
+            //using (var fs = new FileStream(targetFileName, FileMode.Create))
+            //{
+            //    try
+            //    {
+            //        serializer2.Serialize(fs, model);
+            //    }
+            //    catch
+            //    { }
+            //}
+            //model = null;
 
 
 
@@ -171,20 +167,17 @@ namespace MetrLearn {
             else return (int)Math.Round(MetrMath.Model.Apply(point.getRequest(), model.ToList()));
         }
 
-       
-        static public TrainedModel getTrainedModel(TrainPointsList trainPoints, ModelMethod method)
+
+
+        static public ModelParent getTrainedModel(TrainPointsList trainPoints, Type method)
         {
-            if (method == ModelMethod.LeastSquaresMethod)
-            {
-                var ReAn = trainPoints.Points.Select(x => x.ToList());
-                var Request = ReAn.Select(x => x.GetRange(0, x.Count - 1)).ToList();
-                var Answer = ReAn.Select(x => x.Last()).ToList();
+            if (method == typeof(ModelParent))
+                return ModelParent.getModel(trainPoints);
 
-                MetrMath.Model.Build(Request, Answer);
-                return new TrainedModel(MetrMath.Model.model, method.ToString());
-
-            }
-            else return null;
+            if (method == typeof(LeastSquaresModel))
+                return LeastSquaresModel.getModel(trainPoints);
+           
+           return null;
         }
 
 
