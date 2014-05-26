@@ -43,7 +43,7 @@ namespace Learn_Interface
             foreach (var el in MetrLearn.ModelParent.ApproachList.Select(x => x.ToString()))
                 methodComboBox.Items.Add(el);
 
-            methodComboBox.SelectedIndex = 0;
+            methodComboBox.SelectedIndex = 1;
         }
 
         private void fillMetricsAndPointsBoxTogether(string name) {

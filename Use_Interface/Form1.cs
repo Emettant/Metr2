@@ -15,25 +15,74 @@ namespace Use_Interface
     {
 
         MetrInterface.OpenFileGroup openFileGroup, openFileGroup2;
+        MetrInterface.OpenSaveFileGroup openSaveFileGroup0, openSaveFileGroup1, openSaveFileGroup2;
         MetrInterface.CompilationViewGroup compilationViewGroup;
+
         string solutionFile { get { return openFileGroup2.FileName; } }
         string modelFile { get { return openFileGroup.FileName; } }
         public UseForm()
         {
-            compilationViewGroup = new MetrInterface.CompilationViewGroup(this, 90, "");
-            openFileGroup = new MetrInterface.OpenFileGroup(this, 0, @"C:\temp2\Another-Metric - model.xml", "Browse and Load", "Model file", "xml", 
-                new Action<MetrInterface.OpenFileGroup>((MetrInterface.OpenFileGroup op) => {
+            compilationViewGroup = new MetrInterface.CompilationViewGroup(this, 950, 250, 90, "");
+            openFileGroup = new MetrInterface.OpenFileGroup(this, 0, @"C:\temp2\Another-Metric - model.xml",
+                "Load", "Model file", "xml",
+                new Action<MetrInterface.OpenFileGroup>((MetrInterface.OpenFileGroup op) =>
+            {
                 compilationViewGroup.InitModel(op.FileName);
             }));
-            openFileGroup2 = new MetrInterface.OpenFileGroup(this, 60, @"C:\Users\Vitaliy\Documents\Visual Studio 2013\Projects\Metr2\Metr2.sln", "Browse and Load", "Solution file", "sln",
-                new Action<MetrInterface.OpenFileGroup>((MetrInterface.OpenFileGroup op) => {
-                    compilationViewGroup.InitSolution(op.FileName);
+            openFileGroup2 = new MetrInterface.OpenFileGroup(this, 60, @"C:\Users\Vitaliy\Documents\Visual Studio 2013\Projects\Metr2\Metr2.sln", "Load", "Solution file", "sln",
+                new Action<MetrInterface.OpenFileGroup>((MetrInterface.OpenFileGroup op) =>
+            {
+                compilationViewGroup.InitSolution(op.FileName);
             }));
-            
+
+
+
+            //saveOpenFileGroup...
+            openSaveFileGroup0 = 
+            new MetrInterface.OpenSaveFileGroup(this, 480, @"C:\temp2\ForSavingMetr.xml", "Load", "Saved1 file", "xml",
+                new Action<MetrInterface.OpenFileGroup>((MetrInterface.OpenFileGroup op) =>
+            {
+                compilationViewGroup.InitSavedModel(op.FileName, 0);
+            }),
+            "Save",
+            new Action<MetrInterface.OpenSaveFileGroup>((MetrInterface.OpenSaveFileGroup op) =>
+            {
+                compilationViewGroup.saveGeneratedMetricToFile(op.FileName);
+            })
+            );
+
+
+            openSaveFileGroup1 =
+            new MetrInterface.OpenSaveFileGroup(this, 550, @"C:\temp2\ForSavingMetr.xml", "Load", "Saved2 file", "xml",
+                new Action<MetrInterface.OpenFileGroup>((MetrInterface.OpenFileGroup op) =>
+            {
+                compilationViewGroup.InitSavedModel(op.FileName, 1);
+            }),
+            "Save",
+            new Action<MetrInterface.OpenSaveFileGroup>((MetrInterface.OpenSaveFileGroup op) =>
+            {
+                compilationViewGroup.saveGeneratedMetricToFile(op.FileName);
+            })
+            );
+
+
+
+            openSaveFileGroup2 =
+            new MetrInterface.OpenSaveFileGroup(this, 620, @"C:\temp2\ForSavingMetr.xml", "Load", "Saved3 file", "xml",
+              new Action<MetrInterface.OpenFileGroup>((MetrInterface.OpenFileGroup op) =>
+            {
+                compilationViewGroup.InitSavedModel(op.FileName, 2);
+            }),
+          "Save",
+          new Action<MetrInterface.OpenSaveFileGroup>((MetrInterface.OpenSaveFileGroup op) =>
+            {
+                compilationViewGroup.saveGeneratedMetricToFile(op.FileName);
+            })
+          );
             InitializeComponent();
-            
+
         }
 
-      
+
     }
 }

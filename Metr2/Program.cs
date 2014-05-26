@@ -85,7 +85,7 @@ namespace MetrMain
             //MetrMath.ModelTest.Run();
             // MetrLearn.TrainTest.Run();
 
-            MetrLearn.GoodSerializerTest.Run();
+            MetrXML.GoodSerializerTest.Run();
             
 
             //string solutionPath = @"C:\Users\Vitaliy\Documents\Visual Studio 2013\Projects\Metr2\Metr2.sln";

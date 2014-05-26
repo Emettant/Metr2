@@ -126,37 +126,38 @@ namespace MetrLearn {
 
         }
 
-        static Dictionary<string, TrainedModel> _cached_model;
-        static Dictionary<string, TrainedModel> cached_model
+        static Dictionary<string, ModelParent> _cached_model;
+        static Dictionary<string, ModelParent> cached_model
         {
             get
             {
                 if (_cached_model == null)
                 {
-                    _cached_model = new Dictionary<string, TrainedModel>();
+                    _cached_model = new Dictionary<string, ModelParent>();
                 }
                 return _cached_model;
             }
         }
         static public int getAnswerForClassByModel(string sourceFile, string solutionPath, string projectToPick, string className)
         {
-            TrainedModel model = null;
+            ModelParent model = null;
             if (cached_model.Keys.Contains(sourceFile))
                 model = cached_model[sourceFile];
             else
             {
 
-                Type[] Types2 = { typeof(TrainedModelElement) };
-                XmlSerializer serializer2 = new XmlSerializer(typeof(TrainedModel), Types2);
-                using (var fs = new FileStream(sourceFile, FileMode.Open))
-                {
-                    try
-                    {
-                        model = (TrainedModel)serializer2.Deserialize(fs);
-                    }
-                    catch
-                    { }
-                }
+                //Type[] Types2 = { typeof(TrainedModelElement) };
+                //XmlSerializer serializer2 = new XmlSerializer(typeof(TrainedModel), Types2);
+                //using (var fs = new FileStream(sourceFile, FileMode.Open))
+                //{
+                //    try
+                //    {
+                //        model = (TrainedModel)serializer2.Deserialize(fs);
+                //    }
+                //    catch
+                //    { }
+                //}
+                GoodSerializer.loadFromFile(sourceFile, out model);
 
                 cached_model[sourceFile] = model;
             }
@@ -164,7 +165,7 @@ namespace MetrLearn {
             Compilation compilation = Metr.RoslynAPI.GetCompilation(solutionPath, projectToPick);
             var point = TrainPoint.getClassRequestAnswerPoint(Metr.RoslynAPI.GetSolution(solutionPath), compilation, className);
             if (point == null) return -1;// if (className is namespace name)
-            else return (int)Math.Round(MetrMath.Model.Apply(point.getRequest(), model.ToList()));
+            else return (int)Math.Round(model.Apply(point));
         }
 
 

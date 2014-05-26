@@ -48,9 +48,10 @@ namespace Votes_Interface
 
             });
 
-            FileStream fs = new FileStream(votesFileBox.Text, FileMode.Create);
-            serializer.Serialize(fs, form_votes);
-            fs.Close();
+            //FileStream fs = new FileStream(votesFileBox.Text, FileMode.Create);
+            //serializer.Serialize(fs, form_votes);
+            //fs.Close();
+            form_votes.SerializeTo(votesFileBox.Text);
         }
         private void LoadVotesFromFile()
         {

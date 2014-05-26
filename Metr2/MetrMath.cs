@@ -50,7 +50,7 @@ namespace MetrMath
             sb.Append("}");
             return sb.ToString();
         }
-        public static string ListToString(List<double> list)
+        public static string ListToString(IEnumerable<double> list)
         {
             return ListToString(list.Select(x => DoubleToString_ComaToDot_ForMathematica(x)));
         }
