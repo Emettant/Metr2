@@ -1,0 +1,63 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<package xmlns:dm0="http://schemas.microsoft.com/VisualStudio/2008/DslTools/Core" xmlns:dm1="http://schemas.microsoft.com/dsltools/Kernel" xmlns:dm2="http://schemas.microsoft.com/dsltools/Component" xmlns:dm3="http://schemas.microsoft.com/dsltools/UseCase" xmlns:dm4="http://schemas.microsoft.com/dsltools/Activity" xmlns:dm5="http://schemas.microsoft.com/dsltools/Interaction" xmlns:dm6="http://schemas.microsoft.com/dsltools/UmlModelLibrary" xmlns:dm7="http://schemas.microsoft.com/dsltools/UmlDiagrams" xmlns:dm8="http://schemas.microsoft.com/dsltools/LogicalClassDesigner"
+  dslVersion="1.0.0.0"
+  Id="82b451c3-1424-405a-8e17-f50229098d40"
+  name="MetrMath"
+  visibility="Private" xmlns="http://schemas.microsoft.com/dsltools/ModelStore">
+  <referencesInternal>
+    <reference
+      Id="706f8983-d951-46dd-8da1-a2bfa4e7045f"
+      handle="viewcode://./CodeSchema_Namespace?Namespace%3DMetrMath"
+      tag="ViewCode" />
+  </referencesInternal>
+  <packagedElements>
+    <packageHasNamedElement>
+      <class
+        Id="dcbfb746-90dc-475c-a09f-62a794ed563f"
+        name="Adapter"
+        visibility="Package"
+        isAbstract="false"
+        isLeaf="false"
+        isActiveClass="false">
+        <referencesInternal>
+          <reference
+            Id="12327869-031c-4a4a-aa01-6072af952d88"
+            handle="viewcode://./CodeSchema_Class?Assembly%3D&quot;file:%2F%2F%2FC:%2FUsers%2FVitaliy%2Fdocuments%2Fvisual studio 2013%2FProjects%2FMetr2%2FMetr2%2Fbin%2FDebug%2FMetr2.exe&quot; Namespace%3DMetrMath Type%3DAdapter"
+            tag="ViewCode" />
+        </referencesInternal>
+      </class>
+    </packageHasNamedElement>
+    <packageHasNamedElement>
+      <class
+        Id="0e4b8cd2-465c-4648-8cf9-c6a290fa3c01"
+        name="Model"
+        visibility="Package"
+        isAbstract="false"
+        isLeaf="false"
+        isActiveClass="false">
+        <referencesInternal>
+          <reference
+            Id="9ca2d06a-11e9-4dc2-807a-dfd00ab66aa3"
+            handle="viewcode://./CodeSchema_Class?Assembly%3D&quot;file:%2F%2F%2FC:%2FUsers%2FVitaliy%2Fdocuments%2Fvisual studio 2013%2FProjects%2FMetr2%2FMetr2%2Fbin%2FDebug%2FMetr2.exe&quot; Namespace%3DMetrMath Type%3DModel"
+            tag="ViewCode" />
+        </referencesInternal>
+      </class>
+    </packageHasNamedElement>
+    <packageHasNamedElement>
+      <class
+        Id="46f5b704-c761-484d-9925-70129a94d2d2"
+        name="ModelTest"
+        visibility="Package"
+        isAbstract="false"
+        isLeaf="false"
+        isActiveClass="false">
+        <referencesInternal>
+          <reference
+            Id="aa444315-8531-4f71-b9a9-853ea198230e"
+            handle="viewcode://./CodeSchema_Class?Assembly%3D&quot;file:%2F%2F%2FC:%2FUsers%2FVitaliy%2Fdocuments%2Fvisual studio 2013%2FProjects%2FMetr2%2FMetr2%2Fbin%2FDebug%2FMetr2.exe&quot; Namespace%3DMetrMath Type%3DModelTest"
+            tag="ViewCode" />
+        </referencesInternal>
+      </class>
+    </packageHasNamedElement>
+  </packagedElements>
+</package>

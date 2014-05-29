@@ -107,7 +107,9 @@ namespace MetrExamples
         }
 
         private void PrivateMethod1_B() { }
-        protected void ProtectedMethod1_B() { }
+        virtual protected void ProtectedMethod1_B() { }
+
+        public void MethodToBeOverwritten() { }
 
     }
 
@@ -160,7 +162,14 @@ namespace MetrExamples
         static public void PublicMethod1_C() { }
         public void PublicMethod2_C() { }
 
+        public new static void PublicMethod1_B() { }
 
+        protected override void ProtectedMethod1_B()
+        {
+            base.ProtectedMethod1_B();
+        }
 
+        public new void MethodToBeOverwritten() { }
+        public void anotherMethod() { }
     }
 }

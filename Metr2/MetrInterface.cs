@@ -99,7 +99,14 @@ namespace MetrInterface
             action.Invoke(this);
         }
 
-        public OpenFileGroup(Form parent, int y, string startPath, string buttonText, string nameLabelText, string _extention, Action<OpenFileGroup> _action) : base()
+        public OpenFileGroup(
+            Form parent, 
+            int y,
+            string startPath,
+            string buttonText,
+            string nameLabelText,
+            string _extention,
+            Action<OpenFileGroup> _action) : base()
         {
             action = _action;
 
@@ -155,7 +162,14 @@ namespace MetrInterface
     public class OpenSaveFileGroup : OpenFileGroup {
         Button saveButton;
         Action<OpenSaveFileGroup> saveButtonClickAction;
-        public OpenSaveFileGroup(Form parent, int y, string startPath, string buttonLoadText, string nameLabelText, string _extention, Action<OpenFileGroup> _loadClick,
+        public OpenSaveFileGroup(
+            Form parent, 
+            int y, 
+            string startPath, 
+            string buttonLoadText, 
+            string nameLabelText, 
+            string _extention, 
+            Action<OpenFileGroup> _loadClick,
             string buttonSaveText,
             Action<OpenSaveFileGroup> _saveClick
             ) :
@@ -422,7 +436,7 @@ namespace MetrInterface
                 MetrXML.EstimationList temp = null;
                 try
                 {
-                    temp = MetrXML.GoodSerializer.loadFromFile(saved);
+                    temp = MetrXML.GoodSerializer.loadFromFileEstimationList(saved);
                 }
                 catch
                 { continue; }

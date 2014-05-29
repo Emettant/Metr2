@@ -77,12 +77,14 @@ namespace MetrLearn {
                 }
 
                 int ttt2 = Environment.TickCount - ttt;
+                coefs.SerializeTo(targetFileName);
+                //Type[] estimationTypes2 = { typeof(TrainPoint) };
+                //XmlSerializer serializer2 = new XmlSerializer(typeof(TrainPointsList), estimationTypes2);
+                //FileStream fs2 = new FileStream(targetFileName, FileMode.Create);
+                //serializer2.Serialize(fs2, coefs);
+                //fs.Close();
 
-                Type[] estimationTypes2 = { typeof(TrainPoint) };
-                XmlSerializer serializer2 = new XmlSerializer(typeof(TrainPointsList), estimationTypes2);
-                FileStream fs2 = new FileStream(targetFileName, FileMode.Create);
-                serializer2.Serialize(fs2, coefs);
-                fs.Close();
+
                 //Build(coefs, ress);
                 //save to new file
             }

@@ -130,7 +130,7 @@ namespace MetrXML
         }
     }
 
-    class GoodSerializer
+    public class GoodSerializer
     {
 
         public static Type loadFromFile(string fileName, out ModelParent model)
@@ -143,9 +143,14 @@ namespace MetrXML
             return null;
         }
 
-        public static EstimationList loadFromFile(string fileName)
+        public static EstimationList loadFromFileEstimationList(string fileName)
         {
             return (EstimationList)TMySerializable.DeserializeFrom(fileName, typeof(EstimationList));
+        }
+
+        public static TrainPointsList loadFromFileTrainPointsList(string fileName)
+        {
+            return (TrainPointsList)TMySerializable.DeserializeFrom(fileName, typeof(TrainPointsList));
         }
 
         public static void saveToFile(string fileName, ModelParent model)
@@ -197,8 +202,23 @@ namespace MetrLearn
         [XmlAttribute("ClassName")]
         public string not_metric_className { get; set; }
 
+        [XmlIgnoreAttribute]
         public List<PropertyInfo> not_metric_properties_metrics_list { get; private set; }
+        List<int> _cached_list;
 
+        [XmlIgnoreAttribute]
+        List<int> cached_list
+        {
+            get
+            {
+                if (_cached_list == null)
+                {
+                    var propertiesInfos = not_metric_properties_metrics_list;
+                    _cached_list = propertiesInfos.Select(x => (Int32)x.GetValue(this)).ToList();
+                }
+                return _cached_list;
+            }
+        }
         private void InitComponents() {
             not_metric_properties_metrics_list = this.GetType().GetProperties().Where(x => !x.Name.Contains("not_metric")).ToList();
         }
@@ -225,19 +245,6 @@ namespace MetrLearn
             not_metric_className = _className;
         }
 
-        List<int> _cached_list;
-        List<int> cached_list
-        {
-            get
-            {
-                if (_cached_list == null)
-                {
-                    var propertiesInfos = not_metric_properties_metrics_list;
-                    _cached_list = propertiesInfos.Select(x => (Int32)x.GetValue(this)).ToList();
-                }
-                return _cached_list;
-            }
-        }
         public List<int> ToList()
         {
             return cached_list;
@@ -253,7 +260,7 @@ namespace MetrLearn
             return cached_list.Last();
         }
 
-
+        [XmlIgnoreAttribute]
         const int defaultEstimation = -1;
         public static TrainPoint getClassRequestAnswerPoint(Solution solution, Compilation compilation, string className, int estimation = defaultEstimation)
         {
@@ -275,7 +282,7 @@ namespace MetrLearn
 
     [XmlRoot("TrainPointsList")]
     [XmlInclude(typeof(TrainPoint))]
-    public class TrainPointsList
+    public class TrainPointsList : MetrXML.TMySerializable
     {
         [XmlArray("TrainPointsList")]
         [XmlArrayItem("TrainPointsListItem")]
@@ -290,7 +297,58 @@ namespace MetrLearn
         {
             Points.Add(point);
         }
+        public override void SerializeTo(string fileName)
+        {
+            // throw new NotImplementedException();
+            Type[] types = { };
+            XmlSerializer serializer = new XmlSerializer(typeof(TrainPointsList));
+            using (var fs = new FileStream(fileName, FileMode.Create))
+            {
+                serializer.Serialize(fs, this);
+                //try
+                //{
+
+                //    serializer.Serialize(fs, this);
+                //}
+                //catch
+                //{ }
+            }
+        }
+        /// <summary>
+        /// Unpack_TrainData.nb
+        /// </summary>
+        [XmlIgnore]
+        public static string load_UnpackTrainPointList =
+@"UnpackTrainPointList[path_] := Module[{
+    array,
+    TrainDataArrows,
+    
+    },
+   array = Import[path];
+   array[[2, 3, 1, 3, All, 2]] // OutputForm;
+   TrainDataArrows = array[[2, 3, 1, 3, All, 2]];
+   TrainDataArrows[[All, 1 ;; -2, 2]]
+   ];";
+        /// <summary>
+        /// Normalization_0_1.nb
+        /// </summary>
+        [XmlIgnore]
+        public static string load_NormalizeMaxMin =
+@"NormalizeMaxMin [Data_] := 
+  Module[{NormalizationCoefs = {}, MinCoefs = {}},
+   Do[AppendTo[NormalizationCoefs, 
+     1/(Max[Data[[All, kkk]]] - Min[Data[[All, kkk]]])];
+    AppendTo[MinCoefs, Min[Data[[All, kkk]]]];
+    , {kkk, Length[Data]}];
+   (# - MinCoefs)*NormalizationCoefs & /@ Data
+   ];";
+        public static string BuildUnpackTrainPointList(string filePath)
+        {
+            Mathematica.Calc(load_UnpackTrainPointList + load_NormalizeMaxMin);
+            return "NormalizeMaxMin[UnpackTrainPointList[" + filePath + "]]";
+        }
     }
+   
 
 
     [XmlType("TrainedModelElement")]
@@ -344,7 +402,7 @@ namespace MetrLearn
         {
             get {
                 if (_childs_and_self_list == null)
-                    _childs_and_self_list = new List<Type> { typeof(ModelParent), typeof(LeastSquaresModel)};
+                    _childs_and_self_list = new List<Type> { typeof(ModelParent), typeof(LeastSquaresModel), typeof(KNNModel)};
                 return _childs_and_self_list;
             }
         }
@@ -368,10 +426,16 @@ namespace MetrLearn
         static public ModelParent getModel(TrainPointsList list) {
             throw new NotImplementedException();
         }
+        static public ModelParent getModel(string sourceFile)
+        {
+            throw new NotImplementedException();
+        }
 
         virtual public double Apply(TrainPoint point) {
             throw new NotImplementedException();
         }
+
+
     }
 
     [XmlRoot("MyLeastSquaresModel")]
@@ -385,7 +449,7 @@ namespace MetrLearn
         {
             Items = list.Select(x => new TrainedModelElement(x)).ToList();
         }
-        public LeastSquaresModel() { }
+        public LeastSquaresModel() : base() { }
         //public static new LeastSquaresModel DeserializeFrom(string fileName)
         //{
         //    LeastSquaresModel model;
@@ -442,24 +506,213 @@ namespace MetrLearn
             }
         }
 
+        static public new LeastSquaresModel getModel(string sourceFile) {
+            return getModel(GoodSerializer.loadFromFileTrainPointsList(sourceFile));
+        }
 
 
     }
 
-    [XmlInclude(typeof(TrainPoint))]
+   
+
+    [XmlRoot("KNN_Model")]
+    //[XmlInclude(typeof(TrainPoint))]
     public class KNNModel : ModelParent
     {
-        [XmlElement("MethodName")]
-        public int Distance { get; set; }
+        //[XmlElement("MethodName")]
+        //public int Distance { get; set; }
 
         [XmlElement("kNeighbour")]
         public int kNeighbour { get; set; }
 
-        [XmlArray("KNNModelList")]
-        [XmlArrayItem("KNNModelListItem")]
-        public List<TrainPoint> Points = new List<TrainPoint>();
+        [XmlElement("kDistance")]
+        public double kDistance { get; set; }
+
+        [XmlElement("pathToTrainData")]
+        public string pathToTrainData { get; set; }
+        //[XmlArray("KNNModelList")]
+        //[XmlArrayItem("KNNModelListItem")]
+        //public List<TrainPoint> Points = new List<TrainPoint>();
 
         public KNNModel() : base() { }
+        public KNNModel(int kN, double kD, string path) : base() {
+            kNeighbour = kN;
+            kDistance = kD;
+            pathToTrainData = path;
+        }
+
+        override public void SerializeTo(string fileName)
+        {
+            //
+            //Type[] types = { };
+            XmlSerializer serializer = new XmlSerializer(typeof(KNNModel));
+            using (var fs = new FileStream(fileName, FileMode.Create))
+            {
+                try
+                {
+                    serializer.Serialize(fs, this);
+                }
+                catch
+                { }
+            }
+        }
+        override public double Apply(TrainPoint point)
+        {
+            throw new NotImplementedException();
+        }
+
+        static new public KNNModel getModel(string sourceFile)
+        {
+            var trainPointsList = GoodSerializer.loadFromFileTrainPointsList(sourceFile);
+            Mathematica.Calc(
+                    //TrainPointsList.load_UnpackTrainPointList + 
+                    KNNModel.load_SetEuclideanDistance +
+                KNNModel.load_GetApplyModel +
+                "GetLearnedModelKNN[" + TrainPointsList.BuildUnpackTrainPointList(sourceFile) + ",20]"
+                );
+            var res = Mathematica.Result.GetDoubleArray();
+            return new KNNModel((int)Math.Round(res[0]), res[1], sourceFile);
+        }
+
+        /// <summary>
+        /// from ModelKNN.nb
+        /// </summary>
+        [XmlIgnore]
+        static public string load_SetEuclideanDistance =
+@"CustomMeasureDistance := EuclideanDistance;";
+
+        /// <summary>
+        /// from ModelKNN.nb
+        /// </summary>
+        [XmlIgnore]
+        static public string load_GetApplyModel =
+@"getRequest := #[[All, 1 ;; -2]] &;
+getAnswer := #[[All, -1 ;; -1]] &;
+
+GetDistanceNeighborAnswerList[BasePartRequest_, BasePartAnswer_, 
+   Request_] := Module[{},
+   DistanceNeighborList = 
+    CustomMeasureDistance[#, Request] & /@ BasePartRequest;
+   {DistanceNeighborList, Flatten[BasePartAnswer
+      ]}\[Transpose]
+   ];
+AggregateAnswersNeighborList[SortedDistanceNeighborAnswerList_] := 
+  Module[{},
+   (*#&*)
+   Mean[#] &
+    (*Median[#]&*)
+    
+    /@ Take[
+     FoldList[
+      Append[#1, #2[[2]]] &,
+      {},
+      SortedDistanceNeighborAnswerList
+      ], {2, -1}]
+   ];
+
+GetLearnedModelKNN[givenData_, precision_] := 
+  Module[{RepeatTimes = 100,
+    globalGottedK = {},
+    globalGottedDistances = {},
+    rndPerm,
+    BasePercent = 0.6,
+    BaseCount,
+    BasePart,
+    TryPart,
+    BasePartRequest,
+    BasePartAnswer,
+    TryPartRequest,
+    TryPartAnswer,
+    TryGottedK,
+    DistanceNeighborList,
+    DistanceNeighborAnswerList,
+    NeighborErrors,
+    currentK,
+    FirstArgMin
+    
+    },
+   
+   (*from KNN.nb file*)
+   FirstArgMin[inList_] := Module[{MinEl = -1, ret = -1, i, list},
+     list = Flatten[inList];
+     MinEl = Min[list];
+     For[i = Length[list], i >= 1, --i, If[list[[i]] == MinEl, ret = i]
+      ];
+     ret
+     ];
+   
+   
+   Do[
+    rndPerm = 
+     PermutationList[RandomPermutation[Length[givenData]], 
+      Length[givenData]];
+    BaseCount = IntegerPart[BasePercent*Length[rndPerm]];
+    BasePart = Table[givenData[[rndPerm[[i]]]], {i, 1, BaseCount}];
+    TryPart =  
+     Table[givenData[[rndPerm[[i]]]], {i, BaseCount + 1, 
+       Length[givenData]}];
+    BasePartRequest = getRequest[BasePart];
+    BasePartAnswer = getAnswer[BasePart];
+    TryPartRequest = getRequest[TryPart];
+    TryPartAnswer = getAnswer[TryPart];
+    
+    TryGottedK = {};
+    Do[
+      DistanceNeighborAnswerList = 
+       Sort[GetDistanceNeighborAnswerList[BasePartRequest, 
+         BasePartAnswer, TryPartRequest[[i]]]];
+      
+      NeighborErrors =
+       Abs[TryPartAnswer[[i]] - #] & /@ 
+        AggregateAnswersNeighborList[DistanceNeighborAnswerList];
+      currentK = FirstArgMin[NeighborErrors];
+      
+      AppendTo[
+       TryGottedK, {currentK, 
+        DistanceNeighborAnswerList[[currentK, 1]] }];
+      ,
+      {i, Length[TryPartRequest]}
+      ]
+     AppendTo[globalGottedK, TryGottedK[[All, 1]]];
+    AppendTo[globalGottedDistances, TryGottedK[[All, 2]]];
+    ,
+    {j, RepeatTimes}
+    ];
+   {N[Mean[Flatten[globalGottedK]], precision],
+    N[Mean[Flatten[globalGottedDistances]], precision]}
+   
+   ];
+
+ApplyLearnedModelKNN[TrainData_, Request_, Model_] := Module[{
+    ModelDistance,
+    myEPSILON = 0.0000001,
+    SortedDistanceNeighborAnswerList,
+    ModelK = -1
+    },
+   SortedDistanceNeighborAnswerList = 
+    Sort[GetDistanceNeighborAnswerList[getRequest[TrainData], 
+      getAnswer[TrainData], Request]];
+   
+   
+   (*ModelK = Round[Model\[LeftDoubleBracket]1\[RightDoubleBracket]];*) 
+   ModelDistance = Model[[2]]*(1 + myEPSILON);
+   Do[
+    If[ModelDistance >= SortedDistanceNeighborAnswerList[[i, 1]] , 
+      ModelK = i; Break;];
+    ,
+    {i, Length[SortedDistanceNeighborAnswerList]}
+    ];
+   If[ModelK >= 2, ModelK = ModelK - 1];
+   
+   (*{ModelK,Model\[LeftDoubleBracket]1\[RightDoubleBracket]}*)
+   
+   If[ModelK == -1, 
+    -1,
+    AggregateAnswersNeighborList[SortedDistanceNeighborAnswerList][[
+     ModelK]]
+    ]
+   ];";
+
     }
 
     

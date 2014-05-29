@@ -10,89 +10,147 @@
 NotebookFileLineBreakTest
 NotebookFileLineBreakTest
 NotebookDataPosition[       157,          7]
-NotebookDataLength[      3958,        114]
-NotebookOptionsPosition[      3607,         97]
-NotebookOutlinePosition[      3951,        112]
-CellTagsIndexPosition[      3908,        109]
+NotebookDataLength[      6115,        172]
+NotebookOptionsPosition[      5759,        155]
+NotebookOutlinePosition[      6103,        170]
+CellTagsIndexPosition[      6060,        167]
 WindowFrame->Normal*)
 
 (* Beginning of Notebook Content *)
 Notebook[{
-Cell[BoxData[
- RowBox[{"\[IndentingNewLine]", 
+Cell[BoxData[{
+ RowBox[{
   RowBox[{
-   RowBox[{
-    RowBox[{"NormalizeMaxMin", " ", "[", "Data_", "]"}], ":=", 
-    RowBox[{"Module", "[", 
-     RowBox[{
-      RowBox[{"{", 
-       RowBox[{
-        RowBox[{"NormalizationCoefs", " ", "=", 
-         RowBox[{"{", "}"}]}], ",", " ", 
-        RowBox[{"MinCoefs", " ", "=", " ", 
-         RowBox[{"{", "}"}]}]}], "}"}], ",", "\[IndentingNewLine]", 
+   RowBox[{"givenDataUnNorm", " ", "=", " ", 
+    RowBox[{"(*", 
+     RowBox[{"{", 
       RowBox[{
-       RowBox[{"Do", "[", 
-        RowBox[{
-         RowBox[{
-          RowBox[{"AppendTo", "[", 
-           RowBox[{"NormalizationCoefs", ",", 
-            RowBox[{"1", "/", 
-             RowBox[{"(", 
-              RowBox[{
-               RowBox[{"Max", "[", 
-                RowBox[{"Data", "\[LeftDoubleBracket]", 
-                 RowBox[{"All", ",", "kkk"}], "\[RightDoubleBracket]"}], 
-                "]"}], "-", 
-               RowBox[{"Min", "[", 
-                RowBox[{"Data", "\[LeftDoubleBracket]", 
-                 RowBox[{"All", ",", "kkk"}], "\[RightDoubleBracket]"}], 
-                "]"}]}], ")"}]}]}], "]"}], ";", "\[IndentingNewLine]", 
-          RowBox[{"AppendTo", "[", 
-           RowBox[{"MinCoefs", ",", 
-            RowBox[{"Min", "[", 
-             RowBox[{"Data", "\[LeftDoubleBracket]", 
-              RowBox[{"All", ",", "kkk"}], "\[RightDoubleBracket]"}], "]"}]}],
-            "]"}], ";"}], "\[IndentingNewLine]", ",", " ", 
-         RowBox[{"{", 
-          RowBox[{"kkk", ",", 
-           RowBox[{"Length", "[", "Data", "]"}]}], "}"}]}], "]"}], ";", 
-       "\[IndentingNewLine]", 
+       RowBox[{"{", 
+        RowBox[{"1", ",", "2", ",", "3", ",", "4", ",", "5"}], "}"}], ",", 
+       RowBox[{"{", 
+        RowBox[{"10", ",", "20", ",", "30", ",", "40", ",", "50"}], "}"}], 
+       ",", 
+       RowBox[{"{", 
+        RowBox[{"11", ",", "22", ",", "33", ",", "44", ",", "55"}], "}"}], 
+       ",", 
+       RowBox[{"{", 
+        RowBox[{"100", ",", "200", ",", "300", ",", "400", ",", "500"}], 
+        "}"}], ",", 
+       RowBox[{"{", 
+        RowBox[{"2", ",", "4", ",", "6", ",", "8", ",", "10"}], "}"}]}], 
+      "}"}], "*)"}], "\[IndentingNewLine]", 
+    StyleBox[
+     RowBox[{"{", 
+      RowBox[{
+       RowBox[{"{", 
+        RowBox[{"1", ",", "2", ",", "3", ",", "4", ",", "5"}], "}"}], ",", 
+       RowBox[{"{", 
+        RowBox[{"11", ",", "33", ",", "22", ",", "44", ",", "55"}], "}"}], 
+       ",", 
+       RowBox[{"{", 
+        RowBox[{"6", ",", "7", ",", "8", ",", "9", ",", "0"}], "}"}], ",", 
+       RowBox[{"{", 
+        RowBox[{"66", ",", "77", ",", "88", ",", "99", ",", "0"}], "}"}], ",", 
+       RowBox[{"{", 
+        RowBox[{"2", ",", "4", ",", "6", ",", "8", ",", "0"}], "}"}]}], "}"}],
+     FontVariations->{"Underline"->True}]}], 
+   StyleBox[";",
+    FontVariations->{"Underline"->True}]}], 
+  "\[IndentingNewLine]"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{
+   RowBox[{"NormalizeMaxMin", " ", "[", "Data_", "]"}], ":=", 
+   RowBox[{"Module", "[", 
+    RowBox[{
+     RowBox[{"{", 
+      RowBox[{
+       RowBox[{"NormalizationCoefs", " ", "=", 
+        RowBox[{"{", "}"}]}], ",", " ", 
+       RowBox[{"MinCoefs", " ", "=", " ", 
+        RowBox[{"{", "}"}]}]}], "}"}], ",", "\[IndentingNewLine]", 
+     RowBox[{
+      RowBox[{"Do", "[", 
        RowBox[{
         RowBox[{
-         RowBox[{
-          RowBox[{"(", 
-           RowBox[{"#", "-", "MinCoefs"}], ")"}], "*", "NormalizationCoefs"}],
-          "&"}], "/@", "Data"}]}]}], "\[IndentingNewLine]", "]"}]}], 
-   ";"}]}]], "Input",
+         RowBox[{"AppendTo", "[", 
+          RowBox[{"NormalizationCoefs", ",", 
+           RowBox[{"1", "/", 
+            RowBox[{"(", 
+             RowBox[{
+              RowBox[{"Max", "[", 
+               RowBox[{"Data", "\[LeftDoubleBracket]", 
+                RowBox[{"All", ",", "kkk"}], "\[RightDoubleBracket]"}], "]"}],
+               "-", 
+              RowBox[{"Min", "[", 
+               RowBox[{"Data", "\[LeftDoubleBracket]", 
+                RowBox[{"All", ",", "kkk"}], "\[RightDoubleBracket]"}], 
+               "]"}]}], ")"}]}]}], "]"}], ";", "\[IndentingNewLine]", 
+         RowBox[{"AppendTo", "[", 
+          RowBox[{"MinCoefs", ",", 
+           RowBox[{"Min", "[", 
+            RowBox[{"Data", "\[LeftDoubleBracket]", 
+             RowBox[{"All", ",", "kkk"}], "\[RightDoubleBracket]"}], "]"}]}], 
+          "]"}], ";"}], "\[IndentingNewLine]", ",", " ", 
+        RowBox[{"{", 
+         RowBox[{"kkk", ",", 
+          RowBox[{"Length", "[", "Data", "]"}]}], "}"}]}], "]"}], ";", 
+      "\[IndentingNewLine]", 
+      RowBox[{
+       RowBox[{
+        RowBox[{
+         RowBox[{"(", 
+          RowBox[{"#", "-", "MinCoefs"}], ")"}], "*", "NormalizationCoefs"}], 
+        "&"}], "/@", "Data"}]}]}], "\[IndentingNewLine]", "]"}]}], 
+  ";"}]}], "Input",
  CellChangeTimes->{{3.6092534513331656`*^9, 3.609253553199027*^9}, {
    3.6092535925932713`*^9, 3.6092535946166134`*^9}, {3.609253631922471*^9, 
    3.6092537093170238`*^9}, {3.6092537468640428`*^9, 
    3.6092537523667088`*^9}, {3.6092538225954905`*^9, 3.609253830221574*^9}, {
    3.6092539512732105`*^9, 3.6092540183128757`*^9}, {3.6092540755099792`*^9, 
    3.609254103414569*^9}, {3.6092544725344634`*^9, 3.6092545477455673`*^9}, 
-   3.609325068912032*^9}],
+   3.609325068912032*^9, {3.61027676718124*^9, 3.610276796178491*^9}}],
 
 Cell[CellGroupData[{
 
 Cell[BoxData[
- RowBox[{
-  RowBox[{"N", "[", 
-   RowBox[{"NormalizeMaxMin", "[", "givenDataUnNorm", "]"}], "]"}], 
-  "\[LeftDoubleBracket]", "1", "\[RightDoubleBracket]"}]], "Input",
+ RowBox[{"givenData", " ", "=", " ", 
+  RowBox[{"NormalizeMaxMin", "[", "givenDataUnNorm", "]"}]}]], "Input",
  CellChangeTimes->{{3.609254032366233*^9, 3.609254036432947*^9}, {
   3.6092540820933657`*^9, 3.6092541119452505`*^9}, {3.609254568787591*^9, 
   3.6092545700574365`*^9}, {3.6093250180611553`*^9, 3.6093250195721593`*^9}, {
-  3.60932513982327*^9, 3.6093251439510202`*^9}}],
+  3.60932513982327*^9, 3.6093251439510202`*^9}, {3.6102768011107626`*^9, 
+  3.6102768014219728`*^9}, {3.6102768691078973`*^9, 3.61027687551515*^9}}],
 
 Cell[BoxData[
  RowBox[{"{", 
   RowBox[{
-  "0.`", ",", "0.`", ",", "0.`", ",", "0.`", ",", "0.09090909090909091`"}], 
-  "}"}]], "Output",
+   RowBox[{"{", 
+    RowBox[{"0", ",", "0", ",", "0", ",", "0", ",", 
+     FractionBox["1", "11"]}], "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{
+     FractionBox["2", "13"], ",", 
+     FractionBox["31", "75"], ",", 
+     FractionBox["19", "85"], ",", 
+     FractionBox["8", "19"], ",", "1"}], "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{
+     FractionBox["1", "13"], ",", 
+     FractionBox["1", "15"], ",", 
+     FractionBox["1", "17"], ",", 
+     FractionBox["1", "19"], ",", "0"}], "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{"1", ",", "1", ",", "1", ",", "1", ",", "0"}], "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{
+     FractionBox["1", "65"], ",", 
+     FractionBox["2", "75"], ",", 
+     FractionBox["3", "85"], ",", 
+     FractionBox["4", "95"], ",", "0"}], "}"}]}], "}"}]], "Output",
  CellChangeTimes->{
   3.609254112746786*^9, {3.609254556864647*^9, 3.6092545711671753`*^9}, 
-   3.6093250202616167`*^9, 3.609325070479072*^9, 3.6093251444673595`*^9}]
+   3.6093250202616167`*^9, 3.609325070479072*^9, 3.6093251444673595`*^9, 
+   3.6102768018362465`*^9, 3.610276875967449*^9}]
 }, Open  ]]
 },
 WindowSize->{707, 602},
@@ -111,10 +169,10 @@ CellTagsIndex->{}
 *)
 (*NotebookFileOutline
 Notebook[{
-Cell[557, 20, 2252, 53, 172, "Input"],
+Cell[557, 20, 3623, 90, 252, "Input"],
 Cell[CellGroupData[{
-Cell[2834, 77, 451, 8, 31, "Input"],
-Cell[3288, 87, 303, 7, 31, "Output"]
+Cell[4205, 114, 493, 7, 31, "Input"],
+Cell[4701, 123, 1042, 29, 138, "Output"]
 }, Open  ]]
 }
 ]

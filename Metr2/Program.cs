@@ -79,13 +79,33 @@ namespace MetrMain
     {
         static void Main(string[] args)
         {
-            //MetrTest.MetricCalculatorTest.Run();
+          //  MetrTest.MetricCalculatorTest.Run();
+
+            string solutionPath = @"C:\Users\Vitaliy\Documents\Visual Studio 2013\Projects\Metr2\Metr2.sln";
+            var c = Metr.RoslynAPI.GetCompilation(solutionPath, "Metr2").GetTypeByMetadataName("MetrExamples.C");
+            //var m1 = c.GetMembers().Where(x => x.Name == "anotherMethod").First();
+            //var m1pro = m1.GetType().GetProperties();
+
+            //var m2 = c.GetMembers().Where(x => x.Name == "MethodToBeOverwritten").First();
+            //var m2pro = m2.GetType().GetProperties();
+            //for (var i = 0; i < m1pro.Length; ++i) {
+            //    if (m1pro[i].GetValue(m1) != m2pro[i].GetValue(m2)) Console.WriteLine(m1pro[i].Name+" : "+m1pro[i].GetValue(m1).ToString() +" : "+ m2pro[i].GetValue(m2).ToString() + "\n\n");
+            //}
+            //foreach (var el in m1pro) Console.WriteLine(el.Item1, " ", el.Item2);
+            //foreach (var el in m2pro) Console.WriteLine(el.Item1, " ", el.Item2);
+            var l1 = Metr.RoslynAPI.getMethods(c);
+            var l2 = Metr.RoslynAPI.getMethods(c.BaseType);
+            var ttt = Metr.MetricCalculator.mergeChildParentMethodList(Metr.RoslynAPI.getMethods(c),Metr.RoslynAPI.getMethods(c.BaseType));
+            var t = 1;
+
+
+
 
             // MetrExpertXML.EstimationListTest.Run();
             //MetrMath.ModelTest.Run();
             // MetrLearn.TrainTest.Run();
 
-            MetrXML.GoodSerializerTest.Run();
+            //MetrXML.GoodSerializerTest.Run();
             
 
             //string solutionPath = @"C:\Users\Vitaliy\Documents\Visual Studio 2013\Projects\Metr2\Metr2.sln";

@@ -10,10 +10,10 @@
 NotebookFileLineBreakTest
 NotebookFileLineBreakTest
 NotebookDataPosition[       157,          7]
-NotebookDataLength[     18818,        434]
-NotebookOptionsPosition[     18419,        416]
-NotebookOutlinePosition[     18762,        431]
-CellTagsIndexPosition[     18719,        428]
+NotebookDataLength[     20429,        458]
+NotebookOptionsPosition[     20025,        440]
+NotebookOutlinePosition[     20371,        455]
+CellTagsIndexPosition[     20328,        452]
 WindowFrame->Normal*)
 
 (* Beginning of Notebook Content *)
@@ -33,13 +33,17 @@ Cell[BoxData[
         RowBox[{"1", ";;", 
          RowBox[{"-", "2"}]}]}], "\[RightDoubleBracket]"}], "&"}]}], ";"}], 
    "\[IndentingNewLine]", 
-   RowBox[{"getAnswer", " ", ":=", " ", 
-    RowBox[{
-     RowBox[{"#", "\[LeftDoubleBracket]", 
-      RowBox[{"All", ",", 
-       RowBox[{
-        RowBox[{"-", "1"}], ";;", 
-        RowBox[{"-", "1"}]}]}], "\[RightDoubleBracket]"}], "&"}]}], 
+   RowBox[{
+    RowBox[{"getAnswer", " ", ":=", " ", 
+     RowBox[{
+      RowBox[{"#", "\[LeftDoubleBracket]", 
+       RowBox[{"All", ",", 
+        RowBox[{
+         RowBox[{"-", "1"}], ";;", 
+         RowBox[{"-", "1"}]}]}], "\[RightDoubleBracket]"}], "&"}]}], ";"}], 
+   "\[IndentingNewLine]", 
+   RowBox[{
+    RowBox[{"CustomMeasureDistance", " ", ":=", "EuclideanDistance"}], ";"}], 
    "\[IndentingNewLine]", "\[IndentingNewLine]", 
    RowBox[{
     RowBox[{
@@ -53,7 +57,7 @@ Cell[BoxData[
         RowBox[{"DistanceNeighborList", " ", "=", 
          RowBox[{
           RowBox[{
-           RowBox[{"EuclideanDistance", "[", 
+           RowBox[{"CustomMeasureDistance", "[", 
             RowBox[{"#", ",", "Request"}], "]"}], "&"}], "/@", 
           "BasePartRequest"}]}], ";", "\[IndentingNewLine]", 
         RowBox[{
@@ -279,7 +283,7 @@ Cell[BoxData[
              RowBox[{"Flatten", "[", "globalGottedDistances", "]"}], "]"}], 
             ",", "precision"}], "]"}]}], "}"}]}]}], "\[IndentingNewLine]", 
       "\[IndentingNewLine]", "]"}]}], ";"}], "\[IndentingNewLine]", 
-   "\[IndentingNewLine]", 
+   "\[IndentingNewLine]", "\[IndentingNewLine]", 
    RowBox[{
     RowBox[{
      RowBox[{"ApplyLearnedModelKNN", "[", 
@@ -333,7 +337,8 @@ Cell[BoxData[
             ";"}], "\[IndentingNewLine]", ",", "\[IndentingNewLine]", 
           RowBox[{"{", 
            RowBox[{"i", ",", 
-            RowBox[{"Length", "[", "DistanceNeighborAnswerList", "]"}]}], 
+            RowBox[{
+            "Length", "[", "SortedDistanceNeighborAnswerList", "]"}]}], 
            "}"}]}], "\[IndentingNewLine]", "]"}], ";", "\[IndentingNewLine]", 
         RowBox[{"If", "[", 
          RowBox[{
@@ -371,7 +376,13 @@ Cell[BoxData[
    3.6093238866194134`*^9}, 3.6093240455813103`*^9, {3.6093241946446114`*^9, 
    3.6093242504848127`*^9}, {3.609324375276941*^9, 3.6093244240534396`*^9}, {
    3.609324486817251*^9, 3.6093244973672776`*^9}, {3.6093246751487093`*^9, 
-   3.6093246783758616`*^9}}],
+   3.6093246783758616`*^9}, {3.6102777287032804`*^9, 3.610277740437069*^9}, 
+   3.6102777967074227`*^9, {3.6102786527668233`*^9, 3.610278663008621*^9}, {
+   3.6102811749697065`*^9, 3.610281259618889*^9}, {3.6102813004640007`*^9, 
+   3.6102813380949764`*^9}, {3.610281410494032*^9, 3.6102814106301174`*^9}, {
+   3.610281450177369*^9, 3.6102814529342017`*^9}, {3.6102814914757833`*^9, 
+   3.6102814946969213`*^9}, {3.6102818869583106`*^9, 3.610281935453497*^9}, {
+   3.6102821879154963`*^9, 3.6102822332225657`*^9}}],
 
 Cell[CellGroupData[{
 
@@ -381,8 +392,15 @@ Cell[BoxData[
    RowBox[{"someModelKNN", " ", "=", 
     RowBox[{"GetLearnedModelKNN", "[", 
      RowBox[{"givenData", ",", "20"}], "]"}]}], "\[IndentingNewLine]", 
-   RowBox[{"ApplyLearnedModelKNN", "[", 
-    RowBox[{"givenData", ",", 
+   RowBox[{
+    RowBox[{"ApplyLearnedModelKNN", "[", 
+     RowBox[{"givenData", ",", 
+      RowBox[{
+       RowBox[{"getRequest", "[", "givenData", "]"}], "\[LeftDoubleBracket]", 
+       "2", "\[RightDoubleBracket]"}], ",", "someModelKNN"}], "]"}], ";"}], 
+   "\[IndentingNewLine]", 
+   RowBox[{"WithTrainedFileApplyLearnedModelKNN", "[", 
+    RowBox[{"\"\<C:\\\\temp2\\\\Another-Metric - points.xml\>\"", ",", 
      RowBox[{
       RowBox[{"getRequest", "[", "givenData", "]"}], "\[LeftDoubleBracket]", 
       "2", "\[RightDoubleBracket]"}], ",", "someModelKNN"}], 
@@ -391,31 +409,37 @@ Cell[BoxData[
   3.609322430249211*^9, 3.609322437086769*^9}, {3.6093225353122015`*^9, 
   3.609322536841221*^9}, {3.609323892341222*^9, 3.609324003176056*^9}, {
   3.6093241470038695`*^9, 3.6093241725558968`*^9}, {3.6093245120690727`*^9, 
-  3.6093245753072004`*^9}}],
+  3.6093245753072004`*^9}, {3.610281370361394*^9, 3.610281391241254*^9}}],
 
 Cell[BoxData[
  RowBox[{"{", 
   RowBox[{
-  "1.715`20.", ",", 
-   "1.102483705730554649459585522414002089436788691529748853643`20."}], 
+  "1.81`20.", ",", 
+   "1.082009066562617923751966772516713310789843392267041556477`20."}], 
   "}"}]], "Output",
  CellChangeTimes->{{3.609324003927556*^9, 3.6093240150649805`*^9}, 
    3.6093241734084663`*^9, 3.6093242116819572`*^9, {3.6093242547026167`*^9, 
    3.609324267193939*^9}, {3.609324429751234*^9, 3.609324436271579*^9}, {
    3.6093245003272514`*^9, 3.6093245054256477`*^9}, {3.609324564812211*^9, 
-   3.609324575992653*^9}}],
+   3.609324575992653*^9}, 3.610276672228219*^9, {3.6102768610785627`*^9, 
+   3.6102768822776384`*^9}, {3.6102777425244546`*^9, 3.610277753786935*^9}, {
+   3.610277799758443*^9, 3.6102778029605684`*^9}, 3.610278665195072*^9, 
+   3.6102813578190694`*^9, {3.6102813948776674`*^9, 3.6102813972462344`*^9}}],
 
 Cell[BoxData[
- FractionBox["1", "2"]], "Output",
+ RowBox[{"-", "1"}]], "Output",
  CellChangeTimes->{{3.609324003927556*^9, 3.6093240150649805`*^9}, 
    3.6093241734084663`*^9, 3.6093242116819572`*^9, {3.6093242547026167`*^9, 
    3.609324267193939*^9}, {3.609324429751234*^9, 3.609324436271579*^9}, {
    3.6093245003272514`*^9, 3.6093245054256477`*^9}, {3.609324564812211*^9, 
-   3.6093245759956555`*^9}}]
+   3.609324575992653*^9}, 3.610276672228219*^9, {3.6102768610785627`*^9, 
+   3.6102768822776384`*^9}, {3.6102777425244546`*^9, 3.610277753786935*^9}, {
+   3.610277799758443*^9, 3.6102778029605684`*^9}, 3.610278665195072*^9, 
+   3.6102813578190694`*^9, {3.6102813948776674`*^9, 3.610281397337302*^9}}]
 }, Open  ]]
 },
 WindowSize->{707, 602},
-WindowMargins->{{Automatic, 37}, {Automatic, 7}},
+WindowMargins->{{Automatic, 159}, {Automatic, -10}},
 FrontEndVersion->"9.0 for Microsoft Windows (64-bit) (January 25, 2013)",
 StyleDefinitions->"Default.nb"
 ]
@@ -430,11 +454,11 @@ CellTagsIndex->{}
 *)
 (*NotebookFileOutline
 Notebook[{
-Cell[557, 20, 16192, 353, 2492, "Input"],
+Cell[557, 20, 16868, 364, 2532, "Input"],
 Cell[CellGroupData[{
-Cell[16774, 377, 776, 16, 92, "Input"],
-Cell[17553, 395, 475, 10, 31, "Output"],
-Cell[18031, 407, 372, 6, 46, "Output"]
+Cell[17450, 388, 1162, 23, 132, "Input"],
+Cell[18615, 413, 750, 13, 31, "Output"],
+Cell[19368, 428, 641, 9, 31, "Output"]
 }, Open  ]]
 }
 ]

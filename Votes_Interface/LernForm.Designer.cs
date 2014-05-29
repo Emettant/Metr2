@@ -1,6 +1,6 @@
 ﻿namespace Learn_Interface
 {
-    partial class Learn_form
+    partial class Learnform
     {
         /// <summary>
         /// Required designer variable.
@@ -184,12 +184,13 @@
             // 
             // toUseButton
             // 
-            this.toUseButton.Location = new System.Drawing.Point(639, 250);
+            this.toUseButton.Location = new System.Drawing.Point(609, 250);
             this.toUseButton.Name = "toUseButton";
             this.toUseButton.Size = new System.Drawing.Size(123, 41);
             this.toUseButton.TabIndex = 18;
             this.toUseButton.Text = "go Use ==>";
             this.toUseButton.UseVisualStyleBackColor = true;
+            this.toUseButton.Click += new System.EventHandler(this.toUseButton_Click);
             // 
             // Learn_form
             // 

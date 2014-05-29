@@ -41,7 +41,7 @@ namespace Metr
                 return _cacheMethodsCouplingField;
             }
         }
-
+        
         static protected void BuildCompilationCacheMap(Solution solution, Compilation compilation)
         {
             int ttt = Environment.TickCount;
@@ -200,6 +200,7 @@ namespace Metr
             return RS(compilation, cur);
         }
 
+
         static public Int32 WMC(Compilation compilation, String className)
         {
             /// TODO Complexity of Methods Analysis, not C==1 
@@ -263,10 +264,61 @@ namespace Metr
             return CBO(solution, compilation, cur);
         }
 
+        //we do not need any RFC because RFC = CS + CBO
         static public Int32 RFC(Solution solution, Compilation compilation, String className)
         {
             return 0;//CBO(Solution solution, Compilation compilation, String className) 
         }
+
+    
+        static public IEnumerable<IMethodSymbol> mergeChildParentMethodList(IEnumerable<IMethodSymbol> list1, IEnumerable<IMethodSymbol> list2) {
+            //var together = new Dictionary<Tuple<string,ITypeSymbol,System.Collections.Immutable.ImmutableArray<ITypeParameterSymbol>>,IMethodSymbol>();
+
+            var list2_dif =  new List<IMethodSymbol>();
+            
+            foreach (var meth in list2)
+            {
+
+                var t = list1.Where((IMethodSymbol bmeth) =>
+                {
+                    
+                    if (bmeth.PartialImplementationPart != null) bmeth = bmeth.PartialImplementationPart;
+                    var declarations = bmeth.DeclaringSyntaxReferences;
+                    if (declarations != null && declarations.Length == 1)
+                    {
+                        var mods = ((BaseMethodDeclarationSyntax)declarations.First().GetSyntax()).Modifiers;//.Where(x => x.Text == "public" || x.Text == "protected");
+                        return (mods.Count() > 0)
+                && bmeth.Name == meth.Name
+                && bmeth.ReturnType == meth.ReturnType
+                && bmeth.TypeParameters == meth.TypeParameters;
+                    }
+
+                    return false;
+                    
+                }
+                 ).FirstOrDefault();
+
+                if (t == null) list2_dif.Add(t);
+                
+            }
+            //return list1;
+            foreach (var el in list1) yield return el;
+            foreach (var el in list2_dif) yield return el;
+            //foreach (IMethodSymbol meth in cur.GetMembers().Where(x => x is IMethodSymbol))
+            //{
+            //    var t = cur.BaseType.GetMembers().Where(x => x is IMethodSymbol).Select(x=>(IMethodSymbol)x).Where((IMethodSymbol bmeth) =>
+            //    {
+            //        return bmeth.Name == meth.Name && bmeth.ReturnType == meth.ReturnType && bmeth.TypeParameters == meth.TypeParameters;
+            //    }
+            //    ).FirstOrDefault();
+            //    if (t != null) yield return t;
+            //}
+        }
+
+        //static public Int32 NOO(ITypeSymbol cur) {
+        //    var ttt = getClassNOOList(cur);
+        //    return ttt.Count();
+        //}
 
 
     }
@@ -336,7 +388,10 @@ namespace Metr
             _compilation = GetCompilation(_solution, projectToPick);
         }
 
-
+        static public IEnumerable<IMethodSymbol> getMethods(ITypeSymbol cur)
+        {
+            return cur.GetMembers().Select(x => x as IMethodSymbol).Where(x => x != null);
+        }
     }
 
 
