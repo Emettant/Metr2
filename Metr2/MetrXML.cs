@@ -704,6 +704,7 @@ getAnswer := #[[All, -1 ;; -1]] &;";
 
     }
 
+
     [XmlRoot("KNN_Model")]
     [XmlInclude(typeof(TrainPointsList))]
     public class KNNModel : ModelParent, INormalizedMinMax

@@ -42,6 +42,7 @@
             this.buildModel = new System.Windows.Forms.Button();
             this.modelFileStatus = new System.Windows.Forms.Label();
             this.methodComboBox = new System.Windows.Forms.ComboBox();
+            this.makePointsProgressBar = new System.Windows.Forms.ProgressBar();
             this.SuspendLayout();
             // 
             // metricsBox
@@ -171,11 +172,20 @@
             this.methodComboBox.Size = new System.Drawing.Size(436, 24);
             this.methodComboBox.TabIndex = 16;
             // 
+            // makePointsProgressBar
+            // 
+            this.makePointsProgressBar.Location = new System.Drawing.Point(18, 222);
+            this.makePointsProgressBar.Name = "makePointsProgressBar";
+            this.makePointsProgressBar.Size = new System.Drawing.Size(723, 38);
+            this.makePointsProgressBar.TabIndex = 18;
+            this.makePointsProgressBar.Visible = false;
+            // 
             // Learnform
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(774, 457);
+            this.Controls.Add(this.makePointsProgressBar);
             this.Controls.Add(this.methodComboBox);
             this.Controls.Add(this.modelFileStatus);
             this.Controls.Add(this.buildModel);
@@ -213,6 +223,7 @@
         private System.Windows.Forms.Button buildModel;
         private System.Windows.Forms.Label modelFileStatus;
         private System.Windows.Forms.ComboBox methodComboBox;
+        private System.Windows.Forms.ProgressBar makePointsProgressBar;
     }
 }
 

@@ -475,6 +475,12 @@ namespace MetrInterface
                 catch
                 { continue; }
 
+                dataGridSourceList = dataGridSourceList.Select((x) =>
+                {
+                    x.saved_pros[i].SetValue(x, defaultMetricValue);
+                    return x;
+                }).ToList();
+
                 foreach (var el in temp.Estimations)
                 {
                     if (el.Solution == current_solution_file && el.Project == current_project)

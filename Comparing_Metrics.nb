@@ -1,0 +1,705 @@
+(* Content-type: application/vnd.wolfram.mathematica *)
+
+(*** Wolfram Notebook File ***)
+(* http://www.wolfram.com/nb *)
+
+(* CreatedBy='Mathematica 9.0' *)
+
+(*CacheID: 234*)
+(* Internal cache information:
+NotebookFileLineBreakTest
+NotebookFileLineBreakTest
+NotebookDataPosition[       157,          7]
+NotebookDataLength[     28619,        696]
+NotebookOptionsPosition[     27844,        668]
+NotebookOutlinePosition[     28189,        683]
+CellTagsIndexPosition[     28146,        680]
+WindowFrame->Normal*)
+
+(* Beginning of Notebook Content *)
+Notebook[{
+
+Cell[CellGroupData[{
+Cell[BoxData[
+ RowBox[{"\[IndentingNewLine]", 
+  RowBox[{
+   RowBox[{
+    RowBox[{"EvalArray1", " ", "=", " ", 
+     RowBox[{
+      RowBox[{
+      "Import", "[", 
+       "\"\<C:\\\\temp2\\\\Real_Metr2\\\\Metr2\\\\Functional - original.xml\>\
+\"", "]"}], "\[LeftDoubleBracket]", 
+      RowBox[{"2", ",", "3", ",", "1", ",", "3", ",", "All", ",", "2"}], 
+      "\[RightDoubleBracket]"}]}], ";"}], "\[IndentingNewLine]", 
+   RowBox[{
+    RowBox[{"EvalArray2", "=", "\[IndentingNewLine]", 
+     RowBox[{
+      RowBox[{
+      "Import", "[", 
+       "\"\<C:\\\\temp2\\\\Real_Metr2\\\\Functional - prognosed - LS Min \
+Max.xml\>\"", "]"}], "\[LeftDoubleBracket]", 
+      RowBox[{"2", ",", "3", ",", "1", ",", "3", ",", "All", ",", "2"}], 
+      "\[RightDoubleBracket]"}]}], ";"}], "\[IndentingNewLine]", 
+   RowBox[{
+    RowBox[{"Evals2", " ", "=", 
+     RowBox[{"EvalArray1", "\[LeftDoubleBracket]", 
+      RowBox[{"All", ",", 
+       RowBox[{
+        RowBox[{"-", "2"}], ";;", 
+        RowBox[{"-", "1"}]}], ",", "2"}], "\[RightDoubleBracket]"}]}], ";"}], 
+   "\[IndentingNewLine]", 
+   RowBox[{
+    RowBox[{"Evals1", "  ", "=", " ", 
+     RowBox[{"EvalArray2", "\[LeftDoubleBracket]", 
+      RowBox[{"All", ",", 
+       RowBox[{
+        RowBox[{"-", "2"}], ";;", 
+        RowBox[{"-", "1"}]}], ",", "2"}], "\[RightDoubleBracket]"}]}], ";"}], 
+   "\[IndentingNewLine]", "\[IndentingNewLine]", 
+   RowBox[{
+    RowBox[{"evals", " ", "=", 
+     RowBox[{"Sort", "[", 
+      RowBox[{"Evals1", "~", "Join", "~", "Evals2"}], "]"}]}], ";"}], 
+   "\[IndentingNewLine]", 
+   RowBox[{
+    RowBox[{"Result", "  ", "=", " ", 
+     RowBox[{"{", "}"}]}], ";"}], "\[IndentingNewLine]", 
+   RowBox[{
+    RowBox[{"i", " ", "=", " ", "1"}], ";"}], "\[IndentingNewLine]", 
+   RowBox[{
+    RowBox[{"While", "[", 
+     RowBox[{"True", ",", "\[IndentingNewLine]", 
+      RowBox[{
+       RowBox[{
+        RowBox[{"If", "[", 
+         RowBox[{
+          RowBox[{
+           RowBox[{"evals", "\[LeftDoubleBracket]", 
+            RowBox[{"i", ",", "1"}], "\[RightDoubleBracket]"}], " ", 
+           "\[Equal]", " ", 
+           RowBox[{"evals", "\[LeftDoubleBracket]", 
+            RowBox[{
+             RowBox[{"i", "+", "1"}], ",", "1"}], "\[RightDoubleBracket]"}]}],
+           ",", 
+          RowBox[{
+           RowBox[{"AppendTo", "[", 
+            RowBox[{"Result", ",", 
+             RowBox[{"{", 
+              RowBox[{
+               RowBox[{"evals", "\[LeftDoubleBracket]", 
+                RowBox[{"i", ",", "2"}], "\[RightDoubleBracket]"}], ",", 
+               RowBox[{"evals", "\[LeftDoubleBracket]", 
+                RowBox[{
+                 RowBox[{"i", "+", "1"}], ",", "2"}], 
+                "\[RightDoubleBracket]"}]}], "}"}]}], "]"}], ";", 
+           "\[IndentingNewLine]", 
+           RowBox[{"++", "i"}], ";"}], "\[IndentingNewLine]", ","}], 
+         "\[IndentingNewLine]", "\[IndentingNewLine]", "]"}], 
+        "\[IndentingNewLine]", 
+        RowBox[{"If", "[", 
+         RowBox[{
+          RowBox[{
+           RowBox[{"i", "+", "1"}], "\[Equal]", 
+           RowBox[{"Length", "[", "i", "]"}]}], ",", " ", 
+          RowBox[{"Break", ";"}]}], "]"}]}], ";"}]}], "\[IndentingNewLine]", 
+     "]"}], ";"}]}]}]], "Input",
+ CellChangeTimes->{{3.6106332577585993`*^9, 3.6106333008739023`*^9}, {
+  3.6106334069614844`*^9, 3.6106334772621803`*^9}, {3.610633555894414*^9, 
+  3.6106338638279467`*^9}, {3.610634137072447*^9, 3.6106341606761236`*^9}, {
+  3.6106342056359863`*^9, 3.610634284346266*^9}, {3.610634478672613*^9, 
+  3.610634631864362*^9}}],
+
+Cell[BoxData[
+ RowBox[{"{", 
+  RowBox[{
+   RowBox[{"{", 
+    RowBox[{"\<\"Metr.RoslynAPI\"\>", ",", "\<\"40\"\>"}], "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{"\<\"MetrInterface.OpenFileGroup\"\>", ",", "\<\"50\"\>"}], "}"}],
+    ",", 
+   RowBox[{"{", 
+    RowBox[{"\<\"MetrInterface.OpenSaveFileGroup\"\>", ",", "\<\"70\"\>"}], 
+    "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{"\<\"MetrLearn.KNNModel\"\>", ",", "\<\"60\"\>"}], "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{"\<\"MetrLearn.ModelParent\"\>", ",", "\<\"50\"\>"}], "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{"\<\"MetrLearn.TrainPoint\"\>", ",", "\<\"100\"\>"}], "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{"\<\"MetrXML.EstimationOfElement\"\>", ",", "\<\"50\"\>"}], 
+    "}"}]}], "}"}]], "Output",
+ CellChangeTimes->{{3.6106332590264416`*^9, 3.610633301584367*^9}, {
+  3.610633411439464*^9, 3.6106334541748457`*^9}, {3.6106341550513887`*^9, 
+  3.6106341613485727`*^9}}],
+
+Cell[BoxData[
+ RowBox[{"{", 
+  RowBox[{
+   RowBox[{"{", 
+    RowBox[{"\<\"Metr\"\>", ",", "\<\"-1\"\>"}], "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{"\<\"Metr.MetricCalculator\"\>", ",", "\<\"55\"\>"}], "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{"\<\"Metr.MetricCalculatorCore\"\>", ",", "\<\"32\"\>"}], "}"}], 
+   ",", 
+   RowBox[{"{", 
+    RowBox[{"\<\"Metr.RoslynAPI\"\>", ",", "\<\"40\"\>"}], "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{"\<\"MetrExamples\"\>", ",", "\<\"-1\"\>"}], "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{"\<\"MetrExamples.A\"\>", ",", "\<\"23\"\>"}], "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{"\<\"MetrExamples.B\"\>", ",", "\<\"32\"\>"}], "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{"\<\"MetrExamples.B2\"\>", ",", "\<\"10\"\>"}], "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{"\<\"MetrExamples.B2Children1\"\>", ",", "\<\"0\"\>"}], "}"}], 
+   ",", 
+   RowBox[{"{", 
+    RowBox[{"\<\"MetrExamples.B2Children2\"\>", ",", "\<\"0\"\>"}], "}"}], 
+   ",", 
+   RowBox[{"{", 
+    RowBox[{"\<\"MetrExamples.B3\"\>", ",", "\<\"0\"\>"}], "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{"\<\"MetrExamples.C\"\>", ",", "\<\"3\"\>"}], "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{"\<\"MetrExamples.C.InternalDefinedClass1\"\>", 
+     ",", "\<\"-1\"\>"}], "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{"\<\"MetrExamples.classFromAnotherSyntaxTree\"\>", 
+     ",", "\<\"0\"\>"}], "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{"\<\"MetrExamples.ClassLOC\"\>", ",", "\<\"12\"\>"}], "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{"\<\"MetrExamples.CyclomaticClass\"\>", ",", "\<\"38\"\>"}], 
+    "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{"\<\"MetrExamples.DiffPlaceSameExternalMethodCall\"\>", 
+     ",", "\<\"7\"\>"}], "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{"\<\"MetrExamples.NumParam\"\>", ",", "\<\"22\"\>"}], "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{"\<\"MetrExamples.ParentChildExternalMethodCalled\"\>", 
+     ",", "\<\"14\"\>"}], "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{"\<\"MetrExamples.PartialClass\"\>", ",", "\<\"3\"\>"}], "}"}], 
+   ",", 
+   RowBox[{"{", 
+    RowBox[{"\<\"MetrExamples.PropertyClass\"\>", ",", "\<\"17\"\>"}], "}"}], 
+   ",", 
+   RowBox[{"{", 
+    RowBox[{"\<\"MetrExamples.SingleClass\"\>", ",", "\<\"6\"\>"}], "}"}], 
+   ",", 
+   RowBox[{"{", 
+    RowBox[{"\<\"MetrInterface\"\>", ",", "\<\"-1\"\>"}], "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{"\<\"MetrInterface.CompilationViewGroup\"\>", ",", "\<\"60\"\>"}],
+     "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{"\<\"MetrInterface.CompilationViewGroup.DataGridSourceItem\"\>", 
+     ",", "\<\"-1\"\>"}], "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{"\<\"MetrInterface.ControlsGroup\"\>", ",", "\<\"23\"\>"}], "}"}],
+    ",", 
+   RowBox[{"{", 
+    RowBox[{"\<\"MetrInterface.OpenFileGroup\"\>", ",", "\<\"50\"\>"}], "}"}],
+    ",", 
+   RowBox[{"{", 
+    RowBox[{"\<\"MetrInterface.OpenSaveFileGroup\"\>", ",", "\<\"70\"\>"}], 
+    "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{"\<\"MetrInterface.Tools\"\>", ",", "\<\"63\"\>"}], "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{"\<\"MetrLearn\"\>", ",", "\<\"-1\"\>"}], "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{"\<\"MetrLearn.INormalizedMinMax\"\>", ",", "\<\"6\"\>"}], "}"}], 
+   ",", 
+   RowBox[{"{", 
+    RowBox[{"\<\"MetrLearn.KNNModel\"\>", ",", "\<\"60\"\>"}], "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{"\<\"MetrLearn.LeastSquaresModel\"\>", ",", "\<\"13\"\>"}], "}"}],
+    ",", 
+   RowBox[{"{", 
+    RowBox[{"\<\"MetrLearn.LeastSquaresModel_MinMax\"\>", ",", "\<\"39\"\>"}],
+     "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{"\<\"MetrLearn.ModelParent\"\>", ",", "\<\"50\"\>"}], "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{"\<\"MetrLearn.Train\"\>", ",", "\<\"82\"\>"}], "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{"\<\"MetrLearn.TrainedModelElement\"\>", ",", "\<\"27\"\>"}], 
+    "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{"\<\"MetrLearn.TrainPoint\"\>", ",", "\<\"100\"\>"}], "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{"\<\"MetrLearn.TrainPointsList\"\>", ",", "\<\"47\"\>"}], "}"}], 
+   ",", 
+   RowBox[{"{", 
+    RowBox[{"\<\"MetrLearn.TrainTest\"\>", ",", "\<\"20\"\>"}], "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{"\<\"MetrMain\"\>", ",", "\<\"-1\"\>"}], "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{"\<\"MetrMain.Program\"\>", ",", "\<\"132\"\>"}], "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{"\<\"MetrMath\"\>", ",", "\<\"-1\"\>"}], "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{"\<\"MetrMath.Adapter\"\>", ",", "\<\"31\"\>"}], "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{"\<\"MetrMath.Adapter.Mathematica\"\>", ",", "\<\"-1\"\>"}], 
+    "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{"\<\"MetrMath.Model\"\>", ",", "\<\"39\"\>"}], "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{"\<\"MetrMath.ModelTest\"\>", ",", "\<\"19\"\>"}], "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{"\<\"MetrTest\"\>", ",", "\<\"-1\"\>"}], "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{"\<\"MetrTest.MetricCalculatorTest\"\>", ",", "\<\"73\"\>"}], 
+    "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{"\<\"MetrXML\"\>", ",", "\<\"-1\"\>"}], "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{"\<\"MetrXML.EstimationList\"\>", ",", "\<\"7\"\>"}], "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{"\<\"MetrXML.EstimationListTest\"\>", ",", "\<\"44\"\>"}], "}"}], 
+   ",", 
+   RowBox[{"{", 
+    RowBox[{"\<\"MetrXML.EstimationOfElement\"\>", ",", "\<\"50\"\>"}], "}"}],
+    ",", 
+   RowBox[{"{", 
+    RowBox[{"\<\"MetrXML.GoodSerializer\"\>", ",", "\<\"40\"\>"}], "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{"\<\"MetrXML.GoodSerializerTest\"\>", ",", "\<\"16\"\>"}], "}"}], 
+   ",", 
+   RowBox[{"{", 
+    RowBox[{"\<\"MetrXML.TMySerializable\"\>", ",", "\<\"87\"\>"}], "}"}]}], 
+  "}"}]], "Output",
+ CellChangeTimes->{{3.6106332590264416`*^9, 3.610633301584367*^9}, {
+  3.610633411439464*^9, 3.6106334541748457`*^9}, {3.6106341550513887`*^9, 
+  3.610634161368585*^9}}],
+
+Cell[BoxData[
+ RowBox[{"{", 
+  RowBox[{
+   RowBox[{"{", 
+    RowBox[{"\<\"Metr\"\>", ",", "\<\"-1\"\>"}], "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{"\<\"MetrExamples\"\>", ",", "\<\"-1\"\>"}], "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{"\<\"MetrExamples.A\"\>", ",", "\<\"23\"\>"}], "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{"\<\"MetrExamples.B\"\>", ",", "\<\"32\"\>"}], "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{"\<\"MetrExamples.B2\"\>", ",", "\<\"10\"\>"}], "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{"\<\"MetrExamples.B2Children1\"\>", ",", "\<\"0\"\>"}], "}"}], 
+   ",", 
+   RowBox[{"{", 
+    RowBox[{"\<\"MetrExamples.B2Children2\"\>", ",", "\<\"0\"\>"}], "}"}], 
+   ",", 
+   RowBox[{"{", 
+    RowBox[{"\<\"MetrExamples.B3\"\>", ",", "\<\"0\"\>"}], "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{"\<\"MetrExamples.C\"\>", ",", "\<\"3\"\>"}], "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{"\<\"MetrExamples.C.InternalDefinedClass1\"\>", 
+     ",", "\<\"-1\"\>"}], "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{"\<\"MetrExamples.classFromAnotherSyntaxTree\"\>", 
+     ",", "\<\"0\"\>"}], "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{"\<\"MetrExamples.ClassLOC\"\>", ",", "\<\"12\"\>"}], "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{"\<\"MetrExamples.CyclomaticClass\"\>", ",", "\<\"38\"\>"}], 
+    "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{"\<\"MetrExamples.DiffPlaceSameExternalMethodCall\"\>", 
+     ",", "\<\"7\"\>"}], "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{"\<\"MetrExamples.NumParam\"\>", ",", "\<\"22\"\>"}], "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{"\<\"MetrExamples.ParentChildExternalMethodCalled\"\>", 
+     ",", "\<\"14\"\>"}], "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{"\<\"MetrExamples.PartialClass\"\>", ",", "\<\"3\"\>"}], "}"}], 
+   ",", 
+   RowBox[{"{", 
+    RowBox[{"\<\"MetrExamples.PropertyClass\"\>", ",", "\<\"17\"\>"}], "}"}], 
+   ",", 
+   RowBox[{"{", 
+    RowBox[{"\<\"MetrExamples.SingleClass\"\>", ",", "\<\"6\"\>"}], "}"}], 
+   ",", 
+   RowBox[{"{", 
+    RowBox[{"\<\"MetrInterface\"\>", ",", "\<\"-1\"\>"}], "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{"\<\"MetrInterface.CompilationViewGroup\"\>", ",", "\<\"60\"\>"}],
+     "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{"\<\"MetrInterface.CompilationViewGroup.DataGridSourceItem\"\>", 
+     ",", "\<\"-1\"\>"}], "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{"\<\"MetrInterface.ControlsGroup\"\>", ",", "\<\"23\"\>"}], "}"}],
+    ",", 
+   RowBox[{"{", 
+    RowBox[{"\<\"MetrInterface.OpenFileGroup\"\>", ",", "\<\"50\"\>"}], "}"}],
+    ",", 
+   RowBox[{"{", 
+    RowBox[{"\<\"MetrInterface.OpenFileGroup\"\>", ",", "\<\"50\"\>"}], "}"}],
+    ",", 
+   RowBox[{"{", 
+    RowBox[{"\<\"MetrInterface.OpenSaveFileGroup\"\>", ",", "\<\"70\"\>"}], 
+    "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{"\<\"MetrInterface.OpenSaveFileGroup\"\>", ",", "\<\"70\"\>"}], 
+    "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{"\<\"MetrInterface.Tools\"\>", ",", "\<\"63\"\>"}], "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{"\<\"MetrLearn\"\>", ",", "\<\"-1\"\>"}], "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{"\<\"MetrLearn.INormalizedMinMax\"\>", ",", "\<\"6\"\>"}], "}"}], 
+   ",", 
+   RowBox[{"{", 
+    RowBox[{"\<\"MetrLearn.KNNModel\"\>", ",", "\<\"60\"\>"}], "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{"\<\"MetrLearn.KNNModel\"\>", ",", "\<\"60\"\>"}], "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{"\<\"MetrLearn.LeastSquaresModel\"\>", ",", "\<\"13\"\>"}], "}"}],
+    ",", 
+   RowBox[{"{", 
+    RowBox[{"\<\"MetrLearn.LeastSquaresModel_MinMax\"\>", ",", "\<\"39\"\>"}],
+     "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{"\<\"MetrLearn.ModelParent\"\>", ",", "\<\"50\"\>"}], "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{"\<\"MetrLearn.ModelParent\"\>", ",", "\<\"50\"\>"}], "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{"\<\"MetrLearn.Train\"\>", ",", "\<\"82\"\>"}], "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{"\<\"MetrLearn.TrainedModelElement\"\>", ",", "\<\"27\"\>"}], 
+    "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{"\<\"MetrLearn.TrainPoint\"\>", ",", "\<\"100\"\>"}], "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{"\<\"MetrLearn.TrainPoint\"\>", ",", "\<\"100\"\>"}], "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{"\<\"MetrLearn.TrainPointsList\"\>", ",", "\<\"47\"\>"}], "}"}], 
+   ",", 
+   RowBox[{"{", 
+    RowBox[{"\<\"MetrLearn.TrainTest\"\>", ",", "\<\"20\"\>"}], "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{"\<\"MetrMain\"\>", ",", "\<\"-1\"\>"}], "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{"\<\"MetrMain.Program\"\>", ",", "\<\"132\"\>"}], "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{"\<\"MetrMath\"\>", ",", "\<\"-1\"\>"}], "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{"\<\"MetrMath.Adapter\"\>", ",", "\<\"31\"\>"}], "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{"\<\"MetrMath.Adapter.Mathematica\"\>", ",", "\<\"-1\"\>"}], 
+    "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{"\<\"MetrMath.Model\"\>", ",", "\<\"39\"\>"}], "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{"\<\"MetrMath.ModelTest\"\>", ",", "\<\"19\"\>"}], "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{"\<\"Metr.MetricCalculator\"\>", ",", "\<\"55\"\>"}], "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{"\<\"Metr.MetricCalculatorCore\"\>", ",", "\<\"32\"\>"}], "}"}], 
+   ",", 
+   RowBox[{"{", 
+    RowBox[{"\<\"Metr.RoslynAPI\"\>", ",", "\<\"40\"\>"}], "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{"\<\"Metr.RoslynAPI\"\>", ",", "\<\"40\"\>"}], "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{"\<\"MetrTest\"\>", ",", "\<\"-1\"\>"}], "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{"\<\"MetrTest.MetricCalculatorTest\"\>", ",", "\<\"73\"\>"}], 
+    "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{"\<\"MetrXML\"\>", ",", "\<\"-1\"\>"}], "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{"\<\"MetrXML.EstimationList\"\>", ",", "\<\"7\"\>"}], "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{"\<\"MetrXML.EstimationListTest\"\>", ",", "\<\"44\"\>"}], "}"}], 
+   ",", 
+   RowBox[{"{", 
+    RowBox[{"\<\"MetrXML.EstimationOfElement\"\>", ",", "\<\"50\"\>"}], "}"}],
+    ",", 
+   RowBox[{"{", 
+    RowBox[{"\<\"MetrXML.EstimationOfElement\"\>", ",", "\<\"50\"\>"}], "}"}],
+    ",", 
+   RowBox[{"{", 
+    RowBox[{"\<\"MetrXML.GoodSerializer\"\>", ",", "\<\"40\"\>"}], "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{"\<\"MetrXML.GoodSerializerTest\"\>", ",", "\<\"16\"\>"}], "}"}], 
+   ",", 
+   RowBox[{"{", 
+    RowBox[{"\<\"MetrXML.TMySerializable\"\>", ",", "\<\"87\"\>"}], "}"}]}], 
+  "}"}]], "Output",
+ CellChangeTimes->{{3.6106332590264416`*^9, 3.610633301584367*^9}, {
+  3.610633411439464*^9, 3.6106334541748457`*^9}, {3.6106341550513887`*^9, 
+  3.6106341614026055`*^9}}]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"\[IndentingNewLine]", 
+  RowBox[{
+   RowBox[{
+    RowBox[{
+     RowBox[{"MyDistance", "[", 
+      RowBox[{"list1_", ",", "list2_"}], "]"}], " ", ":=", " ", 
+     RowBox[{"Module", "[", 
+      RowBox[{
+       RowBox[{"{", "}"}], ",", "\[IndentingNewLine]", 
+       RowBox[{
+        RowBox[{
+         RowBox[{"Abs", "[", 
+          RowBox[{
+           RowBox[{
+           "#", "\[LeftDoubleBracket]", "1", "\[RightDoubleBracket]"}], "-", 
+           RowBox[{
+           "#", "\[LeftDoubleBracket]", "2", "\[RightDoubleBracket]"}]}], 
+          "]"}], "&"}], "/@", 
+        RowBox[{"Transpose", "[", 
+         RowBox[{"{", 
+          RowBox[{"list1", ",", "list2"}], "}"}], "]"}]}]}], "]"}]}], ";"}], 
+   "\[IndentingNewLine]", 
+   RowBox[{"ListPlot", "[", 
+    RowBox[{"N", "[", 
+     RowBox[{"MyDistance", "[", 
+      RowBox[{"Evals1", ",", "Evals2"}], "]"}], "]"}], "]"}]}]}]], "Input",
+ CellChangeTimes->{{3.6106304079418993`*^9, 3.6106304281032915`*^9}, {
+   3.610630581428287*^9, 3.6106306403314123`*^9}, {3.6106306842425795`*^9, 
+   3.610630807472258*^9}, {3.610632227112177*^9, 3.610632437976466*^9}, {
+   3.6106324721141367`*^9, 3.610632670935703*^9}, {3.6106327573445883`*^9, 
+   3.610632825338237*^9}, {3.610633160807457*^9, 3.610633173301756*^9}, 
+   3.610633256100498*^9}],
+
+Cell[BoxData[
+ RowBox[{"{", 
+  RowBox[{
+  "40", ",", "50", ",", "70", ",", "60", ",", "50", ",", "100", ",", "50"}], 
+  "}"}]], "Output",
+ CellChangeTimes->{{3.61063058966276*^9, 3.6106306366419663`*^9}, {
+   3.6106306868693275`*^9, 3.61063071650455*^9}, {3.610630748954104*^9, 
+   3.6106308085239477`*^9}, 3.6106322238067436`*^9, {3.610632272265396*^9, 
+   3.6106323185021086`*^9}, {3.6106323531090956`*^9, 3.610632376701765*^9}, {
+   3.6106325552701397`*^9, 3.6106325749772296`*^9}, {3.61063260979008*^9, 
+   3.610632629270769*^9}, 3.610632672804945*^9, {3.6106327297732744`*^9, 
+   3.6106328263699226`*^9}, 3.6106331749618635`*^9}],
+
+Cell[BoxData[
+ RowBox[{"{", 
+  RowBox[{
+   RowBox[{"-", "1"}], ",", "55", ",", "32", ",", "40", ",", 
+   RowBox[{"-", "1"}], ",", "23", ",", "32", ",", "10", ",", "0", ",", "0", 
+   ",", "0", ",", "3", ",", 
+   RowBox[{"-", "1"}], ",", "0", ",", "12", ",", "38", ",", "7", ",", "22", 
+   ",", "14", ",", "3", ",", "17", ",", "6", ",", 
+   RowBox[{"-", "1"}], ",", "60", ",", 
+   RowBox[{"-", "1"}], ",", "23", ",", "50", ",", "70", ",", "63", ",", 
+   RowBox[{"-", "1"}], ",", "6", ",", "60", ",", "13", ",", "39", ",", "50", 
+   ",", "82", ",", "27", ",", "100", ",", "47", ",", "20", ",", 
+   RowBox[{"-", "1"}], ",", "132", ",", 
+   RowBox[{"-", "1"}], ",", "31", ",", 
+   RowBox[{"-", "1"}], ",", "39", ",", "19", ",", 
+   RowBox[{"-", "1"}], ",", "73", ",", 
+   RowBox[{"-", "1"}], ",", "7", ",", "44", ",", "50", ",", "40", ",", "16", 
+   ",", "87"}], "}"}]], "Output",
+ CellChangeTimes->{{3.61063058966276*^9, 3.6106306366419663`*^9}, {
+   3.6106306868693275`*^9, 3.61063071650455*^9}, {3.610630748954104*^9, 
+   3.6106308085239477`*^9}, 3.6106322238067436`*^9, {3.610632272265396*^9, 
+   3.6106323185021086`*^9}, {3.6106323531090956`*^9, 3.610632376701765*^9}, {
+   3.6106325552701397`*^9, 3.6106325749772296`*^9}, {3.61063260979008*^9, 
+   3.610632629270769*^9}, 3.610632672804945*^9, {3.6106327297732744`*^9, 
+   3.6106328263699226`*^9}, 3.610633174973868*^9}],
+
+Cell[BoxData[
+ RowBox[{
+  StyleBox[
+   RowBox[{"Transpose", "::", "nmtx"}], "MessageName"], 
+  RowBox[{
+  ":", " "}], "\<\"The first two levels of the one-dimensional list \
+\[NoBreak]\\!\\({\\(\\({40, 50, 70, 60, 50, 100, 50}\\)\\), \
+\\(\\({\\(\\(-1\\)\\), 55, 32, 40, \\(\\(-1\\)\\), 23, 32, 10, 0, 0, 0, 3, \
+\\(\\(-1\\)\\), 0, 12, 38, 7, 22, 14, 3, 17, 6, \\(\\(-1\\)\\), 60, \
+\\(\\(-1\\)\\), 23, 50, 70, 63, \\(\\(-1\\)\\), 6, 60, 13, 39, 50, 82, 27, \
+100, 47, 20, \\(\\(-1\\)\\), 132, \\(\\(-1\\)\\), 31, \\(\\(-1\\)\\), 39, 19, \
+\\(\\(-1\\)\\), 73, \\(\\(-1\\)\\), \\(\\(\[LeftSkeleton] 6 \
+\[RightSkeleton]\\)\\)}\\)\\)}\\)\[NoBreak] cannot be transposed. \
+\\!\\(\\*ButtonBox[\\\"\[RightSkeleton]\\\", ButtonStyle->\\\"Link\\\", \
+ButtonFrame->None, ButtonData:>\\\"paclet:ref/message/Transpose/nmtx\\\", \
+ButtonNote -> \\\"Transpose::nmtx\\\"]\\)\"\>"}]], "Message", "MSG",
+ CellChangeTimes->{3.610633175084942*^9}],
+
+Cell[BoxData[
+ RowBox[{
+  StyleBox[
+   RowBox[{"Thread", "::", "tdlen"}], "MessageName"], 
+  RowBox[{
+  ":", " "}], "\<\"Objects of unequal length in \[NoBreak]\\!\\(\\(\\({40, \
+50, 70, 60, 50, 100, 50}\\)\\) + \\(\\({1, \\(\\(-55\\)\\), \\(\\(-32\\)\\), \
+\\(\\(-40\\)\\), 1, \\(\\(-23\\)\\), \\(\\(-32\\)\\), \\(\\(-10\\)\\), 0, 0, \
+0, \\(\\(-3\\)\\), 1, 0, \\(\\(-12\\)\\), \\(\\(-38\\)\\), \\(\\(-7\\)\\), \
+\\(\\(-22\\)\\), \\(\\(-14\\)\\), \\(\\(-3\\)\\), \\(\\(-17\\)\\), \
+\\(\\(-6\\)\\), 1, \\(\\(-60\\)\\), 1, \\(\\(-23\\)\\), \\(\\(-50\\)\\), \
+\\(\\(-70\\)\\), \\(\\(-63\\)\\), 1, \\(\\(-6\\)\\), \\(\\(-60\\)\\), \
+\\(\\(-13\\)\\), \\(\\(-39\\)\\), \\(\\(-50\\)\\), \\(\\(-82\\)\\), \\(\\(-27\
+\\)\\), \\(\\(-100\\)\\), \\(\\(-47\\)\\), \\(\\(-20\\)\\), 1, \
+\\(\\(-132\\)\\), 1, \\(\\(-31\\)\\), 1, \\(\\(-39\\)\\), \\(\\(-19\\)\\), 1, \
+\\(\\(-73\\)\\), 1, \\(\\(\[LeftSkeleton] 6 \[RightSkeleton]\\)\\)}\\)\\)\\)\
+\[NoBreak] cannot be combined. \\!\\(\\*ButtonBox[\\\"\[RightSkeleton]\\\", \
+ButtonStyle->\\\"Link\\\", ButtonFrame->None, \
+ButtonData:>\\\"paclet:ref/message/Thread/tdlen\\\", ButtonNote -> \
+\\\"Thread::tdlen\\\"]\\)\"\>"}]], "Message", "MSG",
+ CellChangeTimes->{3.6106331750989513`*^9}],
+
+Cell[BoxData[
+ RowBox[{
+  StyleBox[
+   RowBox[{"Thread", "::", "tdlen"}], "MessageName"], 
+  RowBox[{
+  ":", " "}], "\<\"Objects of unequal length in \[NoBreak]\\!\\(\\(\\({40.`, \
+50.`, 70.`, 60.`, 50.`, 100.`, 50.`}\\)\\) + \\(\\({1.`, \\(\\(-55.`\\)\\), \
+\\(\\(-32.`\\)\\), \\(\\(-40.`\\)\\), 1.`, \\(\\(-23.`\\)\\), \
+\\(\\(-32.`\\)\\), \\(\\(-10.`\\)\\), 0.`, 0.`, 0.`, \\(\\(-3.`\\)\\), 1.`, \
+0.`, \\(\\(-12.`\\)\\), \\(\\(-38.`\\)\\), \\(\\(-7.`\\)\\), \
+\\(\\(-22.`\\)\\), \\(\\(-14.`\\)\\), \\(\\(-3.`\\)\\), \\(\\(-17.`\\)\\), \
+\\(\\(\[LeftSkeleton] 9 \[RightSkeleton]\\)\\), \\(\\(-6.`\\)\\), \\(\\(-60.`\
+\\)\\), \\(\\(-13.`\\)\\), \\(\\(-39.`\\)\\), \\(\\(-50.`\\)\\), \
+\\(\\(-82.`\\)\\), \\(\\(-27.`\\)\\), \\(\\(-100.`\\)\\), \\(\\(-47.`\\)\\), \
+\\(\\(-20.`\\)\\), 1.`, \\(\\(-132.`\\)\\), 1.`, \\(\\(-31.`\\)\\), 1.`, \
+\\(\\(-39.`\\)\\), \\(\\(-19.`\\)\\), 1.`, \\(\\(-73.`\\)\\), 1.`, \\(\\(\
+\[LeftSkeleton] 6 \[RightSkeleton]\\)\\)}\\)\\)\\)\[NoBreak] cannot be \
+combined. \\!\\(\\*ButtonBox[\\\"\[RightSkeleton]\\\", \
+ButtonStyle->\\\"Link\\\", ButtonFrame->None, \
+ButtonData:>\\\"paclet:ref/message/Thread/tdlen\\\", ButtonNote -> \
+\\\"Thread::tdlen\\\"]\\)\"\>"}]], "Message", "MSG",
+ CellChangeTimes->{3.6106331752520533`*^9}],
+
+Cell[BoxData[
+ RowBox[{
+  StyleBox[
+   RowBox[{"ListPlot", "::", "lpn"}], "MessageName"], 
+  RowBox[{
+  ":", " "}], "\<\"\[NoBreak]\\!\\(Transpose[\\(\\(Abs[\\(\\(\\(\\({40.`, \
+50.`, 70.`, 60.`, 50.`, 100.`, 50.`}\\)\\) + \\(\\({1.`, \\(\\(-55.`\\)\\), \
+\\(\\(-32.`\\)\\), \\(\\(-40.`\\)\\), 1.`, \\(\\(-23.`\\)\\), \
+\\(\\(-32.`\\)\\), \\(\\(-10.`\\)\\), 0.`, 0.`, 0.`, \\(\\(-3.`\\)\\), 1.`, \
+0.`, \\(\\(-12.`\\)\\), \\(\\(-38.`\\)\\), \\(\\(-7.`\\)\\), \
+\\(\\(-22.`\\)\\), \\(\\(-14.`\\)\\), \\(\\(-3.`\\)\\), \\(\\(\[LeftSkeleton] \
+11 \[RightSkeleton]\\)\\), \\(\\(-60.`\\)\\), \\(\\(-13.`\\)\\), \
+\\(\\(-39.`\\)\\), \\(\\(-50.`\\)\\), \\(\\(-82.`\\)\\), \\(\\(-27.`\\)\\), \
+\\(\\(-100.`\\)\\), \\(\\(-47.`\\)\\), \\(\\(-20.`\\)\\), 1.`, \
+\\(\\(-132.`\\)\\), 1.`, \\(\\(-31.`\\)\\), 1.`, \\(\\(-39.`\\)\\), \
+\\(\\(-19.`\\)\\), 1.`, \\(\\(-73.`\\)\\), 1.`, \\(\\(\[LeftSkeleton] 6 \
+\[RightSkeleton]\\)\\)}\\)\\)\\)\\)]\\)\\)]\\)\[NoBreak] is not a list of \
+numbers or pairs of numbers. \\!\\(\\*ButtonBox[\\\"\[RightSkeleton]\\\", \
+ButtonStyle->\\\"Link\\\", ButtonFrame->None, \
+ButtonData:>\\\"paclet:ref/ListPlot\\\", ButtonNote -> \\\"ListPlot::lpn\\\"]\
+\\)\"\>"}]], "Message", "MSG",
+ CellChangeTimes->{3.610633175377138*^9}],
+
+Cell[BoxData[
+ RowBox[{"ListPlot", "[", 
+  RowBox[{"Transpose", "[", 
+   RowBox[{"Abs", "[", 
+    RowBox[{
+     RowBox[{"{", 
+      RowBox[{
+      "40.`", ",", "50.`", ",", "70.`", ",", "60.`", ",", "50.`", ",", 
+       "100.`", ",", "50.`"}], "}"}], "+", 
+     RowBox[{"{", 
+      RowBox[{"1.`", ",", 
+       RowBox[{"-", "55.`"}], ",", 
+       RowBox[{"-", "32.`"}], ",", 
+       RowBox[{"-", "40.`"}], ",", "1.`", ",", 
+       RowBox[{"-", "23.`"}], ",", 
+       RowBox[{"-", "32.`"}], ",", 
+       RowBox[{"-", "10.`"}], ",", "0.`", ",", "0.`", ",", "0.`", ",", 
+       RowBox[{"-", "3.`"}], ",", "1.`", ",", "0.`", ",", 
+       RowBox[{"-", "12.`"}], ",", 
+       RowBox[{"-", "38.`"}], ",", 
+       RowBox[{"-", "7.`"}], ",", 
+       RowBox[{"-", "22.`"}], ",", 
+       RowBox[{"-", "14.`"}], ",", 
+       RowBox[{"-", "3.`"}], ",", 
+       RowBox[{"-", "17.`"}], ",", 
+       RowBox[{"-", "6.`"}], ",", "1.`", ",", 
+       RowBox[{"-", "60.`"}], ",", "1.`", ",", 
+       RowBox[{"-", "23.`"}], ",", 
+       RowBox[{"-", "50.`"}], ",", 
+       RowBox[{"-", "70.`"}], ",", 
+       RowBox[{"-", "63.`"}], ",", "1.`", ",", 
+       RowBox[{"-", "6.`"}], ",", 
+       RowBox[{"-", "60.`"}], ",", 
+       RowBox[{"-", "13.`"}], ",", 
+       RowBox[{"-", "39.`"}], ",", 
+       RowBox[{"-", "50.`"}], ",", 
+       RowBox[{"-", "82.`"}], ",", 
+       RowBox[{"-", "27.`"}], ",", 
+       RowBox[{"-", "100.`"}], ",", 
+       RowBox[{"-", "47.`"}], ",", 
+       RowBox[{"-", "20.`"}], ",", "1.`", ",", 
+       RowBox[{"-", "132.`"}], ",", "1.`", ",", 
+       RowBox[{"-", "31.`"}], ",", "1.`", ",", 
+       RowBox[{"-", "39.`"}], ",", 
+       RowBox[{"-", "19.`"}], ",", "1.`", ",", 
+       RowBox[{"-", "73.`"}], ",", "1.`", ",", 
+       RowBox[{"-", "7.`"}], ",", 
+       RowBox[{"-", "44.`"}], ",", 
+       RowBox[{"-", "50.`"}], ",", 
+       RowBox[{"-", "40.`"}], ",", 
+       RowBox[{"-", "16.`"}], ",", 
+       RowBox[{"-", "87.`"}]}], "}"}]}], "]"}], "]"}], "]"}]], "Output",
+ CellChangeTimes->{{3.61063058966276*^9, 3.6106306366419663`*^9}, {
+   3.6106306868693275`*^9, 3.61063071650455*^9}, {3.610630748954104*^9, 
+   3.6106308085239477`*^9}, 3.6106322238067436`*^9, {3.610632272265396*^9, 
+   3.6106323185021086`*^9}, {3.6106323531090956`*^9, 3.610632376701765*^9}, {
+   3.6106325552701397`*^9, 3.6106325749772296`*^9}, {3.61063260979008*^9, 
+   3.610632629270769*^9}, 3.610632672804945*^9, {3.6106327297732744`*^9, 
+   3.6106328263699226`*^9}, 3.6106331753981524`*^9}]
+}, Open  ]]
+},
+WindowSize->{715, 618},
+WindowMargins->{{129, Automatic}, {Automatic, 27}},
+FrontEndVersion->"9.0 for Microsoft Windows (64-bit) (January 25, 2013)",
+StyleDefinitions->"Default.nb"
+]
+(* End of Notebook Content *)
+
+(* Internal cache information *)
+(*CellTagsOutline
+CellTagsIndex->{}
+*)
+(*CellTagsIndex
+CellTagsIndex->{}
+*)
+(*NotebookFileOutline
+Notebook[{
+Cell[CellGroupData[{
+Cell[579, 22, 3538, 88, 472, "Input"],
+Cell[4120, 112, 923, 22, 92, "Output"],
+Cell[5046, 136, 5789, 144, 572, "Output"],
+Cell[10838, 282, 6488, 161, 728, "Output"]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[17363, 448, 1306, 32, 92, "Input"],
+Cell[18672, 482, 634, 11, 31, "Output"],
+Cell[19309, 495, 1370, 24, 72, "Output"],
+Cell[20682, 521, 930, 16, 73, "Message"],
+Cell[21615, 539, 1223, 20, 73, "Message"],
+Cell[22841, 561, 1259, 21, 73, "Message"],
+Cell[24103, 584, 1246, 21, 90, "Message"],
+Cell[25352, 607, 2476, 58, 132, "Output"]
+}, Open  ]]
+}
+]
+*)
+
+(* End of internal cache information *)

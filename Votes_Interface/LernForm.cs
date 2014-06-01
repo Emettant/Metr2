@@ -104,7 +104,18 @@ namespace Learn_Interface
             //TODO: Move this part to votes_interface
             pointsFileStatus.Text = inProgressStatus;
             clearModelPart();
-            MetrLearn.Train.toTrainPoints(metricsBox.Text, trainPointsBox.Text);
+            Task task = new Task(() =>
+            {
+                this.Invoke(new Action(() =>
+                {
+                    this.Enabled = false;
+                    this.makePointsProgressBar.Visible = true;
+                    MetrLearn.Train.toTrainPoints(metricsBox.Text, trainPointsBox.Text, this, makePointsProgressBar);
+                    this.makePointsProgressBar.Visible = false;
+                    this.Enabled = true;
+                }));
+            });
+            task.Start();
             pointsFileStatus.Text = isDoneStatus + ToBuildModelAdvise;
             refreshPointsFileExistence();
         }

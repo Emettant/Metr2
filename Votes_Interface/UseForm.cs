@@ -49,6 +49,7 @@ namespace Use_Interface
             new Action<MetrInterface.OpenSaveFileGroup>((MetrInterface.OpenSaveFileGroup op) =>
             {
                 compilationViewGroup.saveGeneratedMetricToFile(op.FileName);
+                compilationViewGroup.InitSavedModel(op.FileName, 0);
             })
             );
 
@@ -63,6 +64,7 @@ namespace Use_Interface
             new Action<MetrInterface.OpenSaveFileGroup>((MetrInterface.OpenSaveFileGroup op) =>
             {
                 compilationViewGroup.saveGeneratedMetricToFile(op.FileName);
+                compilationViewGroup.InitSavedModel(op.FileName, 1);
             })
             );
 
@@ -78,6 +80,7 @@ namespace Use_Interface
           new Action<MetrInterface.OpenSaveFileGroup>((MetrInterface.OpenSaveFileGroup op) =>
             {
                 compilationViewGroup.saveGeneratedMetricToFile(op.FileName);
+                compilationViewGroup.InitSavedModel(op.FileName, 2);
             })
           );
             InitializeComponent();

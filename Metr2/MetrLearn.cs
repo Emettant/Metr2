@@ -13,9 +13,11 @@ namespace MetrLearn {
     using System.Xml.Serialization;
     using System.IO;
     using MetrXML;
+    using System.Windows.Forms;
+
     public class Train
     {
-       
+
 
 
         //TODO: Serialization/Deserialization from toTrainPoints have to move to MetrXML
@@ -25,8 +27,10 @@ namespace MetrLearn {
         /// </summary>
         /// <param name="sourceFileName">Voted Metrics by experts</param>
         /// <param name="targetFileName">Points for train (already calculated metrics as coefficients)</param>
-        static public void toTrainPoints(string sourceFileName, string targetFileName)
+        static public void toTrainPoints(string sourceFileName, string targetFileName, Form LearnForm, ProgressBar progressBar)
         {
+
+
             Type[] estimationTypes = { typeof(EstimationOfElement) };
             XmlSerializer serializer = new XmlSerializer(typeof(EstimationList), estimationTypes);
             var fs = new FileStream(sourceFileName, FileMode.Open);
@@ -43,6 +47,15 @@ namespace MetrLearn {
 
                 int ttt = Environment.TickCount;
 
+                LearnForm.Invoke(new Action(
+    () =>
+                {
+                    progressBar.Maximum = votesList.Estimations.Count;
+                    progressBar.Minimum = 0;
+                    progressBar.Value = 0;
+                }
+    ));
+                int k = 0;
                 foreach (var v in votesList.Estimations)
                 {
                     int tt = Environment.TickCount;
@@ -53,6 +66,12 @@ namespace MetrLearn {
                     var curClass = compilation.GetTypeByMetadataName(v.FullName);
                     int tt2 = Environment.TickCount - tt;
 
+                    LearnForm.Invoke(new Action(
+() =>
+                {
+                    progressBar.Value = k++;
+                }
+));
 
                     if (curClass != null)
                         coefs.AddPoint(

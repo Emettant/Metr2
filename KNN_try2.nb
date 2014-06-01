@@ -192,7 +192,7 @@ Cell[BoxData[{
 Cell[BoxData[
  RowBox[{"{", "1", "}"}]], "Output",
  CellChangeTimes->{
-  3.610533468891013*^9, {3.6105335091965504`*^9, 3.6105335184897237`*^9}}]
+  3.610533468891013*^9, {3.6105335091965504`*^9, 3.6105335375243635`*^9}}]
 }, Open  ]],
 
 Cell[BoxData[{
@@ -1545,8 +1545,8 @@ Cell[BoxData[
    3.61052959551818*^9, 3.6105297570603266`*^9}]
 }, Open  ]]
 },
-WindowSize->{715, 618},
-WindowMargins->{{86, Automatic}, {19, Automatic}},
+WindowSize->{626, 618},
+WindowMargins->{{42, Automatic}, {57, Automatic}},
 FrontEndVersion->"9.0 for Microsoft Windows (64-bit) (January 25, 2013)",
 StyleDefinitions->"Default.nb"
 ]
@@ -1564,15 +1564,15 @@ Notebook[{
 Cell[557, 20, 1710, 48, 172, "Input"],
 Cell[CellGroupData[{
 Cell[2292, 72, 964, 19, 92, "Input"],
-Cell[3259, 93, 3111, 72, 192, "Output"]
+Cell[3259, 93, 3111, 72, 328, "Output"]
 }, Open  ]],
 Cell[CellGroupData[{
 Cell[6407, 170, 701, 19, 92, "Input"],
 Cell[7111, 191, 145, 3, 31, "Output"]
 }, Open  ]],
-Cell[7271, 197, 2441, 61, 272, "Input"],
+Cell[7271, 197, 2441, 61, 292, "Input"],
 Cell[CellGroupData[{
-Cell[9737, 262, 5421, 121, 512, "Input"],
+Cell[9737, 262, 5421, 121, 432, "Input"],
 Cell[15161, 385, 53634, 882, 292, "Output"]
 }, Open  ]],
 Cell[CellGroupData[{
