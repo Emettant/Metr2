@@ -40,7 +40,6 @@
             this.browseSolutionBut = new System.Windows.Forms.Button();
             this.comboProjects = new System.Windows.Forms.ComboBox();
             this.loadProjectBut = new System.Windows.Forms.Button();
-            this.toLearnButton = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.voteBox)).BeginInit();
             this.SuspendLayout();
             // 
@@ -160,22 +159,11 @@
             this.loadProjectBut.UseVisualStyleBackColor = true;
             this.loadProjectBut.Click += new System.EventHandler(this.loadProjectBut_Click);
             // 
-            // toLearnButton
-            // 
-            this.toLearnButton.Location = new System.Drawing.Point(650, 248);
-            this.toLearnButton.Name = "toLearnButton";
-            this.toLearnButton.Size = new System.Drawing.Size(106, 41);
-            this.toLearnButton.TabIndex = 13;
-            this.toLearnButton.Text = "go Learn ==>";
-            this.toLearnButton.UseVisualStyleBackColor = true;
-            this.toLearnButton.Click += new System.EventHandler(this.toLearnButton_Click);
-            // 
             // Votes_Form
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(762, 498);
-            this.Controls.Add(this.toLearnButton);
             this.Controls.Add(this.loadProjectBut);
             this.Controls.Add(this.comboProjects);
             this.Controls.Add(this.browseSolutionBut);
@@ -211,7 +199,6 @@
         private System.Windows.Forms.Button browseSolutionBut;
         private System.Windows.Forms.ComboBox comboProjects;
         private System.Windows.Forms.Button loadProjectBut;
-        private System.Windows.Forms.Button toLearnButton;
     }
 }
 

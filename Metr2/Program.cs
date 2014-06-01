@@ -79,12 +79,34 @@ namespace MetrMain
     {
         static void Main(string[] args)
         {
-          //  MetrTest.MetricCalculatorTest.Run();
+            MetrLearn.KNNModel.TestRun();
+            //MetrLearn.LeastSquaresModel_MinMax.getModel(@"C:\temp2\Real_Metr2\Hierarchical - points.xml").SerializeTo(@"C:\temp2\Real_Metr2\Hierarchical - model2.xml");
 
-            string solutionPath = @"C:\Users\Vitaliy\Documents\Visual Studio 2013\Projects\Metr2\Metr2.sln";
-            var c = Metr.RoslynAPI.GetCompilation(solutionPath, "Metr2").GetTypeByMetadataName("MetrExamples.C");
+            //var lst = MetrXML.GoodSerializer.loadFromFileTrainPointsList(@"C:\temp2\Real_Metr2\Hierarchical - points.xml");
+            //MetrLearn.ModelParent model;
+            //MetrXML.GoodSerializer.loadFromFile(@"C:\temp2\Real_Metr2\Hierarchical - model2.xml", out model);
+            //var mod = (MetrLearn.LeastSquaresModel_MinMax)model;
+            //var ttt = mod.Apply(lst.Points[1]);
+            //var t = 1;
+            
+            //MetrTest.MetricCalculatorTest.Run();
+
+            //string solutionPath = @"C:\Users\Vitaliy\Documents\Visual Studio 2013\Projects\Metr2\Metr2.sln";
+
+            //var compilation = Metr.RoslynAPI.GetCompilation(solutionPath, "Metr2");
+            ////var what = compilation.GetTypeByMetadataName("MetrExamples.C");
+            //var loc = compilation.GetTypeByMetadataName("MetrExamples.ClassLOC");
+            //var t = Metr.MetricCalculator.CS(compilation, what);//10
+            //var t2 = Metr.MetricCalculator.NOO(compilation, what);//1
+            //var t3 = Metr.MetricCalculator.NOA(compilation, what);//3
+            //var t4 = Metr.MetricCalculator.SI100(compilation, what);//27
+            //var t5 = Metr.MetricCalculator.OS(compilation, compilation.GetTypeByMetadataName("MetrExamples.ClassLOC"));
+            //var t6 = Metr.MetricCalculator.OC(compilation, compilation.GetTypeByMetadataName("MetrExamples.CyclomaticClass"));//12
+            //var t7 = Metr.MetricCalculator.NP100(compilation, compilation.GetTypeByMetadataName("MetrExamples.NumParam"));
+            //var tt = 2;
             //var m1 = c.GetMembers().Where(x => x.Name == "anotherMethod").First();
             //var m1pro = m1.GetType().GetProperties();
+            //var t3 = Metr.MetricCalculator.NOA(compilation, compilation.GetTypeByMetadataName("MetrExamples.PartialClass"));
 
             //var m2 = c.GetMembers().Where(x => x.Name == "MethodToBeOverwritten").First();
             //var m2pro = m2.GetType().GetProperties();
@@ -93,10 +115,9 @@ namespace MetrMain
             //}
             //foreach (var el in m1pro) Console.WriteLine(el.Item1, " ", el.Item2);
             //foreach (var el in m2pro) Console.WriteLine(el.Item1, " ", el.Item2);
-            var l1 = Metr.RoslynAPI.getMethods(c);
-            var l2 = Metr.RoslynAPI.getMethods(c.BaseType);
-            var ttt = Metr.MetricCalculator.mergeChildParentMethodList(Metr.RoslynAPI.getMethods(c),Metr.RoslynAPI.getMethods(c.BaseType));
-            var t = 1;
+            //var l1 = Metr.RoslynAPI.getMethods(c);
+            //var l2 = Metr.RoslynAPI.getMethods(c.BaseType);
+            //var ttt = Metr.MetricCalculator.mergeChildParentMethodList(Metr.RoslynAPI.getMethods(c),Metr.RoslynAPI.getMethods(c.BaseType));
 
 
 
@@ -106,7 +127,7 @@ namespace MetrMain
             // MetrLearn.TrainTest.Run();
 
             //MetrXML.GoodSerializerTest.Run();
-            
+
 
             //string solutionPath = @"C:\Users\Vitaliy\Documents\Visual Studio 2013\Projects\Metr2\Metr2.sln";
             //var workspace = MSBuildWorkspace.Create();

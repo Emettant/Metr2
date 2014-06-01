@@ -42,8 +42,6 @@
             this.buildModel = new System.Windows.Forms.Button();
             this.modelFileStatus = new System.Windows.Forms.Label();
             this.methodComboBox = new System.Windows.Forms.ComboBox();
-            this.toVotesButton = new System.Windows.Forms.Button();
-            this.toUseButton = new System.Windows.Forms.Button();
             this.SuspendLayout();
             // 
             // metricsBox
@@ -168,37 +166,16 @@
             // methodComboBox
             // 
             this.methodComboBox.FormattingEnabled = true;
-            this.methodComboBox.Location = new System.Drawing.Point(73, 322);
+            this.methodComboBox.Location = new System.Drawing.Point(18, 275);
             this.methodComboBox.Name = "methodComboBox";
-            this.methodComboBox.Size = new System.Drawing.Size(187, 24);
+            this.methodComboBox.Size = new System.Drawing.Size(436, 24);
             this.methodComboBox.TabIndex = 16;
             // 
-            // toVotesButton
-            // 
-            this.toVotesButton.Location = new System.Drawing.Point(18, 250);
-            this.toVotesButton.Name = "toVotesButton";
-            this.toVotesButton.Size = new System.Drawing.Size(123, 41);
-            this.toVotesButton.TabIndex = 17;
-            this.toVotesButton.Text = "<== go Votes ";
-            this.toVotesButton.UseVisualStyleBackColor = true;
-            // 
-            // toUseButton
-            // 
-            this.toUseButton.Location = new System.Drawing.Point(609, 250);
-            this.toUseButton.Name = "toUseButton";
-            this.toUseButton.Size = new System.Drawing.Size(123, 41);
-            this.toUseButton.TabIndex = 18;
-            this.toUseButton.Text = "go Use ==>";
-            this.toUseButton.UseVisualStyleBackColor = true;
-            this.toUseButton.Click += new System.EventHandler(this.toUseButton_Click);
-            // 
-            // Learn_form
+            // Learnform
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(774, 457);
-            this.Controls.Add(this.toUseButton);
-            this.Controls.Add(this.toVotesButton);
             this.Controls.Add(this.methodComboBox);
             this.Controls.Add(this.modelFileStatus);
             this.Controls.Add(this.buildModel);
@@ -213,7 +190,7 @@
             this.Controls.Add(this.label1);
             this.Controls.Add(this.metricsBox);
             this.Controls.Add(this.MetricsBrowse);
-            this.Name = "Learn_form";
+            this.Name = "Learnform";
             this.Text = "Learn";
             this.ResumeLayout(false);
             this.PerformLayout();
@@ -236,8 +213,6 @@
         private System.Windows.Forms.Button buildModel;
         private System.Windows.Forms.Label modelFileStatus;
         private System.Windows.Forms.ComboBox methodComboBox;
-        private System.Windows.Forms.Button toVotesButton;
-        private System.Windows.Forms.Button toUseButton;
     }
 }
 

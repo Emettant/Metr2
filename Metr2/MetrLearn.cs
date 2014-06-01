@@ -107,7 +107,7 @@ namespace MetrLearn {
             }
 
             
-            var model = getTrainedModel(trainPoints, method);
+            var model = getTrainedModel(sourceFileName, trainPoints, method);
 
             GoodSerializer.saveToFile(targetFileName, model);
 
@@ -167,20 +167,26 @@ namespace MetrLearn {
             Compilation compilation = Metr.RoslynAPI.GetCompilation(solutionPath, projectToPick);
             var point = TrainPoint.getClassRequestAnswerPoint(Metr.RoslynAPI.GetSolution(solutionPath), compilation, className);
             if (point == null) return -1;// if (className is namespace name)
-            else return (int)Math.Round(model.Apply(point));
+            else return (int)Math.Max(Math.Round(model.Apply(point)), 0);
         }
 
 
 
-        static public ModelParent getTrainedModel(TrainPointsList trainPoints, Type method)
+        static public ModelParent getTrainedModel(string trainPointsFileName, TrainPointsList trainPoints, Type method)
         {
             if (method == typeof(ModelParent))
                 return ModelParent.getModel(trainPoints);
 
+            if (method == typeof(LeastSquaresModel_MinMax))
+                return LeastSquaresModel_MinMax.getModel(trainPointsFileName);
+
             if (method == typeof(LeastSquaresModel))
                 return LeastSquaresModel.getModel(trainPoints);
-           
-           return null;
+
+            if (method == typeof(KNNModel))
+                return KNNModel.getModel(trainPointsFileName);
+
+            return null;
         }
 
 

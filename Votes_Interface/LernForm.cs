@@ -18,8 +18,8 @@ namespace Learn_Interface
         public Learnform()
         {
             InitializeComponent();
-            fillMetricsAndPointsBoxTogether(@"C:\temp2\Metr2.xml");
-            clearModelPart();
+            clearModelPart();   
+            fillMetricsAndPointsBoxTogether(@"C:\temp2\Real_Metr2\Hierarchical.xml");
             InitCombobox();
 
         }
@@ -85,6 +85,7 @@ namespace Learn_Interface
                 trainPointsBoxToModelBox();
             }
             else clearModelPart();
+
         }
 
         private void MetricsBrowse_Click(object sender, EventArgs e)

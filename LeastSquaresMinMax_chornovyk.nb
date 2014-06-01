@@ -1,0 +1,676 @@
+(* Content-type: application/vnd.wolfram.mathematica *)
+
+(*** Wolfram Notebook File ***)
+(* http://www.wolfram.com/nb *)
+
+(* CreatedBy='Mathematica 9.0' *)
+
+(*CacheID: 234*)
+(* Internal cache information:
+NotebookFileLineBreakTest
+NotebookFileLineBreakTest
+NotebookDataPosition[       157,          7]
+NotebookDataLength[     24518,        666]
+NotebookOptionsPosition[     23226,        621]
+NotebookOutlinePosition[     23570,        636]
+CellTagsIndexPosition[     23527,        633]
+WindowFrame->Normal*)
+
+(* Beginning of Notebook Content *)
+Notebook[{
+
+Cell[CellGroupData[{
+Cell[BoxData[{
+ RowBox[{
+  RowBox[{
+   RowBox[{"UnpackTrainPointList", "[", "path_", "]"}], ":=", 
+   RowBox[{"Module", "[", 
+    RowBox[{
+     RowBox[{"{", 
+      RowBox[{"array", ",", "TrainDataArrows"}], "}"}], ",", 
+     RowBox[{
+      RowBox[{"array", "=", 
+       RowBox[{"Import", "[", "path", "]"}]}], ";", "\[IndentingNewLine]", 
+      RowBox[{
+       RowBox[{"array", "[", 
+        RowBox[{"[", 
+         RowBox[{"2", ",", "3", ",", "1", ",", "3", ",", "All", ",", "2"}], 
+         "]"}], "]"}], "//", "OutputForm"}], ";", "\[IndentingNewLine]", 
+      RowBox[{"TrainDataArrows", "=", 
+       RowBox[{"array", "[", 
+        RowBox[{"[", 
+         RowBox[{"2", ",", "3", ",", "1", ",", "3", ",", "All", ",", "2"}], 
+         "]"}], "]"}]}], ";", "\[IndentingNewLine]", 
+      RowBox[{"ToExpression", "[", 
+       RowBox[{"TrainDataArrows", "[", 
+        RowBox[{"[", 
+         RowBox[{"All", ",", 
+          RowBox[{"1", ";;", 
+           RowBox[{"-", "2"}]}], ",", "2"}], "]"}], "]"}], "]"}]}]}], "]"}]}],
+   ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{
+   RowBox[{"NormalizeMaxMin", "[", "Data_", "]"}], ":=", 
+   RowBox[{"Module", "[", 
+    RowBox[{
+     RowBox[{"{", 
+      RowBox[{
+       RowBox[{"AntiNormalizationCoefs", "=", 
+        RowBox[{"{", "}"}]}], ",", 
+       RowBox[{"NormalizationCoefs", "=", 
+        RowBox[{"{", "}"}]}], ",", 
+       RowBox[{"MinCoefs", "=", 
+        RowBox[{"{", "}"}]}]}], "}"}], ",", 
+     RowBox[{
+      RowBox[{"Do", "[", 
+       RowBox[{
+        RowBox[{
+         RowBox[{"AppendTo", "[", 
+          RowBox[{"AntiNormalizationCoefs", ",", 
+           RowBox[{"(", 
+            RowBox[{
+             RowBox[{"Max", "[", 
+              RowBox[{"Data", "[", 
+               RowBox[{"[", 
+                RowBox[{"All", ",", "kkk"}], "]"}], "]"}], "]"}], "-", 
+             RowBox[{"Min", "[", 
+              RowBox[{"Data", "[", 
+               RowBox[{"[", 
+                RowBox[{"All", ",", "kkk"}], "]"}], "]"}], "]"}]}], ")"}]}], 
+          "]"}], ";", "\[IndentingNewLine]", 
+         RowBox[{"AppendTo", "[", 
+          RowBox[{"MinCoefs", ",", 
+           RowBox[{"Min", "[", 
+            RowBox[{"Data", "[", 
+             RowBox[{"[", 
+              RowBox[{"All", ",", "kkk"}], "]"}], "]"}], "]"}]}], "]"}], 
+         ";"}], ",", 
+        RowBox[{"{", 
+         RowBox[{"kkk", ",", 
+          RowBox[{"Length", "[", 
+           RowBox[{"Data", "[", 
+            RowBox[{"[", "1", "]"}], "]"}], "]"}]}], "}"}]}], "]"}], ";", 
+      "\[IndentingNewLine]", 
+      RowBox[{"NormalizationCoefs", "=", 
+       RowBox[{
+        RowBox[{
+         RowBox[{"If", "[", 
+          RowBox[{
+           RowBox[{"#", "\[NotEqual]", "0"}], ",", 
+           RowBox[{"1", "/", "#"}], ",", "#"}], "]"}], "&"}], "/@", 
+        "AntiNormalizationCoefs"}]}], ";", "\[IndentingNewLine]", 
+      RowBox[{
+       RowBox[{
+        RowBox[{
+         RowBox[{"(", 
+          RowBox[{"#", "-", "MinCoefs"}], ")"}], "*", "NormalizationCoefs"}], 
+        "&"}], "/@", "Data"}]}]}], "]"}]}], ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"NormalizeMaxMin", "[", 
+   RowBox[{
+   "UnpackTrainPointList", "[", 
+    "\"\<C:\\\\temp2\\\\Real_Metr2\\\\Hierarchical - points.xml\>\"", "]"}], 
+   "]"}], "[", 
+  RowBox[{"[", "1", "]"}], "]"}]}], "Input",
+ CellChangeTimes->{{3.6104487972824087`*^9, 3.610448828022827*^9}, 
+   3.610449620220907*^9}],
+
+Cell[BoxData[
+ RowBox[{"{", 
+  RowBox[{
+  "0", ",", "0", ",", "1", ",", "0", ",", "0", ",", "0", ",", "0", ",", "0", 
+   ",", "0", ",", "0", ",", "0", ",", "0"}], "}"}]], "Output",
+ CellChangeTimes->{3.6104488623313723`*^9}]
+}, Open  ]],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{
+   RowBox[{"givenData", " ", "=", " ", 
+    RowBox[{
+    "UnpackTrainPointList", "[", 
+     "\"\<C:\\\\temp2\\\\Real_Metr2\\\\Hierarchical - points.xml\>\"", 
+     "]"}]}], ";"}], "\[IndentingNewLine]"}]], "Input",
+ CellChangeTimes->{{3.610468702788355*^9, 3.610468767703249*^9}}],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[{"givenData", "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"up", " ", "=", 
+   RowBox[{
+    RowBox[{
+     RowBox[{"Max", "[", "#", "]"}], "&"}], "/@", 
+    RowBox[{"Transpose", "[", "givenData", "]"}]}]}], 
+  ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"down", " ", "=", " ", 
+   RowBox[{
+    RowBox[{
+     RowBox[{"Min", "[", "#", "]"}], "&"}], "/@", 
+    RowBox[{"Transpose", "[", "givenData", "]"}]}]}], ";"}]}], "Input",
+ CellChangeTimes->{{3.610468772842661*^9, 3.610468852530594*^9}, {
+  3.610469078872264*^9, 3.6104690938562117`*^9}, {3.61046925490991*^9, 
+  3.610469255074019*^9}}],
+
+Cell[BoxData[
+ RowBox[{"{", 
+  RowBox[{
+   RowBox[{"{", 
+    RowBox[{"1", ",", "1", ",", "3", ",", "0", ",", "4", ",", "0", ",", 
+     RowBox[{"-", "2"}], ",", "0", ",", "0", ",", "0", ",", "0", ",", "0"}], 
+    "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{
+    "9", ",", "2", ",", "1", ",", "0", ",", "7", ",", "0", ",", "3", ",", "0",
+      ",", "2", ",", "0", ",", "7", ",", "30"}], "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{
+    "1", ",", "2", ",", "2", ",", "0", ",", "4", ",", "0", ",", "0", ",", "0",
+      ",", "0", ",", "0", ",", "0", ",", "0"}], "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{
+    "1", ",", "3", ",", "0", ",", "0", ",", "4", ",", "0", ",", "0", ",", "0",
+      ",", "0", ",", "0", ",", "0", ",", "0"}], "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{
+    "1", ",", "3", ",", "0", ",", "0", ",", "4", ",", "0", ",", "0", ",", "0",
+      ",", "0", ",", "0", ",", "0", ",", "0"}], "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{
+    "1", ",", "2", ",", "0", ",", "0", ",", "4", ",", "0", ",", "0", ",", "0",
+      ",", "0", ",", "0", ",", "0", ",", "0"}], "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{
+    "11", ",", "3", ",", "0", ",", "1", ",", "10", ",", "1", ",", "3", ",", 
+     "27", ",", "2", ",", "0", ",", "5", ",", "30"}], "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{"2", ",", "1", ",", "0", ",", "0", ",", "5", ",", "0", ",", 
+     RowBox[{"-", "1"}], ",", "0", ",", "1", ",", "0", ",", "0", ",", "0"}], 
+    "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{
+    "3", ",", "1", ",", "0", ",", "2", ",", "6", ",", "0", ",", "0", ",", "0",
+      ",", "4", ",", "0", ",", "0", ",", "5"}], "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{"2", ",", "1", ",", "0", ",", "0", ",", "4", ",", "0", ",", 
+     RowBox[{"-", "2"}], ",", "0", ",", "4", ",", "0", ",", "0", ",", "0"}], 
+    "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{
+    "3", ",", "1", ",", "0", ",", "4", ",", "7", ",", "0", ",", "0", ",", "0",
+      ",", "5", ",", "0", ",", "5", ",", "0"}], "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{
+    "3", ",", "1", ",", "0", ",", "0", ",", "6", ",", "0", ",", "0", ",", "0",
+      ",", "4", ",", "0", ",", "0", ",", "5"}], "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{
+    "19", ",", "2", ",", "0", ",", "31", ",", "9", ",", "0", ",", "5", ",", 
+     "0", ",", "14", ",", "19", ",", "12", ",", "100"}], "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{"2", ",", "1", ",", "2", ",", "0", ",", "4", ",", "0", ",", 
+     RowBox[{"-", "2"}], ",", "0", ",", "4", ",", "0", ",", "0", ",", "10"}], 
+    "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{
+    "8", ",", "2", ",", "1", ",", "2", ",", "8", ",", "0", ",", "2", ",", "0",
+      ",", "10", ",", "0", ",", "11", ",", "70"}], "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{
+    "2", ",", "3", ",", "0", ",", "1", ",", "8", ",", "0", ",", "0", ",", "0",
+      ",", "17", ",", "0", ",", "40", ",", "30"}], "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{"1", ",", "1", ",", "0", ",", "0", ",", "5", ",", "0", ",", 
+     RowBox[{"-", "1"}], ",", "0", ",", "35", ",", "2", ",", "5", ",", "10"}],
+     "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{"2", ",", "1", ",", "0", ",", "1", ",", "5", ",", "0", ",", 
+     RowBox[{"-", "1"}], ",", "0", ",", "12", ",", "0", ",", "0", ",", "12"}],
+     "}"}]}], "}"}]], "Output",
+ CellChangeTimes->{{3.610468812958308*^9, 3.6104688549211793`*^9}, 
+   3.6104690964509397`*^9, 3.610469255716444*^9}]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"MatrixRank", "[", "%44", "]"}]], "Input",
+ NumberMarks->False],
+
+Cell[BoxData["11"], "Output",
+ CellChangeTimes->{3.61046925854454*^9}]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[{
+ RowBox[{
+  RowBox[{"Data", " ", "=", " ", "givenData"}], ";"}], "\[IndentingNewLine]", 
+ RowBox[{"AntiNormalizationCoefs", "=", 
+  RowBox[{"{", "}"}]}], "\[IndentingNewLine]", 
+ RowBox[{"NormalizationCoefs", "=", 
+  RowBox[{"{", "}"}]}], "\[IndentingNewLine]", 
+ RowBox[{"MinCoefs", "=", 
+  RowBox[{"{", "}"}]}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{
+   RowBox[{"NormalizeMaxMinVector", "[", 
+    RowBox[{"vector_", ",", "up_", ",", "down_"}], "]"}], ":=", 
+   RowBox[{"Module", "[", 
+    RowBox[{
+     RowBox[{"{", "NormalizationCoefs", "}"}], ",", "\[IndentingNewLine]", 
+     RowBox[{
+      RowBox[{"NormalizationCoefs", "=", 
+       RowBox[{
+        RowBox[{
+         RowBox[{"If", "[", 
+          RowBox[{
+           RowBox[{"#", "\[NotEqual]", "0"}], ",", 
+           RowBox[{"1", "/", "#"}], ",", "#"}], "]"}], "&"}], "/@", 
+        RowBox[{"(", 
+         RowBox[{"up", "-", "down"}], ")"}]}]}], ";", "\[IndentingNewLine]", 
+      RowBox[{
+       RowBox[{
+        RowBox[{
+         RowBox[{"(", 
+          RowBox[{"#", "-", "down"}], ")"}], "*", "NormalizationCoefs"}], 
+        "&"}], "[", "vector", "]"}]}]}], "\[IndentingNewLine]", "]"}]}], 
+  ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{
+   RowBox[{"NormalizeMaxMinVector", "[", 
+    RowBox[{"#", ",", "up", ",", "down"}], "]"}], "&"}], "/@", 
+  "Data"}]}], "Input",
+ CellChangeTimes->{{3.6104691333744397`*^9, 3.610469144137589*^9}, {
+  3.610469180288602*^9, 3.6104692462621665`*^9}, {3.6104694025756645`*^9, 
+  3.6104694108841844`*^9}, {3.6104694539710846`*^9, 3.610469487998217*^9}, {
+  3.6104695306877985`*^9, 3.610469642439027*^9}, {3.610479280828556*^9, 
+  3.6104792818752546`*^9}}],
+
+Cell[BoxData[
+ RowBox[{"{", "}"}]], "Output",
+ CellChangeTimes->{{3.61046918596437*^9, 3.6104691971900597`*^9}, {
+   3.610469241228578*^9, 3.610469261801943*^9}, 3.61046941343688*^9, {
+   3.610469455328987*^9, 3.610469488690677*^9}, 3.6104696433366175`*^9}],
+
+Cell[BoxData[
+ RowBox[{"{", "}"}]], "Output",
+ CellChangeTimes->{{3.61046918596437*^9, 3.6104691971900597`*^9}, {
+   3.610469241228578*^9, 3.610469261801943*^9}, 3.61046941343688*^9, {
+   3.610469455328987*^9, 3.610469488690677*^9}, 3.610469643344623*^9}],
+
+Cell[BoxData[
+ RowBox[{"{", "}"}]], "Output",
+ CellChangeTimes->{{3.61046918596437*^9, 3.6104691971900597`*^9}, {
+   3.610469241228578*^9, 3.610469261801943*^9}, 3.61046941343688*^9, {
+   3.610469455328987*^9, 3.610469488690677*^9}, 3.610469643350627*^9}],
+
+Cell[BoxData[
+ RowBox[{"{", 
+  RowBox[{
+   RowBox[{"{", 
+    RowBox[{
+    "0", ",", "0", ",", "1", ",", "0", ",", "0", ",", "0", ",", "0", ",", "0",
+      ",", "0", ",", "0", ",", "0", ",", "0"}], "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{
+     FractionBox["4", "9"], ",", 
+     FractionBox["1", "2"], ",", 
+     FractionBox["1", "3"], ",", "0", ",", 
+     FractionBox["1", "2"], ",", "0", ",", 
+     FractionBox["5", "7"], ",", "0", ",", 
+     FractionBox["2", "35"], ",", "0", ",", 
+     FractionBox["7", "40"], ",", 
+     FractionBox["3", "10"]}], "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{"0", ",", 
+     FractionBox["1", "2"], ",", 
+     FractionBox["2", "3"], ",", "0", ",", "0", ",", "0", ",", 
+     FractionBox["2", "7"], ",", "0", ",", "0", ",", "0", ",", "0", ",", 
+     "0"}], "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{"0", ",", "1", ",", "0", ",", "0", ",", "0", ",", "0", ",", 
+     FractionBox["2", "7"], ",", "0", ",", "0", ",", "0", ",", "0", ",", 
+     "0"}], "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{"0", ",", "1", ",", "0", ",", "0", ",", "0", ",", "0", ",", 
+     FractionBox["2", "7"], ",", "0", ",", "0", ",", "0", ",", "0", ",", 
+     "0"}], "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{"0", ",", 
+     FractionBox["1", "2"], ",", "0", ",", "0", ",", "0", ",", "0", ",", 
+     FractionBox["2", "7"], ",", "0", ",", "0", ",", "0", ",", "0", ",", 
+     "0"}], "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{
+     FractionBox["5", "9"], ",", "1", ",", "0", ",", 
+     FractionBox["1", "31"], ",", "1", ",", "1", ",", 
+     FractionBox["5", "7"], ",", "1", ",", 
+     FractionBox["2", "35"], ",", "0", ",", 
+     FractionBox["1", "8"], ",", 
+     FractionBox["3", "10"]}], "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{
+     FractionBox["1", "18"], ",", "0", ",", "0", ",", "0", ",", 
+     FractionBox["1", "6"], ",", "0", ",", 
+     FractionBox["1", "7"], ",", "0", ",", 
+     FractionBox["1", "35"], ",", "0", ",", "0", ",", "0"}], "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{
+     FractionBox["1", "9"], ",", "0", ",", "0", ",", 
+     FractionBox["2", "31"], ",", 
+     FractionBox["1", "3"], ",", "0", ",", 
+     FractionBox["2", "7"], ",", "0", ",", 
+     FractionBox["4", "35"], ",", "0", ",", "0", ",", 
+     FractionBox["1", "20"]}], "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{
+     FractionBox["1", "18"], ",", "0", ",", "0", ",", "0", ",", "0", ",", "0",
+      ",", "0", ",", "0", ",", 
+     FractionBox["4", "35"], ",", "0", ",", "0", ",", "0"}], "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{
+     FractionBox["1", "9"], ",", "0", ",", "0", ",", 
+     FractionBox["4", "31"], ",", 
+     FractionBox["1", "2"], ",", "0", ",", 
+     FractionBox["2", "7"], ",", "0", ",", 
+     FractionBox["1", "7"], ",", "0", ",", 
+     FractionBox["1", "8"], ",", "0"}], "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{
+     FractionBox["1", "9"], ",", "0", ",", "0", ",", "0", ",", 
+     FractionBox["1", "3"], ",", "0", ",", 
+     FractionBox["2", "7"], ",", "0", ",", 
+     FractionBox["4", "35"], ",", "0", ",", "0", ",", 
+     FractionBox["1", "20"]}], "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{"1", ",", 
+     FractionBox["1", "2"], ",", "0", ",", "1", ",", 
+     FractionBox["5", "6"], ",", "0", ",", "1", ",", "0", ",", 
+     FractionBox["2", "5"], ",", "1", ",", 
+     FractionBox["3", "10"], ",", "1"}], "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{
+     FractionBox["1", "18"], ",", "0", ",", 
+     FractionBox["2", "3"], ",", "0", ",", "0", ",", "0", ",", "0", ",", "0", 
+     ",", 
+     FractionBox["4", "35"], ",", "0", ",", "0", ",", 
+     FractionBox["1", "10"]}], "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{
+     FractionBox["7", "18"], ",", 
+     FractionBox["1", "2"], ",", 
+     FractionBox["1", "3"], ",", 
+     FractionBox["2", "31"], ",", 
+     FractionBox["2", "3"], ",", "0", ",", 
+     FractionBox["4", "7"], ",", "0", ",", 
+     FractionBox["2", "7"], ",", "0", ",", 
+     FractionBox["11", "40"], ",", 
+     FractionBox["7", "10"]}], "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{
+     FractionBox["1", "18"], ",", "1", ",", "0", ",", 
+     FractionBox["1", "31"], ",", 
+     FractionBox["2", "3"], ",", "0", ",", 
+     FractionBox["2", "7"], ",", "0", ",", 
+     FractionBox["17", "35"], ",", "0", ",", "1", ",", 
+     FractionBox["3", "10"]}], "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{"0", ",", "0", ",", "0", ",", "0", ",", 
+     FractionBox["1", "6"], ",", "0", ",", 
+     FractionBox["1", "7"], ",", "0", ",", "1", ",", 
+     FractionBox["2", "19"], ",", 
+     FractionBox["1", "8"], ",", 
+     FractionBox["1", "10"]}], "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{
+     FractionBox["1", "18"], ",", "0", ",", "0", ",", 
+     FractionBox["1", "31"], ",", 
+     FractionBox["1", "6"], ",", "0", ",", 
+     FractionBox["1", "7"], ",", "0", ",", 
+     FractionBox["12", "35"], ",", "0", ",", "0", ",", 
+     FractionBox["3", "25"]}], "}"}]}], "}"}]], "Output",
+ CellChangeTimes->{{3.61046918596437*^9, 3.6104691971900597`*^9}, {
+   3.610469241228578*^9, 3.610469261801943*^9}, 3.61046941343688*^9, {
+   3.610469455328987*^9, 3.610469488690677*^9}, 3.6104696433666415`*^9}]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"\[IndentingNewLine]", 
+  RowBox[{
+   RowBox[{
+    RowBox[{
+     RowBox[{"NormalizeMaxMinVector", "[", 
+      RowBox[{"vector_", ",", "up_", ",", "down_"}], "]"}], ":=", 
+     RowBox[{"Module", "[", 
+      RowBox[{
+       RowBox[{"{", "NormalizationCoefs", "}"}], ",", 
+       RowBox[{
+        RowBox[{"NormalizationCoefs", "=", 
+         RowBox[{
+          RowBox[{
+           RowBox[{"If", "[", 
+            RowBox[{
+             RowBox[{"#", "\[NotEqual]", "0"}], ",", 
+             RowBox[{"1", "/", "#"}], ",", "#"}], "]"}], "&"}], "/@", 
+          RowBox[{"(", 
+           RowBox[{"up", "-", "down"}], ")"}]}]}], ";", "\[IndentingNewLine]", 
+        RowBox[{
+         RowBox[{
+          RowBox[{
+           RowBox[{"(", 
+            RowBox[{"#", "-", "down"}], ")"}], "*", "NormalizationCoefs"}], 
+          "&"}], "[", "vector", "]"}]}]}], "]"}]}], ";", 
+    RowBox[{
+     RowBox[{"UnpackTrainPointList", "[", "path_", "]"}], ":=", 
+     RowBox[{"Module", "[", 
+      RowBox[{
+       RowBox[{"{", 
+        RowBox[{"array", ",", "TrainDataArrows"}], "}"}], ",", 
+       RowBox[{
+        RowBox[{"array", "=", 
+         RowBox[{"Import", "[", "path", "]"}]}], ";", "\[IndentingNewLine]", 
+        RowBox[{
+         RowBox[{"array", "[", 
+          RowBox[{"[", 
+           RowBox[{"2", ",", "3", ",", "1", ",", "3", ",", "All", ",", "2"}], 
+           "]"}], "]"}], "//", "OutputForm"}], ";", "\[IndentingNewLine]", 
+        RowBox[{"TrainDataArrows", "=", 
+         RowBox[{"array", "[", 
+          RowBox[{"[", 
+           RowBox[{"2", ",", "3", ",", "1", ",", "3", ",", "All", ",", "2"}], 
+           "]"}], "]"}]}], ";", "\[IndentingNewLine]", 
+        RowBox[{"ToExpression", "[", 
+         RowBox[{"TrainDataArrows", "[", 
+          RowBox[{"[", 
+           RowBox[{"All", ",", 
+            RowBox[{"1", ";;", 
+             RowBox[{"-", "2"}]}], ",", "2"}], "]"}], "]"}], "]"}]}]}], 
+      "]"}]}], ";", 
+    RowBox[{"getRequest", ":=", 
+     RowBox[{
+      RowBox[{"#", "[", 
+       RowBox[{"[", 
+        RowBox[{"All", ",", 
+         RowBox[{"1", ";;", 
+          RowBox[{"-", "2"}]}]}], "]"}], "]"}], "&"}]}], ";"}], "\n", 
+   RowBox[{
+    RowBox[{"getAnswer", ":=", 
+     RowBox[{
+      RowBox[{"#", "[", 
+       RowBox[{"[", 
+        RowBox[{"All", ",", 
+         RowBox[{
+          RowBox[{"-", "1"}], ";;", 
+          RowBox[{"-", "1"}]}]}], "]"}], "]"}], "&"}]}], ";", "1"}], "\n", 
+   RowBox[{
+    RowBox[{"givenData", "=", 
+     RowBox[{
+     "UnpackTrainPointList", "[", 
+      "\"\<C:\\\\temp2\\\\Real_Metr2\\\\Hierarchical - points.xml\>\"", 
+      "]"}]}], ";", "1"}], "\n", 
+   RowBox[{
+    RowBox[{"upborder", "=", 
+     RowBox[{
+      RowBox[{
+       RowBox[{"Max", "[", "#", "]"}], "&"}], "/@", 
+      RowBox[{"Transpose", "[", "givenData", "]"}]}]}], ";", "1"}], "\n", 
+   RowBox[{
+    RowBox[{"downborder", "=", 
+     RowBox[{
+      RowBox[{
+       RowBox[{"Min", "[", "#", "]"}], "&"}], "/@", 
+      RowBox[{"Transpose", "[", "givenData", "]"}]}]}], ";", "1"}], "\n", 
+   RowBox[{"N", "[", "upborder", "]"}], "\n", 
+   RowBox[{"N", "[", "downborder", "]"}], "\n", 
+   RowBox[{
+    RowBox[{"NormalizedGivenData", "=", 
+     RowBox[{
+      RowBox[{
+       RowBox[{"NormalizeMaxMinVector", "[", 
+        RowBox[{"#", ",", "upborder", ",", "downborder"}], "]"}], "&"}], "/@", 
+      RowBox[{"getRequest", "[", "givenData", "]"}]}]}], ";"}]}]}]], "Input",
+ CellChangeTimes->{{3.610479288765112*^9, 3.6104794001050706`*^9}}],
+
+Cell[BoxData["1"], "Output",
+ CellChangeTimes->{{3.610479331866745*^9, 3.610479402023345*^9}}],
+
+Cell[BoxData["1"], "Output",
+ CellChangeTimes->{{3.610479331866745*^9, 3.6104794020923862`*^9}}],
+
+Cell[BoxData["1"], "Output",
+ CellChangeTimes->{{3.610479331866745*^9, 3.6104794021013975`*^9}}],
+
+Cell[BoxData["1"], "Output",
+ CellChangeTimes->{{3.610479331866745*^9, 3.6104794021104026`*^9}}],
+
+Cell[BoxData[
+ RowBox[{"{", 
+  RowBox[{
+  "19.`", ",", "3.`", ",", "3.`", ",", "31.`", ",", "10.`", ",", "1.`", ",", 
+   "5.`", ",", "27.`", ",", "35.`", ",", "19.`", ",", "40.`", ",", "100.`"}], 
+  "}"}]], "Output",
+ CellChangeTimes->{{3.610479331866745*^9, 3.6104794021194086`*^9}}],
+
+Cell[BoxData[
+ RowBox[{"{", 
+  RowBox[{
+  "1.`", ",", "1.`", ",", "0.`", ",", "0.`", ",", "4.`", ",", "0.`", ",", 
+   RowBox[{"-", "2.`"}], ",", "0.`", ",", "0.`", ",", "0.`", ",", "0.`", ",", 
+   "0.`"}], "}"}]], "Output",
+ CellChangeTimes->{{3.610479331866745*^9, 3.610479402131417*^9}}],
+
+Cell[BoxData[
+ RowBox[{
+  StyleBox[
+   RowBox[{"Thread", "::", "tdlen"}], "MessageName"], 
+  RowBox[{
+  ":", " "}], "\<\"Objects of unequal length in \[NoBreak]\\!\\(\\(\\({1, 1, \
+3, 0, 4, 0, \\(\\(-2\\)\\), 0, 0, 0, 0}\\)\\) + \\(\\({\\(\\(-1\\)\\), \
+\\(\\(-1\\)\\), 0, 0, \\(\\(-4\\)\\), 0, 2, 0, 0, 0, 0, 0}\\)\\)\\)\[NoBreak] \
+cannot be combined. \\!\\(\\*ButtonBox[\\\"\[RightSkeleton]\\\", \
+ButtonStyle->\\\"Link\\\", ButtonFrame->None, \
+ButtonData:>\\\"paclet:ref/message/Thread/tdlen\\\", ButtonNote -> \
+\\\"Thread::tdlen\\\"]\\)\"\>"}]], "Message", "MSG",
+ CellChangeTimes->{{3.610479331921777*^9, 3.6104794022494907`*^9}}],
+
+Cell[BoxData[
+ RowBox[{
+  StyleBox[
+   RowBox[{"Thread", "::", "tdlen"}], "MessageName"], 
+  RowBox[{
+  ":", " "}], "\<\"Objects of unequal length in \[NoBreak]\\!\\(\\(\\({9, 2, \
+1, 0, 7, 0, 3, 0, 2, 0, 7}\\)\\) + \\(\\({\\(\\(-1\\)\\), \\(\\(-1\\)\\), 0, \
+0, \\(\\(-4\\)\\), 0, 2, 0, 0, 0, 0, 0}\\)\\)\\)\[NoBreak] cannot be \
+combined. \\!\\(\\*ButtonBox[\\\"\[RightSkeleton]\\\", \
+ButtonStyle->\\\"Link\\\", ButtonFrame->None, \
+ButtonData:>\\\"paclet:ref/message/Thread/tdlen\\\", ButtonNote -> \
+\\\"Thread::tdlen\\\"]\\)\"\>"}]], "Message", "MSG",
+ CellChangeTimes->{{3.610479331921777*^9, 3.6104794022584963`*^9}}],
+
+Cell[BoxData[
+ RowBox[{
+  StyleBox[
+   RowBox[{"Thread", "::", "tdlen"}], "MessageName"], 
+  RowBox[{
+  ":", " "}], "\<\"Objects of unequal length in \[NoBreak]\\!\\(\\(\\({1, 2, \
+2, 0, 4, 0, 0, 0, 0, 0, 0}\\)\\) + \\(\\({\\(\\(-1\\)\\), \\(\\(-1\\)\\), 0, \
+0, \\(\\(-4\\)\\), 0, 2, 0, 0, 0, 0, 0}\\)\\)\\)\[NoBreak] cannot be \
+combined. \\!\\(\\*ButtonBox[\\\"\[RightSkeleton]\\\", \
+ButtonStyle->\\\"Link\\\", ButtonFrame->None, \
+ButtonData:>\\\"paclet:ref/message/Thread/tdlen\\\", ButtonNote -> \
+\\\"Thread::tdlen\\\"]\\)\"\>"}]], "Message", "MSG",
+ CellChangeTimes->{{3.610479331921777*^9, 3.610479402266502*^9}}],
+
+Cell[BoxData[
+ RowBox[{
+  StyleBox[
+   RowBox[{"General", "::", "stop"}], "MessageName"], 
+  RowBox[{
+  ":", " "}], "\<\"Further output of \[NoBreak]\\!\\(\\*StyleBox[\\(Thread :: \
+tdlen\\), \\\"MessageName\\\"]\\)\[NoBreak] will be suppressed during this \
+calculation. \\!\\(\\*ButtonBox[\\\"\[RightSkeleton]\\\", \
+ButtonStyle->\\\"Link\\\", ButtonFrame->None, \
+ButtonData:>\\\"paclet:ref/message/General/stop\\\", ButtonNote -> \
+\\\"General::stop\\\"]\\)\"\>"}]], "Message", "MSG",
+ CellChangeTimes->{{3.610479331921777*^9, 3.6104794023915896`*^9}}]
+}, Open  ]]
+},
+WindowSize->{715, 618},
+WindowMargins->{{353, Automatic}, {5, Automatic}},
+FrontEndVersion->"9.0 for Microsoft Windows (64-bit) (January 25, 2013)",
+StyleDefinitions->"Default.nb"
+]
+(* End of Notebook Content *)
+
+(* Internal cache information *)
+(*CellTagsOutline
+CellTagsIndex->{}
+*)
+(*CellTagsIndex
+CellTagsIndex->{}
+*)
+(*NotebookFileOutline
+Notebook[{
+Cell[CellGroupData[{
+Cell[579, 22, 3383, 93, 332, "Input"],
+Cell[3965, 117, 224, 5, 31, "Output"]
+}, Open  ]],
+Cell[4204, 125, 315, 8, 72, "Input"],
+Cell[CellGroupData[{
+Cell[4544, 137, 608, 16, 72, "Input"],
+Cell[5155, 155, 3344, 76, 212, "Output"]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[8536, 236, 86, 2, 31, "Input"],
+Cell[8625, 240, 70, 1, 31, "Output"]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[8732, 246, 1679, 42, 192, "Input"],
+Cell[10414, 290, 257, 4, 31, "Output"],
+Cell[10674, 296, 255, 4, 31, "Output"],
+Cell[10932, 302, 255, 4, 31, "Output"],
+Cell[11190, 308, 5083, 127, 579, "Output"]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[16310, 440, 3473, 95, 412, "Input"],
+Cell[19786, 537, 94, 1, 31, "Output"],
+Cell[19883, 540, 96, 1, 31, "Output"],
+Cell[19982, 543, 96, 1, 31, "Output"],
+Cell[20081, 546, 96, 1, 31, "Output"],
+Cell[20180, 549, 284, 6, 31, "Output"],
+Cell[20467, 557, 289, 6, 31, "Output"],
+Cell[20759, 565, 638, 12, 39, "Message"],
+Cell[21400, 579, 625, 12, 39, "Message"],
+Cell[22028, 593, 623, 12, 39, "Message"],
+Cell[22654, 607, 556, 11, 21, "Message"]
+}, Open  ]]
+}
+]
+*)
+
+(* End of internal cache information *)
+

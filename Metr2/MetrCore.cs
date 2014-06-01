@@ -270,18 +270,19 @@ namespace Metr
             return 0;//CBO(Solution solution, Compilation compilation, String className) 
         }
 
-    
-        static public IEnumerable<IMethodSymbol> mergeChildParentMethodList(IEnumerable<IMethodSymbol> list1, IEnumerable<IMethodSymbol> list2) {
+
+        static private IEnumerable<IMethodSymbol> mergeChildParentMethodList(IEnumerable<IMethodSymbol> list1, IEnumerable<IMethodSymbol> list2)
+        {
             //var together = new Dictionary<Tuple<string,ITypeSymbol,System.Collections.Immutable.ImmutableArray<ITypeParameterSymbol>>,IMethodSymbol>();
 
-            var list2_dif =  new List<IMethodSymbol>();
-            
+            var list2_dif = new List<IMethodSymbol>();
+
             foreach (var meth in list2)
             {
 
                 var t = list1.Where((IMethodSymbol bmeth) =>
                 {
-                    
+
                     if (bmeth.PartialImplementationPart != null) bmeth = bmeth.PartialImplementationPart;
                     var declarations = bmeth.DeclaringSyntaxReferences;
                     if (declarations != null && declarations.Length == 1)
@@ -294,12 +295,12 @@ namespace Metr
                     }
 
                     return false;
-                    
+
                 }
                  ).FirstOrDefault();
 
                 if (t == null) list2_dif.Add(t);
-                
+
             }
             //return list1;
             foreach (var el in list1) yield return el;
@@ -315,14 +316,160 @@ namespace Metr
             //}
         }
 
-        //static public Int32 NOO(ITypeSymbol cur) {
-        //    var ttt = getClassNOOList(cur);
-        //    return ttt.Count();
-        //}
+        /// <summary>
+        /// Class size.
+        /// All class methods and properties
+        /// </summary>
+        /// <param name="compilation"></param>
+        /// <param name="cur"></param>
+        /// <returns></returns>
+        static public Int32 CS(Compilation compilation, ITypeSymbol cur)
+        {
+            var curType = RoslynAPI.emitAndLoad(compilation, cur);
+            //var ms = curTypeInfo.GetMethods();
+            //var ps = curTypeInfo.GetProperties();
+            return curType.GetMethods().Count() + curType.GetProperties().Count();
+        }
+
+        /// <summary>
+        /// overrided methods
+        /// </summary>
+        /// <param name="compilation"></param>
+        /// <param name="cur"></param>
+        /// <returns></returns>
+        static public Int32 NOO(Compilation compilation, ITypeSymbol cur) {
+            int sm = 0;
+            foreach (var meth in RoslynAPI.getMethods(cur)) sm += meth.IsOverride ? 1 : 0;
+            return sm;
+        }
+
+        /// <summary>
+        /// added methods.
+        /// New methods does not count.
+        /// </summary>
+        /// <param name="compilation"></param>
+        /// <param name="cur"></param>
+        /// <returns></returns>
+        static public Int32 NOA(Compilation compilation, ITypeSymbol cur)
+        {
+            var curType = RoslynAPI.emitAndLoad(compilation, cur);
+            var baseType = curType.BaseType;
+            var mc = curType.GetMethods().Count();
+            //TODO exclude extention methods
+            int mb = 0;
+            if (baseType != null)
+            mb = baseType.GetMethods().Where(x => !x.IsPrivate).Count();
+            return Math.Max(mc - mb, 0); 
+        }
+
+        /// <summary>
+        /// Metric 4
+        /// metric SI * 100
+        /// </summary>
+        /// <param name="compilation"></param>
+        /// <param name="cur"></param>
+        /// <returns></returns>
+        static public Int32 SI100(Compilation compilation, ITypeSymbol cur) {
+            var curType = RoslynAPI.emitAndLoad(compilation, cur);
+            var count = (curType.GetMethods() != null) ? curType.GetMethods().Count() : 0;
+            return 100 * (NOO(compilation, cur) * DIT(compilation, cur)) / (count + 1);
+        }
+
+       
+        const int bad_value = -1;
+
+        /// <summary>
+        /// metric 5
+        /// average LOC
+        /// </summary>
+        /// <param name="compilation"></param>
+        /// <param name="cur"></param>
+        /// <returns></returns>
+        static public Int32 OS(Compilation compilation, ITypeSymbol cur) {
+            Int32 sm = 0;
+            int k = 0;
+            var ttt = RoslynAPI.getMethods(cur);
+            foreach (var el in RoslynAPI.getMethods(cur))
+            {
+                var temp = LOC(el);
+
+                if (temp != bad_value)
+                {
+                    k++;
+                    sm += temp;
+                }
+            }
+            return (k != 0) ? sm / k : 0;
+        }
+        /// <summary>
+        /// Metric 6
+        /// Kind of cyclomatic complexity
+        /// </summary>
+        /// <param name="compilation"></param>
+        /// <param name="cur"></param>
+        /// <returns></returns>
+        static public Int32 OC(Compilation compilation, ITypeSymbol cur)
+        {
+            Int32 sm = 0;
+            foreach (var el in RoslynAPI.getMethods(cur))
+            {
+                var decl = RoslynAPI.getMethodDeclaration(el);
+                if (decl == null) continue;
+                var body = decl.DescendantNodes();
+
+                var dos = body.OfType<DoStatementSyntax>();
+                var whiles = body.OfType<WhileStatementSyntax>();
+                var ifs = body.OfType<IfStatementSyntax>();
+                var fors = body.OfType<ForStatementSyntax>();
+                var foreaches = body.OfType<ForEachStatementSyntax>();
+                var switches = body.OfType<SwitchSectionSyntax>();
+                var gotos = body.OfType<GotoStatementSyntax>();
+                sm += dos.Count() + whiles.Count() + ifs.Count() + fors.Count() + foreaches.Count() + switches.Count() + gotos.Count();
+            }
+            return sm;
+        }
+
+        static public Int32 NP100(IMethodSymbol el)
+        {
+            var temp = LOC(el);
+            return (temp != 0) ? 100 * el.Parameters.Count() / LOC(el) : bad_value;
+        }
 
 
+       
+        /// <summary>
+        /// Metric 7
+        /// Average Number of Parameters per operation
+        /// </summary>
+        /// <param name="compilation"></param>
+        /// <param name="cur"></param>
+        /// <returns></returns>
+        static public Int32 NP100(Compilation compilation, ITypeSymbol cur) {
+            Int32 sm = 0;
+            int k = 0;
+            foreach (var el in RoslynAPI.getMethods(cur))
+            {
+                var temp = NP100(el);
+                if (temp != bad_value)
+                {
+                    k++;
+                    sm += temp;
+                }
+            }
+            return (k != 0) ? sm / k : 0;
+        }
+
+
+        static public Int32 LOC(IMethodSymbol el) {
+            //TODO: kill comments
+            var decl = RoslynAPI.getMethodDeclaration(el);
+            if (decl == null) return bad_value;
+            //Console.WriteLine(decl.ToFullString());
+            return  decl.ToFullString().Count(x => x == '\n');
+        }
+
+       
     }
-
     public class RoslynAPI
     {
 
@@ -391,6 +538,41 @@ namespace Metr
         static public IEnumerable<IMethodSymbol> getMethods(ITypeSymbol cur)
         {
             return cur.GetMembers().Select(x => x as IMethodSymbol).Where(x => x != null);
+        }
+
+        static  Dictionary<Compilation, System.Reflection.Assembly> _compilationAssembly_cache;
+        static Dictionary<Compilation, System.Reflection.Assembly> compilationAssembly_cache {
+            get {
+                if (_compilationAssembly_cache == null) _compilationAssembly_cache = new Dictionary<Compilation, System.Reflection.Assembly>();
+                return _compilationAssembly_cache;
+            }
+        }
+
+        static private HashSet<Compilation> SetOfEmmitedCompilations = new HashSet<Compilation>();
+
+        static public Type emitAndLoad(Compilation compilation, ITypeSymbol cur)
+        {
+            System.Reflection.Assembly assembly;
+            if (compilationAssembly_cache.Keys.Contains(compilation)) assembly = compilationAssembly_cache[compilation];
+            else {
+                var name = "emittedOne1.dll";
+                var filePath = System.IO.Path.Combine(System.IO.Directory.GetCurrentDirectory(), name);
+                if (!SetOfEmmitedCompilations.Contains(compilation))
+                {
+                    compilation.Emit(filePath);
+                    SetOfEmmitedCompilations.Add(compilation);
+                }
+                assembly = System.Reflection.Assembly.LoadFrom(filePath);
+                compilationAssembly_cache[compilation] = assembly;
+            }
+            return assembly.GetTypes().Where(x => x.Name == cur.Name).First();
+        }
+
+        static public SyntaxNode getMethodDeclaration(IMethodSymbol el) {
+            var meth = (el.PartialImplementationPart != null) ? el.PartialImplementationPart : el;
+            var declarings = meth.DeclaringSyntaxReferences;
+            if (declarings == null || declarings.Count() == 0) return null;
+            return declarings.First().GetSyntax();
         }
     }
 

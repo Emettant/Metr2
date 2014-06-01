@@ -140,6 +140,13 @@ namespace MetrXML
 
             model = (LeastSquaresModel)TMySerializable.DeserializeFrom(fileName, typeof(LeastSquaresModel));
             if (model != null && ((ModelParent)model).ApproachName == typeof(LeastSquaresModel).ToString()) return typeof(LeastSquaresModel);
+
+            model = (LeastSquaresModel_MinMax)TMySerializable.DeserializeFrom(fileName, typeof(LeastSquaresModel_MinMax));
+            if (model != null && ((ModelParent)model).ApproachName == typeof(LeastSquaresModel_MinMax).ToString()) return typeof(LeastSquaresModel_MinMax);
+
+            model = (KNNModel)TMySerializable.DeserializeFrom(fileName, typeof(KNNModel));
+            if (model != null && ((ModelParent)model).ApproachName == typeof(KNNModel).ToString()) return typeof(KNNModel);
+
             return null;
         }
 
@@ -195,6 +202,29 @@ namespace MetrLearn
 
         [XmlAttribute("CBO")]
         public int CBO { get; set; }
+
+
+        [XmlAttribute("CS")]
+        public int CS { get; set; }
+
+        [XmlAttribute("NOO")]
+        public int NOO { get; set; }
+
+        [XmlAttribute("NOA")]
+        public int NOA { get; set; }
+
+        [XmlAttribute("SI100")]
+        public int SI100 { get; set; }
+
+        [XmlAttribute("OS")]
+        public int OS { get; set; }
+
+        [XmlAttribute("OC")]
+        public int OC { get; set; }
+
+        [XmlAttribute("NP100")]
+        public int NP100 { get; set; }
+
 
         [XmlAttribute("Answer")]
         public int Answer { get; set; }
@@ -272,6 +302,14 @@ namespace MetrLearn
                         Metr.MetricCalculator.DIT(compilation,curClass),
                         Metr.MetricCalculator.NOC(solution,compilation,curClass),
                         Metr.MetricCalculator.CBO(solution, compilation,curClass),
+
+                        Metr.MetricCalculator.CS(compilation,curClass),
+                        Metr.MetricCalculator.NOO(compilation,curClass),
+                        Metr.MetricCalculator.NOA(compilation,curClass),
+                        Metr.MetricCalculator.SI100(compilation,curClass),
+                        Metr.MetricCalculator.OS(compilation,curClass),
+                        Metr.MetricCalculator.OC(compilation,curClass),
+                        Metr.MetricCalculator.NP100(compilation,curClass),
                         estimation
                     }, className);
             else return null;
@@ -314,6 +352,12 @@ namespace MetrLearn
                 //{ }
             }
         }
+
+        [XmlIgnore]
+        public static string load_getRequestGetAnswer =
+@"getRequest := #[[All, 1 ;; -2]] &;
+getAnswer := #[[All, -1 ;; -1]] &;";
+        
         /// <summary>
         /// Unpack_TrainData.nb
         /// </summary>
@@ -321,32 +365,90 @@ namespace MetrLearn
         public static string load_UnpackTrainPointList =
 @"UnpackTrainPointList[path_] := Module[{
     array,
-    TrainDataArrows,
-    
+    TrainDataArrows
     },
    array = Import[path];
    array[[2, 3, 1, 3, All, 2]] // OutputForm;
    TrainDataArrows = array[[2, 3, 1, 3, All, 2]];
-   TrainDataArrows[[All, 1 ;; -2, 2]]
+   ToExpression[TrainDataArrows[[All, 1 ;; -2, 2]]]
    ];";
-        /// <summary>
-        /// Normalization_0_1.nb
-        /// </summary>
-        [XmlIgnore]
-        public static string load_NormalizeMaxMin =
-@"NormalizeMaxMin [Data_] := 
-  Module[{NormalizationCoefs = {}, MinCoefs = {}},
-   Do[AppendTo[NormalizationCoefs, 
-     1/(Max[Data[[All, kkk]]] - Min[Data[[All, kkk]]])];
-    AppendTo[MinCoefs, Min[Data[[All, kkk]]]];
-    , {kkk, Length[Data]}];
-   (# - MinCoefs)*NormalizationCoefs & /@ Data
+
+        //        /// <summary>
+        //        /// Normalization_0_1.nb
+        //        /// </summary>
+        //        [XmlIgnore]
+        //        public static string load_NormalizeMaxMin =
+        //@"NormalizeMaxMin [Data_] := Module[{AntiNormalizationCoefs = {},
+        //    NormalizationCoefs = {}, MinCoefs = {}},
+        //   Do[AppendTo[
+        //     AntiNormalizationCoefs, (Max[Data[[All, kkk]]] - 
+        //       Min[Data[[All, kkk]]])];
+        //    AppendTo[MinCoefs, Min[Data[[All, kkk]]]];
+        //    , {kkk, Length[Data[[1]]]}];
+        //   NormalizationCoefs = If[# != 0, 1/#, #] & /@ AntiNormalizationCoefs;
+        //   (# - MinCoefs)*NormalizationCoefs & /@ Data
+        //   ];";
+
+        public static string load_NormalizeMaxMin_Vector =
+            @"NormalizeMaxMinVector[vector_, up_, down_] := 
+  Module[{NormalizationCoefs},
+   NormalizationCoefs = If[# != 0, 1/#, #] & /@ (up - down);
+   (# - down)*NormalizationCoefs &[vector]
    ];";
-        public static string BuildUnpackTrainPointList(string filePath)
+
+        public static string getUnpackTrainPointList(string filePath)
         {
-            Mathematica.Calc(load_UnpackTrainPointList + load_NormalizeMaxMin);
-            return "NormalizeMaxMin[UnpackTrainPointList[" + filePath + "]]";
+            var str = "\"" + filePath.Replace(@"\", @"\\") + "\"";
+            return "UnpackTrainPointList[" + str + "]";
         }
+
+
+        public static string getNormalizationMaxMin_Up(string matrix)
+        {
+
+            return "Max[#] & /@ Transpose[" + matrix + "]";
+        }
+
+        public static string getNormalizationMaxMin_Down(string matrix)
+        {
+
+            return "Min[#] & /@ Transpose[" + matrix + "]";
+        }
+
+        public static string getNormalizedMaxMin_Vector(string vector, string up, string down) {
+            return "NormalizeMaxMinVector[" + vector + "," + up + "," + down + "]";
+        }
+
+        public static string getNormilized(string matrix, string up, string down)
+        {
+            return getNormalizedMaxMin_Vector("#", up, down) + "&/@" + matrix;
+        }
+        public static string getRequest(string data)
+        {
+            return "getRequest[" + data + "]";
+        }
+        public static string getAnswer(string data)
+        {
+            return "Flatten[getAnswer[" + data + "]]";
+        }
+
+        public static void NormalizationMinMax_Scenario(string sourceFile, out double[] up, out double[] down) {
+            Mathematica.Load(TrainPointsList.load_NormalizeMaxMin_Vector + TrainPointsList.load_UnpackTrainPointList + TrainPointsList.load_getRequestGetAnswer);
+            Mathematica.LoadVar("givenData", TrainPointsList.getUnpackTrainPointList(sourceFile));
+
+            Mathematica.LoadVar("upborder", TrainPointsList.getNormalizationMaxMin_Up(TrainPointsList.getRequest("givenData")));
+            Mathematica.LoadVar("downborder", TrainPointsList.getNormalizationMaxMin_Down(TrainPointsList.getRequest("givenData")));
+
+            Mathematica.Calc("N[upborder]");
+            up = Mathematica.Result.GetDoubleArray();
+
+            Mathematica.Calc("N[downborder]");
+            down = Mathematica.Result.GetDoubleArray();
+
+            Mathematica.LoadVar("NormalizedGivenData", TrainPointsList.getNormilized(TrainPointsList.getRequest("givenData"), "upborder", "downborder"));
+            Mathematica.LoadVar("givenAnswer", TrainPointsList.getAnswer("givenData"));
+        }
+
     }
    
 
@@ -359,6 +461,10 @@ namespace MetrLearn
 
         public TrainedModelElement() { Val = -1; }
         public TrainedModelElement(double _val) { Val = _val; }
+        public override string ToString()
+        {
+            return Val.ToString();
+        }
     }
 
     //[XmlRoot("TrainedModel")]
@@ -402,7 +508,7 @@ namespace MetrLearn
         {
             get {
                 if (_childs_and_self_list == null)
-                    _childs_and_self_list = new List<Type> { typeof(ModelParent), typeof(LeastSquaresModel), typeof(KNNModel)};
+                    _childs_and_self_list = new List<Type> { typeof(LeastSquaresModel), typeof(LeastSquaresModel_MinMax), typeof(KNNModel)};
                 return _childs_and_self_list;
             }
         }
@@ -513,32 +619,126 @@ namespace MetrLearn
 
     }
 
-   
+    interface INormalizedMinMax {
+        [XmlArray("Max_Values")]
+        [XmlArrayItem("Item")]
+        List<TrainedModelElement> max_values { get; set; }// = new List<TrainedModelElement>();
+
+        [XmlArray("Min_Values")]
+        [XmlArrayItem("Item")]
+        List<TrainedModelElement> min_values { get; set; }// = new List<TrainedModelElement>();
+
+    }
+    public class LeastSquaresModel_MinMax : LeastSquaresModel, INormalizedMinMax
+    {
+
+        [XmlArray("Max_Values")]
+        [XmlArrayItem("Item")]
+        public List<TrainedModelElement> max_values { get; set; } = new List<TrainedModelElement>();
+
+        [XmlArray("Min_Values")]
+        [XmlArrayItem("Item")]
+        public List<TrainedModelElement> min_values { get; set; } = new List<TrainedModelElement>();
+        public LeastSquaresModel_MinMax(IEnumerable<double> list, IEnumerable<double> up, IEnumerable<double> down) : base(list) {
+            max_values = up.Select(x => new TrainedModelElement(x)).ToList();
+            min_values = down.Select(x => new TrainedModelElement(x)).ToList();
+        }
+        public LeastSquaresModel_MinMax() :base() { }
+        public override void SerializeTo(string fileName)
+        {
+            //
+            //Type[] types = { };
+            XmlSerializer serializer = new XmlSerializer(typeof(LeastSquaresModel_MinMax));
+            using (var fs = new FileStream(fileName, FileMode.Create))
+            {
+                try
+                {
+                    serializer.Serialize(fs, this);
+                }
+                catch
+                { }
+            }
+        }
+        public override double Apply(TrainPoint point)
+        {
+            Mathematica.Load(TrainPointsList.load_NormalizeMaxMin_Vector + TrainPointsList.load_getRequestGetAnswer);
+            Mathematica.LoadVar("Normilized", TrainPointsList.getNormalizedMaxMin_Vector(ListToString(point.getRequest()), 
+                ListToString(max_values.Select(x => x.Val)), 
+                ListToString(min_values.Select(x => x.Val))));
+            Mathematica.Calc("Normilized . " + ListToString(Items.Select(x => x.Val)));
+            return Mathematica.Result.GetDouble();
+        }
+
+        public static string getLeastSquares(string data, string data2)
+        {
+            return "N[LeastSquares[" + data + "," + data2 + "]]";
+        }
+
+
+
+        static public new LeastSquaresModel_MinMax getModel(string sourceFile)
+        {
+            double[] up, down;
+            TrainPointsList.NormalizationMinMax_Scenario(sourceFile,out up, out down);
+
+            Mathematica.Calc(
+                getLeastSquares(
+                "NormalizedGivenData",
+                TrainPointsList.getAnswer("givenData")
+                )
+                );
+
+            return new LeastSquaresModel_MinMax(Mathematica.Result.GetDoubleArray(), up, down);
+        }
+
+        static public void TestRun() {
+            MetrLearn.LeastSquaresModel_MinMax.getModel(@"C:\temp2\Real_Metr2\Hierarchical - points.xml").SerializeTo(@"C:\temp2\Real_Metr2\Hierarchical - model2.xml");
+
+            var lst = MetrXML.GoodSerializer.loadFromFileTrainPointsList(@"C:\temp2\Real_Metr2\Hierarchical - points.xml");
+            MetrLearn.ModelParent model;
+            MetrXML.GoodSerializer.loadFromFile(@"C:\temp2\Real_Metr2\Hierarchical - model2.xml", out model);
+            var mod = (MetrLearn.LeastSquaresModel_MinMax)model;
+            var ttt = mod.Apply(lst.Points[1]);
+            var t = 1;
+        }
+
+    }
 
     [XmlRoot("KNN_Model")]
-    //[XmlInclude(typeof(TrainPoint))]
-    public class KNNModel : ModelParent
+    [XmlInclude(typeof(TrainPointsList))]
+    public class KNNModel : ModelParent, INormalizedMinMax
     {
+        [XmlArray("Max_Values")]
+        [XmlArrayItem("Item")]
+        public List<TrainedModelElement> max_values { get; set; } = new List<TrainedModelElement>();
+
+        [XmlArray("Min_Values")]
+        [XmlArrayItem("Item")]
+        public List<TrainedModelElement> min_values { get; set; } = new List<TrainedModelElement>();
         //[XmlElement("MethodName")]
         //public int Distance { get; set; }
 
         [XmlElement("kNeighbour")]
         public int kNeighbour { get; set; }
 
-        [XmlElement("kDistance")]
-        public double kDistance { get; set; }
+        //[XmlElement("kDistance")]
+        //public double kDistance { get; set; }
 
-        [XmlElement("pathToTrainData")]
-        public string pathToTrainData { get; set; }
-        //[XmlArray("KNNModelList")]
-        //[XmlArrayItem("KNNModelListItem")]
-        //public List<TrainPoint> Points = new List<TrainPoint>();
+        //[XmlElement("pathToTrainData")]
+        //public string pathToTrainData { get; set; }
+
+        [XmlElement("KNNModelPointsFile")]
+        public string PointsFile;
 
         public KNNModel() : base() { }
-        public KNNModel(int kN, double kD, string path) : base() {
+        public KNNModel(int kN,
+                        //double kD, 
+            double[] up, double[] down, string fileName) : base() {
             kNeighbour = kN;
-            kDistance = kD;
-            pathToTrainData = path;
+            //kDistance = kD;
+            max_values = up.Select(x => new TrainedModelElement(x)).ToList();
+            min_values = down.Select(x => new TrainedModelElement(x)).ToList();
+            PointsFile = fileName;
         }
 
         override public void SerializeTo(string fileName)
@@ -558,22 +758,70 @@ namespace MetrLearn
         }
         override public double Apply(TrainPoint point)
         {
-            throw new NotImplementedException();
+            double[] up, down;
+            TrainPointsList.NormalizationMinMax_Scenario(PointsFile, out up, out down);
+            Mathematica.LoadVar("Normilized", TrainPointsList.getNormalizedMaxMin_Vector(ListToString(point.getRequest()),
+                ListToString(max_values.Select(x => x.Val)),
+                ListToString(min_values.Select(x => x.Val))));
+            Mathematica.Calc(getAgreggate( getNearest("NormalizedGivenData", "givenAnswer", "Normilized", kNeighbour.ToString())));
+            return Mathematica.Result.GetDouble();
+        }
+
+        static public void TestRun()
+        {
+            MetrLearn.KNNModel.getModel(@"C:\temp2\Real_Metr2\Hierarchical - points.xml").SerializeTo(@"C:\temp2\Real_Metr2\Hierarchical - model2.xml");
+
+            var lst = MetrXML.GoodSerializer.loadFromFileTrainPointsList(@"C:\temp2\Real_Metr2\Hierarchical - points.xml");
+            MetrLearn.ModelParent model;
+            MetrXML.GoodSerializer.loadFromFile(@"C:\temp2\Real_Metr2\Hierarchical - model2.xml", out model);
+            var mod = (MetrLearn.KNNModel)model;
+            var ttt = mod.Apply(lst.Points[1]);
+            var t = 1;
         }
 
         static new public KNNModel getModel(string sourceFile)
         {
-            var trainPointsList = GoodSerializer.loadFromFileTrainPointsList(sourceFile);
-            Mathematica.Calc(
-                    //TrainPointsList.load_UnpackTrainPointList + 
-                    KNNModel.load_SetEuclideanDistance +
-                KNNModel.load_GetApplyModel +
-                "GetLearnedModelKNN[" + TrainPointsList.BuildUnpackTrainPointList(sourceFile) + ",20]"
-                );
-            var res = Mathematica.Result.GetDoubleArray();
-            return new KNNModel((int)Math.Round(res[0]), res[1], sourceFile);
+            double[] up, down;
+            TrainPointsList.NormalizationMinMax_Scenario(sourceFile, out up, out down);
+
+            Mathematica.Calc(getKNNModel("NormalizedGivenData"));
+
+            return new KNNModel((int)Mathematica.Result.GetDouble(), up, down, sourceFile);
+
+            //var trainPointsList = GoodSerializer.loadFromFileTrainPointsList(sourceFile);
+            //Mathematica.Calc(
+            //        //TrainPointsList.load_UnpackTrainPointList + 
+            //        KNNModel.load_SetEuclideanDistance +
+            //    KNNModel.load_GetApplyModel +
+            //    "GetLearnedModelKNN[" + TrainPointsList.BuildUnpackTrainPointList(sourceFile) + ",20]"
+            //    );
+            //var res = Mathematica.Result.GetDoubleArray();
+            //return new KNNModel((int)Math.Round(res[0]), res[1], sourceFile);
         }
 
+
+        //[XmlIgnore]
+        //private bool SetVar_NormalizedGivenData_Field = false;
+  
+        //public bool SetVar_NormalizedGivenData(string sourceFile, out double[] up, out double[] down) { 
+        //        if (!SetVar_NormalizedGivenData_Field) {
+        //            TrainPointsList.NormalizationMinMax_Scenario(sourceFile, out up, out down);
+                    
+        //        }
+        //        else 
+        //    }
+
+        static string getKNNModel(string points) {
+            return "1";
+        }
+
+        static string getNearest(string request, string answer, string what, string howMany) {
+            return "Nearest[" + request + "->" + answer + ", " + what + "," + howMany + "]";
+        }
+
+        static string getAgreggate(string array) {
+            return "Mean[" + array + "]";
+        }
         /// <summary>
         /// from ModelKNN.nb
         /// </summary>

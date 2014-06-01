@@ -31,9 +31,19 @@ namespace MetrMath
                     kl = MathLinkFactory.CreateKernelLink();//"-linkmode launch -linkname 'c:\\program files\\wolfram research\\mathematica\\9.0\\mathkernel'");
                     kl.WaitAndDiscardAnswer();
                 }
-                Console.WriteLine(input);
+                //Console.WriteLine(input);
                 kl.Evaluate(input);
                 kl.WaitForAnswer();
+            }
+
+            public static void Load(string input) {
+                Calc(input + "1");
+                //TODO load without response :)
+                Result.GetDouble();
+            }
+
+            public static void LoadVar(string variable, string value) {
+                Load(variable + "=" + value + ";");
             }
 
         }

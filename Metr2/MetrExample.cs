@@ -6,6 +6,78 @@ using System.Threading.Tasks;
 
 namespace MetrExamples
 {
+    class NumParam {
+        void method(int t2, int t3) {
+            //this is comment
+            var t1 = 2;
+            if (t2 == 3)
+                t1++;
+            //another comment
+        }
+    }
+    class ClassLOC {
+        void method() {
+            //this is comment
+            var t1 = 2;
+            if (t1 == 3)
+                t1++;
+            //another comment
+            {
+                //this is comment
+                var t0 = 2;
+                if (t1 == 3)
+                    t1++;
+                //another comment
+            }
+        }
+
+        int method2()
+        {
+            var t1 = 2;
+            var t2 = 3;
+            return t1 + t2;
+        }
+    }
+
+    class CyclomaticClass {
+        public void method() {
+            // this is commentary
+            Int32 t1 = 1, t2 = 2, t3 = 3;
+            var list = new Int32[] { 4, 5, 6 };
+            if (t1 == 1) t2++;
+            else t2--;
+            if (t1 == 2) t2++;
+            else t2--;
+            if (t1 == 3) t2++;
+            else t2--;
+            // this is commentary
+            // and this is too
+            for (t1 = 5; t1 < t3; t1++) {
+                foreach (var el in list) {
+                    t2 += el;
+                }
+            }
+            //another one
+            switch (t2) {
+                case 1: { t3++; break; }
+                case 32: { t3--; goto Finish; }
+                default: { t3 += 2; goto case 32; }
+            }
+
+            while (t2 < t3) {
+                t1++;
+            }
+
+            Finish:
+            do
+            {
+                t1++;
+            } while (t2 < t3);
+
+            Hi:
+                t1++;
+        }
+    }
 
     partial class PartialClass
     {

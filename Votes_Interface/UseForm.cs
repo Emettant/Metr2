@@ -23,7 +23,8 @@ namespace Use_Interface
         public UseForm()
         {
             compilationViewGroup = new MetrInterface.CompilationViewGroup(this, 950, 250, 90, "");
-            openFileGroup = new MetrInterface.OpenFileGroup(this, 0, @"C:\temp2\Another-Metric - model.xml",
+
+            openFileGroup = new MetrInterface.OpenFileGroup(this, 0, @"C:\temp2\Real_Metr2\Hierarchical - model - LS.xml",
                 "Load", "Model file", "xml",
                 new Action<MetrInterface.OpenFileGroup>((MetrInterface.OpenFileGroup op) =>
             {

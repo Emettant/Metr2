@@ -126,7 +126,76 @@ namespace MetrTest
                 Console.WriteLine(ex.Message);
             }
         }
+        static public void Test_Lorenz(String nameOfThisMethod)
+        {
+            try
+            {
+                var compilation = _compilation;
+                Microsoft.VisualStudio.TestTools.UnitTesting.
+                Assert.AreEqual(10, 
+                Metr.MetricCalculator.CS(compilation, compilation.GetTypeByMetadataName(ExampleNamespaceName + ".C")),"Blah");
 
+                Microsoft.VisualStudio.TestTools.UnitTesting.
+                Assert.AreEqual(1,
+                Metr.MetricCalculator.NOO(compilation, compilation.GetTypeByMetadataName(ExampleNamespaceName + ".C")),"Blah");
+
+                Microsoft.VisualStudio.TestTools.UnitTesting.
+                Assert.AreEqual(3,
+                Metr.MetricCalculator.NOA(compilation, compilation.GetTypeByMetadataName(ExampleNamespaceName + ".C")),"Blah");
+
+                Microsoft.VisualStudio.TestTools.UnitTesting.
+                Assert.AreEqual(27,
+                Metr.MetricCalculator.SI100(compilation, compilation.GetTypeByMetadataName(ExampleNamespaceName + ".C")), "Blah");
+
+                Microsoft.VisualStudio.TestTools.UnitTesting.
+                Assert.AreEqual(10,
+                Metr.MetricCalculator.OS(compilation, compilation.GetTypeByMetadataName(ExampleNamespaceName + ".ClassLOC")), "Blah");
+
+                Microsoft.VisualStudio.TestTools.UnitTesting.
+                Assert.AreEqual(12,
+                Metr.MetricCalculator.OC(compilation, compilation.GetTypeByMetadataName(ExampleNamespaceName + ".CyclomaticClass")), "Blah");
+
+                Microsoft.VisualStudio.TestTools.UnitTesting.
+                Assert.AreEqual(14,
+                Metr.MetricCalculator.NP100(compilation, compilation.GetTypeByMetadataName(ExampleNamespaceName + ".NumParam")), "Blah");
+
+                Console.WriteLine(nameOfThisMethod + " - OK");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+            }
+
+        }
+
+        static public void Test_OC(String nameOfThisMethod)
+        {
+            try
+            {
+                Microsoft.VisualStudio.TestTools.UnitTesting.
+                Assert.AreEqual(12,
+                Metr.MetricCalculator.OC( _compilation, _compilation.GetTypeByMetadataName(ExampleNamespaceName + ".CyclomaticClass")), "Blah");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+            }
+
+        }
+
+
+        static public void Template(String nameOfThisMethod)
+        {
+            try
+            {
+
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+            }
+
+        }
 
     }
 

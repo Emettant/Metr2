@@ -12,6 +12,7 @@ using System.Collections.Generic;
 namespace MetrInterface
 {
     using System.IO;
+    using System.Threading.Tasks;
     using System.Windows.Forms;
 
     public static class Tools
@@ -100,7 +101,7 @@ namespace MetrInterface
         }
 
         public OpenFileGroup(
-            Form parent, 
+            Form parent,
             int y,
             string startPath,
             string buttonText,
@@ -159,21 +160,22 @@ namespace MetrInterface
 
     }
 
-    public class OpenSaveFileGroup : OpenFileGroup {
+    public class OpenSaveFileGroup : OpenFileGroup
+    {
         Button saveButton;
         Action<OpenSaveFileGroup> saveButtonClickAction;
         public OpenSaveFileGroup(
-            Form parent, 
-            int y, 
-            string startPath, 
-            string buttonLoadText, 
-            string nameLabelText, 
-            string _extention, 
+            Form parent,
+            int y,
+            string startPath,
+            string buttonLoadText,
+            string nameLabelText,
+            string _extention,
             Action<OpenFileGroup> _loadClick,
             string buttonSaveText,
             Action<OpenSaveFileGroup> _saveClick
             ) :
-            base(parent, y, startPath, buttonLoadText,  nameLabelText,  _extention, _loadClick)
+            base(parent, y, startPath, buttonLoadText, nameLabelText, _extention, _loadClick)
         {
             this.saveButton = new System.Windows.Forms.Button();
 
@@ -183,7 +185,7 @@ namespace MetrInterface
             this.saveButton.Location = new System.Drawing.Point(703, y + 51);
             this.saveButton.Name = "saveButton" + enumeratorOfGroup.ToString();
             this.saveButton.Size = new System.Drawing.Size(75, 23);//(93, 50);
-          //  this.saveButton.TabIndex = 3;
+                                                                   //  this.saveButton.TabIndex = 3;
             this.saveButton.Text = buttonSaveText;
             this.saveButton.UseVisualStyleBackColor = true;
             this.saveButton.Click += new System.EventHandler(saveButton_Click);
@@ -205,6 +207,7 @@ namespace MetrInterface
         Button loadProjectBut;
         DataGridView symbolTableView;
         List<Control> current_controls;
+        ProgressBar progressbar1;
 
         Button startCalcButton;
         bool startCalcButtonPressed = false;
@@ -236,7 +239,7 @@ namespace MetrInterface
                 Saved1 = s1;
                 Saved2 = s2;
                 Saved3 = s3;
-    
+
             }
 
             private List<System.Reflection.PropertyInfo> _saved_pros;
@@ -251,7 +254,8 @@ namespace MetrInterface
 
         }
 
-        private MetrXML.EstimationList GeneratedMetricToEstimationList() {
+        private MetrXML.EstimationList GeneratedMetricToEstimationList()
+        {
             return new MetrXML.EstimationList(dataGridSourceList
                 .Select(x =>
                 new MetrXML.EstimationOfElement(
@@ -326,7 +330,8 @@ namespace MetrInterface
             }
         }
 
-        public void InitSavedModel(string modelFilePath, int num) {
+        public void InitSavedModel(string modelFilePath, int num)
+        {
             current_saved_model_files[num] = modelFilePath;
             TryInitAll();
         }
@@ -335,7 +340,8 @@ namespace MetrInterface
         {
             String projectToPick = comboProjects.Items[comboProjects.SelectedIndex].ToString();
             var project = _solution.Projects.Where(x => x.Name == projectToPick).FirstOrDefault();
-            if (current_project != project.Name.ToString()) {
+            if (current_project != project.Name.ToString())
+            {
                 ProjectChanged = true;
                 current_project = project.Name.ToString();
             }
@@ -388,9 +394,43 @@ namespace MetrInterface
 
         private void CalculateModel()
         {
-            dataGridSourceList = dataGridSourceList.Select(x => new DataGridSourceItem(x.TypeOrNamespaceName,
-                   MetrLearn.Train.getAnswerForClassByModel(current_model_file, current_solution_file, current_project, x.TypeOrNamespaceName)
-               )).ToList();
+            Task task = new Task(()=>
+            {
+                var k = 0;
+                var count = dataGridSourceList.Count;
+                //var progressBarControl = this.useForm.Controls.OfType<ProgressBar>().Single();
+                useForm.Invoke(new Action(()=>
+                    {
+                        useForm.Controls.OfType<DataGridView>().Single().Hide();
+                        useForm.Enabled = false;
+                        progressbar1.Maximum = count;
+                        progressbar1.Value = 0;
+                        progressbar1.Minimum = 0;
+                        progressbar1.Visible = true;
+                    }));
+                dataGridSourceList = dataGridSourceList.Select((x) =>
+                {
+                    k++;
+                    useForm.Invoke(new Action(() =>
+                    {
+                        progressbar1.Value = k;
+                    }));
+                    return new DataGridSourceItem(x.TypeOrNamespaceName,
+                   MetrLearn.Train.getAnswerForClassByModel(current_model_file, current_solution_file, current_project, x.TypeOrNamespaceName),
+                   x.Saved1, x.Saved2, x.Saved3);
+                }).ToList();
+                useForm.Invoke(new Action(() =>
+                    {
+                        useForm.Controls.OfType<DataGridView>().Single().Show();
+                        useForm.Enabled = true;
+                        progressbar1.Visible = false;
+
+                        symbolTableView.DataSource = dataGridSourceList;//current_names.ToList();
+                        symbolTableView.Columns[0].Width = 300;
+                    }));
+
+            });
+            task.Start();
         }
         private void InitTreeView(Compilation compilation)
         {
@@ -423,14 +463,8 @@ namespace MetrInterface
                 ProjectChanged = false;
                 dataGridSourceList = current_names.Select(x => new DataGridSourceItem(x, defaultMetricValue)).ToList();
             }
-            
-            if (startCalcButtonPressed)
-            {
-                startCalcButtonPressed = false;
-                   CalculateModel();
-            }
-           
-            for (var i=0;i< current_saved_model_files.Count; ++i)
+
+            for (var i = 0; i < current_saved_model_files.Count; ++i)
             {
                 var saved = current_saved_model_files[i];
                 MetrXML.EstimationList temp = null;
@@ -440,11 +474,18 @@ namespace MetrInterface
                 }
                 catch
                 { continue; }
-                
-                foreach (var el in temp.Estimations) {
+
+                foreach (var el in temp.Estimations)
+                {
                     if (el.Solution == current_solution_file && el.Project == current_project)
-                        foreach (var data in dataGridSourceList) if (data.TypeOrNamespaceName == el.FullName) data.saved_pros[i].SetValue(data,el.Estimation);
+                        foreach (var data in dataGridSourceList) if (data.TypeOrNamespaceName == el.FullName) data.saved_pros[i].SetValue(data, el.Estimation);
                 }
+            }
+
+            if (startCalcButtonPressed)
+            {
+                startCalcButtonPressed = false;
+                CalculateModel();
             }
 
             symbolTableView.DataSource = dataGridSourceList;//current_names.ToList();
@@ -459,26 +500,36 @@ namespace MetrInterface
         private void startCalcButton_Click(object sender, EventArgs e)
         {
             startCalcButtonPressed = true;
-            TryInitAll();
+            InitProject();
         }
         private void InitNotInterfaceElements(string solutionPath)
         {
             InitSolution(solutionPath);
         }
 
-        public void saveGeneratedMetricToFile(string fileName) {
+        public void saveGeneratedMetricToFile(string fileName)
+        {
             GeneratedMetricToEstimationList().SerializeTo(fileName);
         }
-
+        private Form useForm;
         public CompilationViewGroup(Form parent, int TableWidth, int TableHeight, int y, string solutionPath)
         {
-
+            this.useForm = parent;
             symbolView = new System.Windows.Forms.TreeView(); symbolView.Visible = false;
 
             comboProjects = new System.Windows.Forms.ComboBox();
             loadProjectBut = new System.Windows.Forms.Button();
             symbolTableView = new DataGridView();
             startCalcButton = new Button();
+            progressbar1 = new ProgressBar();
+            // 
+            // progressBar1
+            // 
+            this.progressbar1.Location = new System.Drawing.Point(89, y+252);
+            this.progressbar1.Name = "progressBar1";
+            this.progressbar1.Size = new System.Drawing.Size(765, 94);
+            this.progressbar1.TabIndex = 0;
+            this.progressbar1.Visible = false;
             // 
             // symbolView
             // 
@@ -536,9 +587,9 @@ namespace MetrInterface
             this.startCalcButton.Click += new System.EventHandler(this.startCalcButton_Click);
 
 
-            current_controls = new List<Control>() { symbolView, symbolTableView, loadProjectBut, comboProjects, startCalcButton };
+            current_controls = new List<Control>() { symbolView, symbolTableView, loadProjectBut, comboProjects, startCalcButton, progressbar1 };
             foreach (var control in current_controls) parent.Controls.Add(control);
-
+            
             InitNotInterfaceElements(solutionPath);
         }
 
